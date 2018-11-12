@@ -1,0 +1,271 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: otgs-senior-developer-test-001\n"
+"POT-Creation-Date: 2018-07-16 21:50+0300\n"
+"PO-Revision-Date: 2018-07-14 16:09+0300\n"
+"Last-Translator: \n"
+"Language-Team: KAGG Design\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.9\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: ru\n"
+"X-Poedit-KeywordsList: __\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: includes/class-otgs-sdt001-api-controller.php:64
+msgid "Unique identifier for the resource."
+msgstr ""
+
+#: includes/class-otgs-sdt001-api-controller.php:93
+msgid "Whether to bypass trash and force deletion."
+msgstr ""
+
+#: includes/class-otgs-sdt001-api-controller.php:111
+msgid "Limit result set to dealer with a specific slug."
+msgstr ""
+
+#: includes/class-otgs-sdt001-api-controller.php:117
+msgid "Limit result set to dealers assigned a specific status."
+msgstr ""
+
+#: includes/class-otgs-sdt001-api-controller.php:124
+msgid "Limit result set to dealers with a specific location."
+msgstr ""
+
+#: includes/class-otgs-sdt001-api-controller.php:130
+msgid "Limit result set to dealers of specific type."
+msgstr ""
+
+#: includes/class-otgs-sdt001-api-controller.php:136
+msgid "Limit result set to dealers assigned a specific brand."
+msgstr ""
+
+#: includes/class-otgs-sdt001-api-controller.php:174
+#: includes/class-otgs-sdt001-api-controller.php:256
+#: includes/class-otgs-sdt001-api-controller.php:323
+msgid "Invalid ID."
+msgstr ""
+
+#: includes/class-otgs-sdt001-api-controller.php:192
+msgid "Cannot create existing post."
+msgstr ""
+
+#: includes/class-otgs-sdt001-api-controller.php:336
+msgid "The item cannot be deleted."
+msgstr ""
+
+#: includes/class-otgs-sdt001-api-controller.php:650
+#: includes/class-otgs-sdt001-api-controller.php:665
+msgid "Sorry, you cannot view resources."
+msgstr ""
+
+#: includes/class-otgs-sdt001-api-controller.php:680
+msgid "Sorry, you cannot create resources."
+msgstr ""
+
+#: includes/class-otgs-sdt001-api-controller.php:695
+msgid "Sorry, you cannot update resources."
+msgstr ""
+
+#: includes/class-otgs-sdt001-api-controller.php:710
+msgid "Sorry, you cannot delete resources."
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:127 includes/class-otgs-sdt001.php:137
+msgid "Locations"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:128 includes/page-dealers.php:31
+msgid "Location"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:129
+msgid "Search Locations"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:130
+msgid "All Locations"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:131
+msgid "Parent Location"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:132
+msgid "Parent Location:"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:133
+msgid "Edit Location"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:134
+msgid "Update Location"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:135
+msgid "Add New Location"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:136
+msgid "New Location"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:139
+msgid "Dealer Location"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:150 includes/class-otgs-sdt001.php:160
+msgid "Types"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:151 includes/page-dealers.php:47
+msgid "Type"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:152
+msgid "Search Types"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:153
+msgid "All Types"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:154
+msgid "Parent Type"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:155
+msgid "Parent Type:"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:156
+msgid "Edit Type"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:157
+msgid "Update Type"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:158
+msgid "Add New Type"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:159
+msgid "New Type"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:162
+msgid "Dealer Type: Dealer or Point of Sale"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:173 includes/class-otgs-sdt001.php:183
+#: includes/page-dealers.php:39
+msgid "Brands"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:174
+msgid "Brand"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:175
+msgid "Search Brands"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:176
+msgid "All Brands"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:177
+msgid "Parent Brand"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:178
+msgid "Parent Brand:"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:179
+msgid "Edit Brand"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:180
+msgid "Update Brand"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:181
+msgid "Add New Brand"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:182
+msgid "New Brand"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:185
+msgid "Dealer Brands"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:228
+msgid "Dealers"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:229
+msgid "Dealer"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:230
+msgid "Add New"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:231
+msgid "Add New Dealer"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:232
+msgid "Edit Dealer"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:233
+msgid "New Dealer"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:234
+msgid "View Dealer"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:235
+msgid "Search Dealers"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:236
+msgid "Not Found"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:237
+msgid "Not Found In Trash"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:238
+msgid "Parent"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:239
+msgid "Parent:"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:240 includes/class-otgs-sdt001.php:246
+msgid "Automotive Oils Dealers"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:330
+msgid "Bad nonce!"
+msgstr ""
+
+#: includes/class-otgs-sdt001.php:336
+msgid "Your order was processed."
+msgstr ""

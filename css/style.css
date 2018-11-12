@@ -1,0 +1,190 @@
+.content-area.notifications-content {
+    width: 100% !important;
+}
+
+.notifications-modal-content .wrap {
+    padding: 2em 3em;
+}
+
+.content-area.notifications-content article {
+    padding-bottom: 2em;
+}
+
+.content-area.notifications-content h1 {
+    color: #333 !important;
+    font-size: 1.875rem !important;
+    font-weight: bold !important;
+    text-transform: none !important;
+    margin-bottom: 0;
+}
+
+div#notifications-header {
+    margin-bottom: 1em;
+    clear: both;
+}
+
+#notifications-header select {
+    width: auto;
+    height: 2em;
+    float: right;
+}
+
+#notifications-header>span:first-child {
+    font-weight: bold;
+    line-height: 30px;
+}
+
+#notifications-list tbody tr:nth-child(odd) {
+    background: #eee;
+}
+
+#notifications-list {
+    table-layout: fixed;
+}
+
+#notifications-list th:first-child,
+#notifications-list td:first-child {
+    width: calc(100% - 55px);
+}
+
+#notifications-list th:last-child,
+#notifications-list td:last-child {
+    width: 55px;
+}
+
+.notifications-error {
+    font-weight: bold;
+    text-align: center;
+}
+
+.update-notification-button, .delete-notification-button {
+    width: 24px;
+    float: right;
+    cursor: pointer;
+}
+
+#more-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.3;
+}
+
+#more-button {
+    padding: 1em 28px;
+    float: left;
+}
+
+#create-notification-button {
+    padding: 1em 28px;
+    margin-left: 15px;
+    float: right;
+}
+
+.notifications-modal h3 {
+    padding-top: 0;
+    font-weight: bold;
+}
+
+.notifications-modal label, .notifications-modal input {
+    padding-top: 15px;
+}
+
+#send-button, #create-button, #update-button {
+    margin-top: 25px;
+}
+
+.notification-data {
+    font-size: 0.7em;
+    opacity: 0.7;
+}
+
+/* Modal */
+.notifications-modal {
+    display: none;
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.notifications-modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 20px;
+    border: 1px solid #888;
+    max-width: 80%;
+    width: 800px;
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.notifications-modal input,
+.notifications-modal #content-text,
+.notifications-modal #update-content-text {
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    padding: 0.7em;
+}
+
+.notifications-modal input:focus,
+.notifications-modal #content-text:focus,
+.notifications-modal #update-content-text:focus {
+    color: #222;
+    border-color: #333;
+}
+
+/* End Modal */
+
+/* Media */
+
+@media (max-width: 767px ) {
+    .notifications-modal-content .close {
+        top: 7px;
+        right: 15px;
+    }
+
+    .notifications-modal-content {
+        width: 100%;
+        padding: 15px;
+        max-width: unset;
+    }
+
+    #notifications-popup > .notifications-modal-content {
+        width: calc(100% - 30px);
+    }
+
+
+    .notifications-modal-content .wrap {
+        padding: 0;
+    }
+
+    #more-button {
+        padding: 1em 7px;
+    }
+
+    #create-notification-button {
+        padding: 1em 7px;
+        margin-left: 7px;
+    }
+}
