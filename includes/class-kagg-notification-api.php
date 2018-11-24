@@ -1,9 +1,5 @@
 <?php
 /**
- * KAGG Notification plugin API.
- */
-
-/**
  * Class KAGG_Notification_API
  */
 class KAGG_Notification_API {

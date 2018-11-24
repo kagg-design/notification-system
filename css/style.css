@@ -2,8 +2,21 @@
     width: 100% !important;
 }
 
+#notifications-popup > .notifications-modal-content {
+    min-height: 450px;
+}
+
 .notifications-modal-content .wrap {
+    position: relative;
     padding: 2em 3em;
+}
+
+#notifications-popup main {
+    position: absolute;
+    transform: translateY(-50%);
+    margin-top: 25%;
+    top: 50%;
+    left: 0;
 }
 
 .content-area.notifications-content article {
@@ -42,14 +55,19 @@ div#notifications-header {
     table-layout: fixed;
 }
 
+#notifications-list th,
+#notifications-list td {
+    padding: 8px;
+}
+
 #notifications-list th:first-child,
 #notifications-list td:first-child {
-    width: calc(100% - 55px);
+    width: calc(100% - 65px);
 }
 
 #notifications-list th:last-child,
 #notifications-list td:last-child {
-    width: 55px;
+    width: 65px;
 }
 
 .notifications-error {
@@ -92,6 +110,25 @@ div#notifications-header {
     margin-top: 25px;
 }
 
+.notification-cell {
+    position: relative;
+}
+
+.notification-cell:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 5px;
+    background-color: #f06292;
+}
+
+.notification-cell.read:before {
+    display: none;
+}
+
 .notification-data {
     font-size: 0.7em;
     opacity: 0.7;
@@ -101,7 +138,7 @@ div#notifications-header {
 .notifications-modal {
     display: none;
     position: fixed;
-    z-index: 10;
+    z-index: 999999;
     left: 0;
     top: 0;
     width: 100%;
@@ -130,6 +167,7 @@ div#notifications-header {
     float: right;
     font-size: 28px;
     font-weight: bold;
+    z-index: 20;
 }
 
 .close:hover,

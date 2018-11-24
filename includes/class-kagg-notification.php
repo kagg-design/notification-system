@@ -1,14 +1,19 @@
 <?php
 /**
- * Main class of the KAGG Notification plugin.
- */
-
-/**
  * Class KAGG_Notification
+ * Main class of the KAGG Notification plugin.
+ *
  * @package agg-notification
  * Version 1.0.0
  */
 class KAGG_Notification {
+
+	/**
+	 * The single instance of the class.
+	 *
+	 * @var KAGG_Notification
+	 */
+	protected static $_instance = null;
 
 	/**
 	 * API instance.
@@ -16,6 +21,13 @@ class KAGG_Notification {
 	 * @var KAGG_Notification_API
 	 */
 	public $api = null;
+
+	/**
+	 * List_In_Meta instance.
+	 *
+	 * @var KAGG_List_In_Meta
+	 */
+	public $list_in_meta = null;
 
 	/**
 	 * Slug of virtual page with frontend.
@@ -34,9 +46,26 @@ class KAGG_Notification {
 	}
 
 	/**
+	 * Main KAGG_Notification Instance.
+	 *
+	 * Ensures only one instance of KAGG_Notification is loaded or can be loaded.
+	 *
+	 * @return KAGG_Notification - Main instance.
+	 */
+	public static function instance() {
+		if ( is_null( self::$_instance ) ) {
+			self::$_instance = new self();
+		}
+
+		return self::$_instance;
+	}
+
+	/**
 	 * Include required files.
 	 */
 	protected function includes() {
+		include_once KAGG_NOTIFICATION_PATH . '/includes/class-kagg-list-in-meta.php';
+		$this->list_in_meta = new KAGG_List_In_Meta();
 		include_once KAGG_NOTIFICATION_PATH . '/includes/class-kagg-notification-api.php';
 		$this->api = new KAGG_Notification_API();
 	}
@@ -397,6 +426,30 @@ class KAGG_Notification {
 		}
 
 		wp_send_json_success( $this->notifications_shortcode() );
+	}
+
+	/**
+	 * Get count of notifications.
+	 *
+	 * @return int
+	 */
+	public function get_unread_count() {
+		$args  = array(
+			'post_type'  => 'notification',
+			'status'     => 'publish',
+			'meta_query' => array(
+				array(
+					'key'     => '_read',
+					'value'   => '|' . (string) wp_get_current_user()->ID . '|',
+					'compare' => 'LIKE',
+				),
+			),
+		);
+		$query = new WP_Query( $args );
+
+		$total_count = wp_count_posts( 'notification' );
+
+		return $total_count->publish - $query->found_posts;
 	}
 
 	/**

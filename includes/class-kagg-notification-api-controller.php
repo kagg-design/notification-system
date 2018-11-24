@@ -1,9 +1,5 @@
 <?php
 /**
- * KAGG Notification plugin API Controller.
- */
-
-/**
  * Class KAGG_Notification_API_Controller
  */
 class KAGG_Notification_API_Controller extends WP_REST_Controller {
@@ -28,6 +24,22 @@ class KAGG_Notification_API_Controller extends WP_REST_Controller {
 	 * @var string
 	 */
 	protected $post_type = 'notification';
+
+	/**
+	 * List_In_Meta instance.
+	 *
+	 * @var KAGG_List_In_Meta
+	 */
+	public $list_in_meta = null;
+
+	public function __construct() {
+		$this->includes();
+	}
+
+	private function includes() {
+		include_once KAGG_NOTIFICATION_PATH . '/includes/class-kagg-notification-api-controller.php';
+		$this->list_in_meta = new KAGG_List_In_Meta();
+	}
 
 	/**
 	 * Register routes for API.
@@ -267,6 +279,10 @@ class KAGG_Notification_API_Controller extends WP_REST_Controller {
 			return $post_id;
 		}
 
+		if ( isset( $request['read'] ) ) {
+			$this->set_read_status( $post_id, $request['read'] );
+		}
+
 		$this->add_taxonomies( $post_id, $request );
 
 		$object = get_post( $post_id );
@@ -390,6 +406,7 @@ class KAGG_Notification_API_Controller extends WP_REST_Controller {
 		$args['post_parent__not_in'] = $request['parent_exclude'];
 		$args['s']                   = $request['search'];
 		$args['channel']             = $request['channel'];
+		$args['read']                = $request['read'];
 
 		if ( 'date' === $args['orderby'] ) {
 			$args['orderby'] = 'date ID';
@@ -565,6 +582,7 @@ class KAGG_Notification_API_Controller extends WP_REST_Controller {
 			'content' => $notification->post_content,
 			'date'    => $this->time_ago( $notification->post_date ),
 			'channel' => $this->get_terms_list( $notification->ID, 'channel', ', ' ),
+			'read'    => $this->get_read_status( $notification->ID ),
 		);
 
 		return $data;
@@ -596,6 +614,32 @@ class KAGG_Notification_API_Controller extends WP_REST_Controller {
 		}
 
 		return join( $sep, $names );
+	}
+
+	/**
+	 * Get read status of the notification for current user.
+	 *
+	 * @param int $id Notification ID.
+	 *
+	 * @return bool
+	 */
+	protected function get_read_status( $id ) {
+		return $this->list_in_meta->is_listed_in_meta( $id, '_read', wp_get_current_user()->ID );
+	}
+
+	/**
+	 * Set read status of the notification for current user.
+	 *
+	 * @param int $id Notification ID.
+	 * @param bool $read_status Read status.
+	 */
+	protected function set_read_status( $id, $read_status ) {
+		$user_id = wp_get_current_user()->ID;
+		if ( $read_status ) {
+			$this->list_in_meta->add_to_list_in_meta( $id, '_read', $user_id );
+		} else {
+			$this->list_in_meta->remove_from_list_in_meta( $id, '_read', $user_id );
+		}
 	}
 
 	/**
@@ -684,6 +728,15 @@ class KAGG_Notification_API_Controller extends WP_REST_Controller {
 	 * @return WP_Error|boolean
 	 */
 	public function update_item_permissions_check( $request ) {
+		$json          = $request->get_params();
+		$non_priv_keys = array( 'id', 'read' );
+		sort( $non_priv_keys );
+		$intersect = array_intersect_key( array_keys( $json ), $non_priv_keys );
+		sort( $intersect );
+		if ( $intersect === $non_priv_keys ) {
+			// Allow any user to manipulate own read status.
+			return true;
+		}
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			return new WP_Error(
 				'KAGG_Notification_rest_cannot_update',
@@ -724,7 +777,7 @@ class KAGG_Notification_API_Controller extends WP_REST_Controller {
 		$taxonomies = array( 'channel' );
 		foreach ( $taxonomies as $taxonomy ) {
 			$term_slug_list = isset( $request[ $taxonomy ] ) ? $request[ $taxonomy ] : null;
-			$term_slugs     = explode( ',', $term_slug_list );
+			$term_slugs     = explode( '|', $term_slug_list );
 			$append         = false; // To drop any existing terms at first call of wp_set_post_terms().
 			foreach ( $term_slugs as $i => $term_slug ) {
 				$term_slug = trim( $term_slug );

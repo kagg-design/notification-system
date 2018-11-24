@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	// Collection to fetch. Should be in global scope to work with Show More button.
 	let notifications = null;
 	const POPUP_HASH = 'notifications';
+	const UNREAD_COUNT = 'unread-notifications-count';
 	let PER_PAGE = 10;
 	if (screen.width < 768) {
 		PER_PAGE = 5;
@@ -154,10 +155,17 @@ document.addEventListener('DOMContentLoaded', function () {
 			buttons += '<img class="update-notification-button" src="' + WP_API_Settings.pluginURL + '/images/update-button.svg' + '">';
 		}
 
+		let unread_count = 0;
 		let notificationsList = '';
 		notifications.each(function (notification) {
+			let readClass = '';
+			if (notification.attributes.read) {
+				readClass = ' read';
+			} else {
+				unread_count++;
+			}
 			notificationsList += '<tr>';
-			notificationsList += '<td>';
+			notificationsList += '<td class="notification-cell' + readClass + '">';
 			notificationsList += '<div class="notification-content"';
 			notificationsList += ' data-id="' + notification.attributes.id + '"';
 			notificationsList += ' data-channel="' + notification.attributes.channel + '"';
@@ -184,6 +192,21 @@ document.addEventListener('DOMContentLoaded', function () {
 		} else {
 			tbody.innerHTML = notificationsList;
 		}
+
+		const unread_count_el = document.getElementById(UNREAD_COUNT);
+		if (typeof unread_count_el !== 'undefined') {
+			if (unread_count > 9) {
+				unread_count = '9+';
+			}
+			unread_count_el.innerText = unread_count;
+			if (unread_count) {
+				unread_count_el.style.display = 'block';
+			} else {
+				unread_count_el.style.display = 'none';
+			}
+		}
+
+		bindEvents();
 	}
 
 
@@ -227,17 +250,45 @@ document.addEventListener('DOMContentLoaded', function () {
 			});
 	}
 
+	function hasPopupHash(href) {
+		if (typeof href === 'undefined' || '' === href) {
+			return false;
+		}
+		if (POPUP_HASH === href.split('#')[1].split('?')[0]) {
+			return true;
+		}
+		return false;
+	}
+
 	function bindEvents() {
-		window.onclick = function (event) {
-			// Click on link containing POPUP_HASH
-			if (typeof event.target.href !== 'undefined') {
-				if (POPUP_HASH === event.target.href.split('#')[1].split('?')[0]) {
+		// Click on link containing POPUP_HASH.
+		const links = document.getElementsByTagName('a');
+		for (let link of links) {
+			if (hasPopupHash(link.hash)) {
+				link.onclick = function (event) {
 					event.preventDefault();
 					showPopup();
 					return false;
 				}
 			}
+		}
 
+		// Click on notification cell, toggle read status.
+		const cells = document.getElementsByClassName('notification-cell');
+		for (let cell of cells) {
+			cell.onclick = function (event) {
+				const cell = event.target.closest('.notification-cell');
+				cell.classList.toggle('read');
+				const id = cell.querySelector('.notification-content').dataset.id;
+				let query = [];
+				query['id'] = id;
+				query['read'] = cell.classList.contains('read');
+				updateNotification(query);
+				return false;
+			}
+		}
+
+		window.onclick = function (event) {
 			// When user clicks anywhere outside of the modal, close it.
 			if (event.target.matches('.notifications-modal')) {
 				event.target.style.display = 'none';
@@ -352,7 +403,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		getPopupContent().then(response => {
 			const modalContent = document.getElementsByClassName('notifications-modal-content')[0];
 			modalContent.innerHTML = '<span class="close">&times;</span>' + response;
-			bindEvents();
 			getNotifications([]);
 			popup.style.display = 'block';
 		});
@@ -369,7 +419,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	// Get and show notifications at page load.
 	if (notificationsContent) {
 		// Standard page.
-		bindEvents();
 		getNotifications([]);
 	} else {
 		// No notifications content.
