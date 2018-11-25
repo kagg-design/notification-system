@@ -1,0 +1,511 @@
+class NotificationsRESTAPI {
+	constructor() {
+
+		// Collection to fetch. Should be in global scope to work with Show More button.
+		this.POPUP_HASH   = 'notifications';
+		this.UNREAD_COUNT = 'unread-notifications-count';
+		this.PER_PAGE     = 9;
+		if ( 768 > screen.width ) {
+			this.PER_PAGE = 5;
+		}
+
+		// Init.
+
+		// Initialize the wp.api object with the custom namespace.
+		wp.api.init(
+			{ 'versionString': 'kagg/v1/' }
+		);
+
+		// Get content.
+		const notificationsContent = document.getElementsByClassName( 'notifications-content' )[0];
+
+		// Get and show notifications at page load.
+		if ( notificationsContent ) {
+
+			// Standard page.
+			// eslint-disable-next-line
+			this.getNotifications( [] );
+			return;
+		}
+
+		// No notifications content.
+		// eslint-disable-next-line
+		if ( '#' + this.POPUP_HASH === window.location.hash.split( '?' )[0] ) {
+			this.showPopup(); // URL with #POPUP_HASH
+		} else {
+			this.bindEvents(); // Any page
+		}
+	}
+
+	/**
+	 * Handler of change event on any select.
+	 */
+	changeEventHandler() {
+		let query      = [];
+		const elements = document.querySelectorAll( '#notifications-header select' );
+		const count    = elements.length;
+		// eslint-disable-next-line
+		for ( let i = 0; i < count; i ++ ) {
+			const e     = elements[i];
+			const value = e.options[e.selectedIndex].value;
+			if ( '' !== value ) {
+				query[e.name] = value;
+			}
+		}
+		this.getNotifications( query );
+	}
+
+	/**
+	 * Get notifications via REST API.
+	 *
+	 * @param query array of taxonomy=term relations.
+	 */
+	getNotifications( query ) {
+		this.notifications = null;
+
+		const showNotifications = () => this.showNotifications( this.notifications );
+
+		return wp.api.loadPromise.done(
+			() => {
+				let i           = 0;
+				let queryString = '';
+				for ( let key in query ) {
+					if ( query.hasOwnProperty( key ) ) {
+						let sep = ( 0 === i ) ? '?' : '&';
+
+						queryString += sep + key + '=' + query[key];
+						// eslint-disable-next-line
+						i ++;
+					}
+				}
+
+				const Notification = wp.api.models.Post.extend(
+					{ urlRoot: WPAPISettings.root + WPAPISettings.base }
+				);
+
+				const Notifications = wp.api.collections.Posts.extend(
+					{
+						url: WPAPISettings.root + WPAPISettings.base + queryString,
+						model: Notification
+					}
+				);
+
+				this.notifications = new Notifications();
+
+				const notifications = this.notifications;
+
+				return notifications.fetch(
+					{
+						// eslint-disable-next-line
+						data: { per_page: this.PER_PAGE },
+						error: ( collection, response ) => {
+							document.querySelector( '#notifications-list tbody' ).innerHTML =
+								'<td colspan="4" class="notifications-error">' + response.responseJSON.message + '</td>';
+						}
+					}
+				).done(
+					() => {
+
+						document.querySelector( '#more-button' ).disabled = ! notifications.hasMore();
+						showNotifications();
+					}
+				);
+			}
+		);
+	}
+
+	/**
+	 * Create notification via REST API.
+	 *
+	 * @param query array of attributes.
+	 */
+	createNotification( query ) {
+		const getNotifications = () => this.getNotifications();
+		wp.api.loadPromise.done(
+			() => {
+				// eslint-disable-next-line
+				let notification = new wp.api.models.Notifications( {} );
+
+				for ( let key in query ) {
+					if ( query.hasOwnProperty( key ) ) {
+						notification.attributes[key] = query[key];
+					}
+				}
+
+				notification.save().done(
+					function() {
+						getNotifications();
+					}
+				);
+			}
+		);
+	}
+
+	/**
+	 * Update notification via REST API.
+	 *
+	 * @param query array of attributes.
+	 */
+	updateNotification( query ) {
+		const getNotifications = () => this.getNotifications();
+		wp.api.loadPromise.done(
+			function() {
+				// eslint-disable-next-line
+				let notification = new wp.api.models.Notifications( {} );
+
+				for ( let key in query ) {
+					if ( query.hasOwnProperty( key ) ) {
+						notification.attributes[key] = query[key];
+					}
+				}
+
+				notification.set();
+
+				notification.save().done(
+					function() {
+						getNotifications();
+					}
+				);
+			}
+		);
+	}
+
+	/**
+	 * Delete notification via REST API.
+	 *
+	 * @param id string.
+	 */
+	deleteNotification( id ) {
+		const getNotifications = () => this.getNotifications();
+		wp.api.loadPromise.done(
+			function() {
+				// eslint-disable-next-line
+				let notification = new wp.api.models.Notifications( {} );
+
+				notification.attributes.id = id;
+
+				notification.destroy().done(
+					function() {
+						getNotifications();
+					}
+				);
+			}
+		);
+	}
+
+	/**
+	 * Show notifications received via REST API.
+	 *
+	 * @param notifications Notifications.
+	 * @param add bool Add to output area.
+	 */
+	showNotifications( notifications, add = false ) {
+		const tbody = document.querySelector( '#notifications-list tbody' );
+		if ( 0 === tbody.length ) {
+			return;
+		}
+
+		if ( notifications.hasMore() ) {
+			notifications.more();
+		}
+
+		let buttons = '';
+		if ( document.querySelector( '.notifications-content' ).classList.contains( 'edit' ) ) {
+			buttons += '<img alt="Delete Button" class="delete-notification-button" src="' +
+				WPAPISettings.pluginURL + '/images/delete-button.svg">';
+			buttons += '<img alt="Update Button" class="update-notification-button" src="' +
+				WPAPISettings.pluginURL + '/images/update-button.svg">';
+		}
+
+		let unreadCount       = 0;
+		let notificationsList = '';
+		notifications.each(
+			function( notification ) {
+				let readClass = '';
+				if ( notification.attributes.read ) {
+					readClass = ' read';
+				} else {
+					// eslint-disable-next-line
+					unreadCount ++;
+				}
+				notificationsList += '<tr>';
+				notificationsList += '<td class="notification-cell' + readClass + '">';
+				notificationsList += '<div class="notification-content"';
+				notificationsList += ' data-id="' + notification.attributes.id + '"';
+				notificationsList += ' data-channel="' + notification.attributes.channel + '"';
+				notificationsList += ' data-users="' + notification.attributes.users + '"';
+				notificationsList += ' data-title="' + notification.attributes.title + '"';
+				notificationsList += '>';
+				notificationsList += notification.attributes.content;
+				notificationsList += '</div>';
+				notificationsList += '<div class="notification-data">';
+				notificationsList += '<span class="notification-channel">' + notification.attributes.channel + '</span>';
+				if ( notification.attributes.channel ) {
+					notificationsList += ' - ';
+				}
+				notificationsList += '<span class="notification-date">' + notification.attributes.date + '</span>';
+				if ( notification.attributes.users ) {
+					notificationsList += ' - ';
+					notificationsList += '<span class="notification-users">' + notification.attributes.users + '</span>';
+				}
+				notificationsList += '</div>';
+				notificationsList += '</td>';
+				notificationsList += '<td>' + buttons + '</td>';
+				notificationsList += '</tr>';
+			}
+		);
+
+		if ( add ) {
+			tbody.innerHTML += notificationsList;
+		} else {
+			tbody.innerHTML = notificationsList;
+		}
+
+		const unreadCountElement = document.getElementById( this.UNREAD_COUNT );
+		if ( unreadCountElement ) {
+			if ( 9 > unreadCount ) {
+				unreadCountElement.innerText = unreadCount.toString();
+			} else {
+				unreadCountElement.innerText = '9+';
+			}
+			if ( unreadCount ) {
+				unreadCountElement.style.display = 'block';
+			} else {
+				unreadCountElement.style.display = 'none';
+			}
+		}
+
+		this.bindEvents();
+	}
+
+	/**
+	 * Bind events to methods.
+	 */
+	bindEvents() {
+		let query                = [];
+		let deleteId             = null;
+		const showPopup          = () => this.showPopup();
+		const createNotification = () => this.createNotification( query );
+		const showNotifications  = () => this.showNotifications( this.notifications, true );
+		const updateNotification = () => this.updateNotification( query );
+		const deleteNotification = () => this.deleteNotification( deleteId );
+
+		// Click on link containing POPUP_HASH.
+		const links = document.getElementsByTagName( 'a' );
+		for ( let link of links ) {
+			if ( this.hasPopupHash( link.hash ) ) {
+				link.onclick = function( event ) {
+					event.preventDefault();
+					showPopup();
+					return false;
+				};
+			}
+		}
+
+		// Click on notification cell, toggle read status.
+		const cells = document.getElementsByClassName( 'notification-cell' );
+		for ( let cell of cells ) {
+			cell.onclick = event => {
+
+				const cell = event.target.closest( '.notification-cell' );
+				cell.classList.toggle( 'read' );
+				const id   = cell.querySelector( '.notification-content' ).dataset.id;
+				query      = [];
+				query.id   = id;
+				query.read = cell.classList.contains( 'read' );
+				updateNotification( query );
+				return false;
+			};
+		}
+
+		window.onclick = function( event ) {
+
+			// When user clicks anywhere outside of the modal, close it.
+			if ( event.target.matches( '.notifications-modal' ) ) {
+				event.target.style.display = 'none';
+			}
+
+			// When user clicks on <span> (x), close modal.
+			if ( event.target.matches( '.close' ) ) {
+				event.target.closest( '.notifications-modal' ).style.display = 'none';
+			}
+
+			// Open Create Notification modal.
+			if ( event.target.matches( '#create-notification-button' ) ) {
+				document.getElementById( 'create-modal' ).style.display = 'block';
+			}
+
+			// Create notification.
+			if ( event.target.matches( '#create-button' ) ) {
+				const title = document.getElementById( 'title-text' ).value.trim();
+				if ( '' === title ) {
+					return;
+				}
+
+				const content = document.getElementById( 'content-text' ).innerHTML.trim();
+				if ( '' === content ) {
+					return;
+				}
+
+				document.getElementById( 'create-modal' ).style.display = 'none';
+
+				query         = [];
+				query.title   = title;
+				query.content = content;
+				query.channel = document.getElementById( 'channel-text' ).value;
+				query.users   = document.getElementById( 'users-text' ).value;
+				createNotification();
+			}
+
+			// Open Update Notification modal.
+			if ( event.target.matches( '.update-notification-button' ) ) {
+				const tr   = event.target.closest( 'tr' );
+				const text = tr.getElementsByClassName( 'notification-content' )[0];
+
+				document.getElementById( 'update-title-text' ).value       = text.dataset.title;
+				document.getElementById( 'update-title-text' ).dataset.id  = text.dataset.id;
+				document.getElementById( 'update-content-text' ).innerHTML = text.innerHTML;
+				document.getElementById( 'update-channel-text' ).value     = text.dataset.channel;
+				document.getElementById( 'update-users-text' ).value       = text.dataset.users;
+
+				document.getElementById( 'update-modal' ).style.display = 'block';
+			}
+
+			// Update notification.
+			if ( event.target.matches( '#update-button' ) ) {
+				const title = document.getElementById( 'update-title-text' ).value.trim();
+				if ( '' === title ) {
+					return;
+				}
+
+				const content = document.getElementById( 'update-content-text' ).innerHTML.trim();
+				if ( '' === content ) {
+					return;
+				}
+
+				const id = document.getElementById( 'update-title-text' ).dataset.id;
+
+				document.getElementById( 'update-modal' ).style.display = 'none';
+
+				query         = [];
+				query.id      = id;
+				query.title   = title;
+				query.content = content;
+				query.channel = document.getElementById( 'update-channel-text' ).value;
+				query.users   = document.getElementById( 'update-users-text' ).value;
+				updateNotification();
+			}
+
+			// Delete notification.
+			if ( event.target.matches( '.delete-notification-button' ) ) {
+				const tr   = event.target.closest( 'tr' );
+				const text = tr.getElementsByClassName( 'notification-content' )[0];
+
+				if ( confirm( 'Are you sure to delete the following notification?\n\n' + text.innerText ) ) {
+					deleteId = text.dataset.id;
+					deleteNotification();
+				}
+			}
+		};
+
+		// Select change handler.
+		const select = document.querySelector( '#notifications-header select' );
+		if ( null !== select ) {
+			select.onchange = () => this.changeEventHandler();
+		}
+
+		// Show More button.
+		const moreButton = document.querySelector( '#more-button' );
+		if ( null !== moreButton ) {
+			moreButton.onclick = () => {
+
+				moreButton.disabled = ! this.notifications.hasMore();
+				showNotifications();
+			};
+		}
+	}
+
+	/**
+	 * Check if url has popup hash (#notifications by default).
+	 */
+	hasPopupHash( href ) {
+		if ( 'undefined' === typeof href || '' === href ) {
+			return false;
+		}
+		return this.POPUP_HASH === href.split( '#' )[1].split( '?' )[0];
+	}
+
+	/**
+	 * Get content of popup window with notifications.
+	 */
+	getPopupContent() {
+		const data = {
+			action: 'kagg_notification_get_popup_content',
+			nonce: WPAPISettings.nonce
+		};
+
+		const encodedData = Object.keys( data )
+		// eslint-disable-next-line
+			.map( ( key ) => encodeURIComponent( key ) + '=' + encodeURIComponent( data[key] ) )
+			.join( '&' );
+
+		return fetch(
+			WPAPISettings.ajaxURL,
+			{
+				method: 'POST',
+				body: encodedData,
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+				},
+				credentials: 'same-origin'
+			}
+		)
+			.then(
+				response => {
+					if ( ! response.ok ) {
+						throw new Error( response.statusText );
+					}
+					return response.json();
+				}
+			)
+			.then(
+				response => {
+					if ( response.success ) {
+						return response.data;
+					} else {
+						throw new Error( response.data );
+					}
+				}
+			)
+			.catch(
+				( reason ) => {
+					return reason.message;
+				}
+			);
+	}
+
+	/**
+	 * Show popup window.
+	 */
+	showPopup() {
+		let popup = document.getElementById( 'notifications-popup' );
+		if ( ! popup ) {
+			popup           = document.createElement( 'div' );
+			popup.id        = 'notifications-popup';
+			popup.className = 'notifications-modal';
+			popup.innerHTML = '<div class="notifications-modal-content"></div>';
+			document.body.appendChild( popup );
+		}
+		this.getPopupContent().then(
+			response => {
+				const modalContent     = document.getElementsByClassName( 'notifications-modal-content' )[0];
+				modalContent.innerHTML = '<span class="close">&times;</span>' + response;
+				// eslint-disable-next-line
+				this.getNotifications( [] );
+				popup.style.display = 'block';
+			}
+		);
+	}
+}
+
+export default NotificationsRESTAPI;

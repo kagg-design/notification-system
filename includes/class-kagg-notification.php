@@ -1,491 +1,107 @@
 <?php
+
 /**
  * Class KAGG_Notification
- * Main class of the KAGG Notification plugin.
- *
- * @package agg-notification
- * Version 1.0.0
  */
 class KAGG_Notification {
+	/** @var string */
+	const READ_STATUS_META_KEY = '_read';
 
-	/**
-	 * The single instance of the class.
-	 *
-	 * @var KAGG_Notification
-	 */
-	protected static $_instance = null;
+	/** @var string */
+	const USERS_META_KEY = '_users';
 
-	/**
-	 * API instance.
-	 *
-	 * @var KAGG_Notification_API
-	 */
-	public $api = null;
+	/** @var int ID of this notification. */
+	protected $id = 0;
 
-	/**
-	 * List_In_Meta instance.
-	 *
-	 * @var KAGG_List_In_Meta
-	 */
-	public $list_in_meta = null;
-
-	/**
-	 * Slug of virtual page with frontend.
-	 * By default, works on site.org/notifications
-	 *
-	 * @var string
-	 */
-	protected $page_slug = 'notifications';
+	/** @var KAGG_List_In_Meta Instance of List In Meta class. */
+	protected $list_in_meta;
 
 	/**
 	 * KAGG_Notification constructor.
-	 */
-	public function __construct() {
-		$this->includes();
-		$this->init_hooks();
-	}
-
-	/**
-	 * Main KAGG_Notification Instance.
 	 *
-	 * Ensures only one instance of KAGG_Notification is loaded or can be loaded.
-	 *
-	 * @return KAGG_Notification - Main instance.
+	 * @param int $id Notification post ID.
 	 */
-	public static function instance() {
-		if ( is_null( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-	/**
-	 * Include required files.
-	 */
-	protected function includes() {
-		include_once KAGG_NOTIFICATION_PATH . '/includes/class-kagg-list-in-meta.php';
+	public function __construct( $id ) {
+		$this->id           = absint( $id );
 		$this->list_in_meta = new KAGG_List_In_Meta();
-		include_once KAGG_NOTIFICATION_PATH . '/includes/class-kagg-notification-api.php';
-		$this->api = new KAGG_Notification_API();
 	}
 
 	/**
-	 * Init various hooks.
-	 */
-	protected function init_hooks() {
-		add_action( 'init', array( $this, 'register_taxonomies' ) );
-		add_action( 'init', array( $this, 'add_rewrite_rules' ) );
-		add_action( 'init', array( $this, 'register_cpt_notification' ) );
-
-		// Register activation hook to flush rewrite rules.
-		register_activation_hook( KAGG_NOTIFICATION_FILE, array( $this, 'activate_plugin' ) );
-
-		// Register deactivation hook to flush rewrite rules.
-		register_deactivation_hook( KAGG_NOTIFICATION_FILE, array( $this, 'deactivate_plugin' ) );
-
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 20 );
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-
-		add_action( 'init', array( $this, 'notifications_page' ) );
-		add_shortcode( 'notifications', array( $this, 'notifications_shortcode' ) );
-
-		add_action( 'wp_ajax_kagg_notification_get_popup_content', array( $this, 'get_popup_content' ) );
-		add_action( 'wp_ajax_nopriv_kagg_notification_get_popup_content', array( $this, 'get_popup_content' ) );
-	}
-
-	/**
-	 * Plugin activation hook.
-	 */
-	public function activate_plugin() {
-		// Register entities as they do not exist when activation hook is fired.
-		// Otherwise flush_rewrite_rules() has nothing to do.
-		$this->register_taxonomies();
-		$this->add_rewrite_rules();
-		$this->register_cpt_notification();
-
-		flush_rewrite_rules();
-	}
-
-	/**
-	 * Plugin deactivation hook.
-	 */
-	public function deactivate_plugin() {
-		// Unregister entities here as they do already exist when deactivation hook is fired.
-		// Otherwise flush_rewrite_rules() has nothing to do.
-		remove_rewrite_tag( '%channel%' );
-
-		// This also unregisters taxonomies.
-		unregister_post_type( 'notification' );
-
-		flush_rewrite_rules();
-	}
-
-	/**
-	 * Enqueue scripts.
-	 */
-	public function enqueue_scripts() {
-		// REST Javascript API.
-		wp_localize_script(
-			'wp-api',
-			'WP_API_Settings',
-			array(
-				'root'      => rest_url(),
-				'base'      => 'kagg/v1/notifications',
-				'pluginURL' => KAGG_NOTIFICATION_URL,
-				'ajaxURL'   => admin_url( 'admin-ajax.php' ),
-				'nonce'     => wp_create_nonce( 'kagg-notification-rest' ),
-			)
-		);
-		wp_enqueue_script( 'wp-api' );
-
-		// Plugin RESTful script.
-		wp_enqueue_script(
-			'kagg-notification',
-			KAGG_NOTIFICATION_URL . '/js/script.js',
-			array( 'wp-api' ),
-			KAGG_NOTIFICATION_VERSION,
-			true
-		);
-
-		wp_enqueue_style(
-			'kagg-notification',
-			KAGG_NOTIFICATION_URL . '/css/style.css',
-			array(),
-			KAGG_NOTIFICATION_VERSION
-		);
-	}
-
-	/**
-	 * Enqueue admin scripts.
-	 */
-	public function admin_enqueue_scripts() {
-		wp_enqueue_style(
-			'kagg-notification',
-			KAGG_NOTIFICATION_URL . '/css/admin-style.css',
-			array(),
-			KAGG_NOTIFICATION_VERSION
-		);
-	}
-
-	/**
-	 * Register taxonomies for Notification custom post type.
-	 */
-	public function register_taxonomies() {
-		$args = array(
-			'labels'            => array(
-				'name'              => __( 'Channels', 'kagg-notification' ),
-				'singular_name'     => __( 'Channel', 'kagg-notification' ),
-				'search_items'      => __( 'Search Channels', 'kagg-notification' ),
-				'all_items'         => __( 'All Channels', 'kagg-notification' ),
-				'parent_item'       => __( 'Parent Channel', 'kagg-notification' ),
-				'parent_item_colon' => __( 'Parent Channel:', 'kagg-notification' ),
-				'edit_item'         => __( 'Edit Channel', 'kagg-notification' ),
-				'update_item'       => __( 'Update Channel', 'kagg-notification' ),
-				'add_new_item'      => __( 'Add New Channel', 'kagg-notification' ),
-				'new_item_name'     => __( 'New Channel', 'kagg-notification' ),
-				'menu_name'         => __( 'Channels', 'kagg-notification' ),
-			),
-			'description'       => __( 'Notification Channels', 'kagg-notification' ),
-			'public'            => true,
-			'show_ui'           => true,
-			'hierarchical'      => false,
-			'meta_box_cb'       => null,
-			'show_admin_column' => false,
-		);
-		register_taxonomy( 'channel', array( 'notification' ), $args );
-	}
-
-	/**
-	 * Add rewrite rules.
-	 */
-	public function add_rewrite_rules() {
-		// Tags.
-		add_rewrite_tag( '%channel%', '([^&]+)', 'channel=' );
-
-		// New query vars.
-		add_filter( 'query_vars', array( $this, 'add_query_vars' ) );
-	}
-
-	/**
-	 * Add query vars.
+	 * Get read status of the notification for current user.
 	 *
-	 * @param $vars array Query vars.
+	 * @return bool
+	 */
+	public function get_read_status() {
+		return $this->list_in_meta->is_in_list( $this->id, self::READ_STATUS_META_KEY, wp_get_current_user()->ID );
+	}
+
+	/**
+	 * Set read status of the notification for current user.
+	 *
+	 * @param bool $read_status Read status.
+	 */
+	public function set_read_status( $read_status ) {
+		$user_id = wp_get_current_user()->ID;
+		if ( $read_status ) {
+			$this->list_in_meta->add( $this->id, self::READ_STATUS_META_KEY, $user_id );
+		} else {
+			$this->list_in_meta->remove( $this->id, self::READ_STATUS_META_KEY, $user_id );
+		}
+	}
+
+	/**
+	 * Get array of user ids to whom to show notifications.
 	 *
 	 * @return array
 	 */
-	public function add_query_vars( $vars ) {
-		$vars[] = 'channel';
-
-		return $vars;
+	public function get_users() {
+		return $this->list_in_meta->get_array( $this->id, self::USERS_META_KEY );
 	}
 
 	/**
-	 * Register Notification custom post type.
+	 * Set array of user ids to whom to show notifications.
+	 *
+	 * @param array $users User ids to save.
 	 */
-	public function register_cpt_notification() {
-		$labels = array(
-			'name'               => __( 'Notifications', 'kagg-notification' ),
-			'singular_name'      => __( 'Notification', 'kagg-notification' ),
-			'add_new'            => __( 'Add New', 'kagg-notification' ),
-			'add_new_item'       => __( 'Add New Notification', 'kagg-notification' ),
-			'edit_item'          => __( 'Edit Notification', 'kagg-notification' ),
-			'new_item'           => __( 'New Notification', 'kagg-notification' ),
-			'view_item'          => __( 'View Notification', 'kagg-notification' ),
-			'search_items'       => __( 'Search Notifications', 'kagg-notification' ),
-			'not_found'          => __( 'Not Found', 'kagg-notification' ),
-			'not_found_in_trash' => __( 'Not Found In Trash', 'kagg-notification' ),
-			'parent_item'        => __( 'Parent', 'kagg-notification' ),
-			'parent_item_colon'  => __( 'Parent:', 'kagg-notification' ),
-			'menu_name'          => __( 'Notifications', 'kagg-notification' ),
-		);
-
-		$args = array(
-			'labels'                => $labels,
-			'hierarchical'          => false,
-			'description'           => __( 'Notifications', 'kagg-notification' ),
-			'supports'              => array(
-				'title',
-				'editor',
-				'excerpt',
-				'thumbnail',
-				'custom-fields',
-				'page-attributes',
-			),
-			'taxonomies'            => array( 'channel' ),
-			'public'                => true,
-			'show_ui'               => true,
-			'show_in_menu'          => true,
-			//@codingStandardsIgnoreLine
-			'menu_icon'             => 'data:image/svg+xml;base64,' . base64_encode( '<svg class="icon" height="20" viewBox="0 85.5 1024 855" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M490.666667 938.666667c46.933333 0 85.333333-38.4 85.333333-85.333334h-170.666667c0 46.933333 38.4 85.333333 85.333334 85.333334z m277.333333-256V448c0-130.986667-90.88-240.64-213.333333-269.653333V149.333333c0-35.413333-28.586667-64-64-64s-64 28.586667-64 64v29.013334C304.213333 207.36 213.333333 317.013333 213.333333 448v234.666667l-85.333333 85.333333v42.666667h725.333333v-42.666667l-85.333333-85.333333z" fill="black" /> </svg>' ),
-			'show_in_nav_menus'     => true,
-			'publicly_queryable'    => true,
-			'exclude_from_search'   => false,
-			'has_archive'           => false,
-			'query_var'             => true,
-			'can_export'            => true,
-			'rewrite'               => array(
-				'slug'       => 'notification',
-				'with_front' => false,
-			),
-			'capability_type'       => 'page',
-			'show_in_rest'          => false,
-			'rest_base'             => 'kagg/v1/notification',
-			'rest_controller_class' => 'KAGG_Notification_API_Controller',
-		);
-
-		register_post_type( 'notification', $args );
+	public function set_users( $users ) {
+		$this->list_in_meta->set_array( $this->id, self::USERS_META_KEY, $users );
 	}
 
 	/**
-	 * Template for the plugin frontend page.
-	 */
-	public function notifications_page() {
-		$uri  = $_SERVER['REQUEST_URI'];
-		$path = wp_parse_url( $uri, PHP_URL_PATH );
-
-		if ( '/' . trailingslashit( $this->page_slug ) === trailingslashit( $path ) ) {
-			get_header();
-			echo do_shortcode( '[notifications]' );
-			get_footer();
-			exit;
-		}
-	}
-
-	/**
-	 * Shortcode to show notifications.
+	 * Get list of users as comma-separated string.
 	 *
 	 * @return string
 	 */
-	public function notifications_shortcode() {
-		ob_start();
-		if ( current_user_can( 'edit_posts' ) ) {
-			$edit_class = 'edit';
-		} else {
-			$edit_class = '';
+	public function get_user_list() {
+		$users = $this->get_users();
+		foreach ( $users as $key => $user ) {
+			$users[ $key ] = get_userdata( $user )->user_login;
 		}
-		?>
-
-		<div class="wrap">
-			<div id="primary" class="content-area notifications-content <?php echo esc_attr( $edit_class ); ?>">
-				<main id="main" class="site-main" role="main">
-					<article id="notifications-page" <?php post_class(); ?>>
-						<header class="entry-header">
-							<h1>
-								<?php esc_html_e( 'Notifications', 'kagg-notification' ); ?>
-							</h1>
-						</header><!-- .entry-header -->
-						<div id="notifications-header">
-								<span>
-									<?php esc_html_e( 'Message', 'kagg-notification' ); ?>
-								</span>
-							<span>
-									<?php
-									$this->select_terms(
-										'channel',
-										__( 'Select channel', 'kagg-notification' )
-									);
-									?>
-								</span>
-						</div>
-						<table id="notifications-list">
-							<tbody>
-							<?php // Here will be the javascript output ?>
-							</tbody>
-						</table>
-						<?php
-						if ( current_user_can( 'read' ) ) {
-							?>
-							<input
-									type='button' id='more-button'
-									value='<?php esc_html_e( 'Show more...', 'kagg-notification' ); ?>'>
-							<?php
-						}
-
-						if ( current_user_can( 'edit_posts' ) ) {
-							?>
-							<input
-									type='button' id='create-notification-button'
-									value='<?php esc_html_e( 'Create Notification', 'kagg-notification' ); ?>'>
-							<?php
-						}
-						?>
-					</article><!-- #notifications-page -->
-				</main><!-- #main -->
-
-				<?php // Create modal window ?>
-				<?php
-				if ( current_user_can( 'edit_posts' ) ) {
-					?>
-					<div id="create-modal" class="notifications-modal">
-						<div class="notifications-modal-content">
-							<span class="close">&times;</span>
-							<h3><?php esc_html_e( 'Create new notification', 'kagg-notification' ); ?></h3>
-							<label for="title-text">
-								<?php echo esc_html__( 'Title', 'kagg-notification' ) . ' *'; ?>
-							</label>
-							<input type="text" id="title-text" required="required">
-							<label for="content-text">
-								<?php echo esc_html__( 'Content', 'kagg-notification' ) . ' *'; ?>
-							</label>
-							<div contenteditable="true" id="content-text"></div>
-							<label for="channel-text">
-								<?php esc_html_e( 'Channel(s), separated by comma', 'kagg-notification' ); ?>
-							</label>
-							<input type="text" id="channel-text">
-							<input
-									type='button' id='create-button'
-									value='<?php esc_html_e( 'Create', 'kagg-notification' ); ?>'>
-						</div>
-					</div>
-					<?php
-				}
-				?>
-
-				<?php // Update modal window ?>
-				<?php
-				if ( current_user_can( 'edit_posts' ) ) {
-					?>
-					<div id="update-modal" class="notifications-modal">
-						<div class="notifications-modal-content">
-							<span class="close">&times;</span>
-							<h3><?php esc_html_e( 'Update notification', 'kagg-notification' ); ?></h3>
-							<label for="update-title-text">
-								<?php echo esc_html__( 'Title', 'kagg-notification' ) . ' *'; ?>
-							</label>
-							<input type="text" id="update-title-text" required="required">
-							<label for="update-content-text">
-								<?php echo esc_html__( 'Content', 'kagg-notification' ) . ' *'; ?>
-							</label>
-							<div contenteditable="true" id="update-content-text"></div>
-							<label for="update-channel-text">
-								<?php esc_html_e( 'Channel(s), separated by comma', 'kagg-notification' ); ?>
-							</label>
-							<input type="text" id="update-channel-text">
-							<input
-									type='button' id='update-button'
-									value='<?php esc_html_e( 'Update', 'kagg-notification' ); ?>'>
-						</div>
-					</div>
-					<?php
-				}
-				?>
-			</div><!-- #primary -->
-		</div><!-- .wrap -->
-
-		<?php
-		return ob_get_clean();
+		return implode( ', ', $users );
 	}
 
 	/**
-	 * AJAX callback function to get popup content.
-	 */
-	public function get_popup_content() {
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'kagg-notification-rest' ) ) {
-			wp_send_json_error( __( 'Bad nonce!', 'kagg-notification' ) );
-		}
-
-		wp_send_json_success( $this->notifications_shortcode() );
-	}
-
-	/**
-	 * Get count of notifications.
+	 * Set list of users defined by the comma-separated string.
 	 *
-	 * @return int
+	 * @param string $users User list as comma-separated string.
 	 */
-	public function get_unread_count() {
-		$args  = array(
-			'post_type'  => 'notification',
-			'status'     => 'publish',
-			'meta_query' => array(
-				array(
-					'key'     => '_read',
-					'value'   => '|' . (string) wp_get_current_user()->ID . '|',
-					'compare' => 'LIKE',
-				),
-			),
-		);
-		$query = new WP_Query( $args );
-
-		$total_count = wp_count_posts( 'notification' );
-
-		return $total_count->publish - $query->found_posts;
-	}
-
-	/**
-	 * Output select element for selection of a taxonomy.
-	 *
-	 * @param $taxonomy string Taxonomy slug.
-	 * @param $select_header string Taxonomy name.
-	 */
-	protected function select_terms( $taxonomy, $select_header ) {
-		if ( ! $taxonomy ) {
-			return;
-		}
-
-		$args = array(
-			'taxonomy'   => $taxonomy,
-			'hide_empty' => true,
-		);
-
-		$terms = get_terms( $args );
-		?>
-		<select name="<?php echo esc_attr( $taxonomy ); ?>" title="">
-			<option value="">
-				<?php
-				echo esc_html( ' -- ' . $select_header . ' -- ' );
-				?>
-			</option>
-			<?php
-			foreach ( $terms as $term ) {
-				?>
-				<option value="<?php echo esc_attr( $term->slug ); ?>">
-					<?php echo esc_html( $term->name ); ?>
-				</option>
-				<?php
+	public function set_user_list( $users ) {
+		$users         = preg_replace( '/\s+/', '', $users );
+		$users         = explode( ',', $users );
+		$users_to_save = array();
+		foreach ( $users as $key => $user ) {
+			$wp_user = get_user_by( 'login', $user );
+			if ( $wp_user ) {
+				$users_to_save[] = $wp_user->ID;
 			}
-			?>
-		</select>
-		<?php
+		}
+		$this->set_users( $users_to_save );
+	}
+
+	/**
+	 * Save notification to database.
+	 */
+	public function save() {
+		clean_post_cache( $this->id );
 	}
 }

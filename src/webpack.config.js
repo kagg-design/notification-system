@@ -1,56 +1,60 @@
-const path              = require('path');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const path              = require( 'path' );
+const ExtractTextPlugin = require( 'extract-text-webpack-plugin' );
 
-const webPackModule = {
-	rules: [
-		{
+const webPackModule = ( production = true ) => {
+	return {
+		rules: [ {
 			loader: 'babel-loader',
 			test: /\.js$/,
 			exclude: /node_modules/,
 			query: {
-				presets: ["es2015"]
+				presets: [ 'es2015' ]
 			}
 		}, {
 			test: /\.s?css$/,
-			use: ExtractTextPlugin.extract({
-				fallback: 'style-loader',
-				use: [
-					{
+			use: ExtractTextPlugin.extract(
+				{
+					fallback: 'style-loader',
+					use: [ {
 						loader: 'css-loader',
 						options: {
-							sourceMap: true,
+							sourceMap: ! production,
+							minimize: production
 						}
 					}, {
 						loader: 'sass-loader',
 						options: {
-							sourceMap: true,
+							sourceMap: ! production
 						}
 					}, {
-						loader: 'postcss-loader',
-					},
-				]
-			})
+						loader: 'postcss-loader'
+					}
+					]
+				}
+			)
 		}
-	]
+		]
+	};
 };
 
-const sample = (env) => {
-	const isProduction = env === 'production';
+const notificationsRESTAPI = ( env ) => {
+
+	const isProduction = 'production' === env;
 
 	return {
-		entry: ['whatwg-fetch', './js/sample/app.js'],
+		entry: [ 'whatwg-fetch', './js/notificationsRESTAPI/app.js' ],
 		output: {
-			path: path.join(__dirname, '..', 'dist'),
-			filename: path.join('js', 'sample.js')
+			path: path.join( __dirname, '..', 'dist' ),
+			filename: path.join( 'js', 'notificationsRESTAPI', 'app.js' )
 		},
-		module: webPackModule,
+		module: webPackModule( ! isProduction ),
 		plugins: [
-			new ExtractTextPlugin(path.join('css', 'sample.css'))
+			new ExtractTextPlugin( path.join( 'css', 'sample.css' ) )
 		],
 		devtool: isProduction ? '' : 'inline-source-map'
 	};
 };
 
 module.exports = [
-	sample,
+	notificationsRESTAPI
 ];

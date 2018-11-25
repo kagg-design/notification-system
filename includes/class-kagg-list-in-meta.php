@@ -14,8 +14,8 @@ class KAGG_List_In_Meta {
 	 *
 	 * @return bool
 	 */
-	public function is_listed_in_meta( $post_id, $meta_key, $value ) {
-		$meta_arr = $this->get_arr_from_list_in_meta( $post_id, $meta_key );
+	public function is_in_list( $post_id, $meta_key, $value ) {
+		$meta_arr = $this->get_array( $post_id, $meta_key );
 		$result   = array_search( (string) $value, $meta_arr, true );
 		if ( false !== $result ) {
 			return true;
@@ -29,10 +29,10 @@ class KAGG_List_In_Meta {
 	 * @param string $meta_key Meta name.
 	 * @param string $value Item to add to the list.
 	 */
-	public function add_to_list_in_meta( $post_id, $meta_key, $value ) {
-		$meta_arr   = $this->get_arr_from_list_in_meta( $post_id, $meta_key );
+	public function add( $post_id, $meta_key, $value ) {
+		$meta_arr   = $this->get_array( $post_id, $meta_key );
 		$meta_arr[] = $value;
-		$this->update_list_in_meta( $post_id, $meta_key, $meta_arr );
+		$this->update( $post_id, $meta_key, $meta_arr );
 	}
 
 	/**
@@ -40,10 +40,10 @@ class KAGG_List_In_Meta {
 	 * @param string $meta_key Meta name.
 	 * @param string $value Item to remove from the list.
 	 */
-	public function remove_from_list_in_meta( $post_id, $meta_key, $value ) {
-		$meta_arr = $this->get_arr_from_list_in_meta( $post_id, $meta_key );
+	public function remove( $post_id, $meta_key, $value ) {
+		$meta_arr = $this->get_array( $post_id, $meta_key );
 		$meta_arr = array_diff( $meta_arr, array( $value ) );
-		$this->update_list_in_meta( $post_id, $meta_key, $meta_arr );
+		$this->update( $post_id, $meta_key, $meta_arr );
 	}
 
 	/**
@@ -54,17 +54,45 @@ class KAGG_List_In_Meta {
 	 *
 	 * @return array
 	 */
-	protected function get_arr_from_list_in_meta( $post_id, $meta_key ) {
+	public function get_array( $post_id, $meta_key ) {
 		return array_filter( explode( self::DELIMITER, get_post_meta( $post_id, $meta_key, true ) ) );
 	}
+
+	/**
+	 * Set array to store as list in meta.
+	 *
+	 * @param int $post_id Post ID.
+	 * @param string $meta_key Meta name.
+	 * @param array $meta_arr Array of values.
+	 */
+	public function set_array( $post_id, $meta_key, $meta_arr ) {
+		$this->update( $post_id, $meta_key, $meta_arr );
+	}
+
+
+	/**
+	 * Get item prepared to search it the list.
+	 *
+	 * @param string $item
+	 *
+	 * @return string
+	 */
+	public static function get_prepared_item( $item ) {
+		return self::DELIMITER . $item . self::DELIMITER;
+}
 
 	/**
 	 * @param int $post_id Post ID.
 	 * @param string $meta_key Meta name.
 	 * @param array $meta_arr Array of values.
 	 */
-	protected function update_list_in_meta( $post_id, $meta_key, $meta_arr ) {
-		$meta_value = implode( self::DELIMITER, array_unique( array_filter( $meta_arr ) ) );
+	protected function update( $post_id, $meta_key, $meta_arr ) {
+		$meta_arr = array_unique( array_filter( $meta_arr ) );
+		if ( ! $meta_arr ) {
+			delete_post_meta( $post_id, $meta_key );
+			return;
+		}
+		$meta_value = implode( self::DELIMITER, $meta_arr );
 		$meta_value = self::DELIMITER . $meta_value . self::DELIMITER;
 		update_post_meta( $post_id, $meta_key, $meta_value );
 	}

@@ -1,4 +1,4 @@
-=== KAGG Notification ===
+=== KAGG Notifications ===
 Author: KAGG Design
 Author URI: http://kagg.eu/en/
 Contributors: kaggdesign
@@ -10,11 +10,11 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-KAGG Notification plugin creates and maintains notification system for users on WordPress site.
+KAGG Notifications plugin creates and maintains notification system for users on WordPress site.
 
 == Description ==
 
-KAGG Notification plugin creates and maintains notification system for users on WordPress site.
+KAGG Notifications plugin creates and maintains notification system for users on WordPress site.
 
 Plugin has options page in the site console, with relevant buttons and controls. Please see screenshots.
 
@@ -76,9 +76,9 @@ All code is checked by php Code Sniffer, and conforms to WordPress Extra standar
 
 = Automatic installation =
 
-Automatic installation is the easiest option as WordPress handles the file transfers itself and you don’t need to leave your web browser. To do an automatic install of KAGG Notification plugin, log in to your WordPress dashboard, navigate to the Plugins menu and click Add New.
+Automatic installation is the easiest option as WordPress handles the file transfers itself and you don’t need to leave your web browser. To do an automatic install of KAGG Notifications plugin, log in to your WordPress dashboard, navigate to the Plugins menu and click Add New.
 
-In the search field type “KAGG Notification” and click Search Plugins. Once you’ve found our plugin you can view details about it such as the point release, rating and description. Most importantly of course, you can install it by simply clicking “Install Now”.
+In the search field type “KAGG Notifications” and click Search Plugins. Once you’ve found our plugin you can view details about it such as the point release, rating and description. Most importantly of course, you can install it by simply clicking “Install Now”.
 
 = Manual installation =
 
@@ -92,11 +92,11 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 
 = Where can I get support or talk to other users? =
 
-If you get stuck, you can ask for help in the [KAGG Notification Plugin Forum](https://wordpress.org/support/plugin/kagg-notification).
+If you get stuck, you can ask for help in the [KAGG Notifications Plugin Forum](https://wordpress.org/support/plugin/kagg-notifications).
 
 == Screenshots ==
 
-1. The KAGG Notification /notifications page (frontend).
+1. The KAGG Notifications /notifications page (frontend).
 
 == Changelog ==
 

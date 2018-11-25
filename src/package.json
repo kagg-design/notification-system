@@ -1,5 +1,5 @@
 {
-  "name": "otgs-senior-developer-test-001",
+  "name": "kagg-notification",
   "license": "MIT",
   "scripts": {
     "build:dev": "webpack --mode development",
@@ -16,6 +16,8 @@
   "dependencies": {
     "classnames": "~2.2.0",
     "cross-fetch": "~1.1.0",
+    "eslint": "^5.9.0",
+    "eslint-config-wordpress": "^2.0.0",
     "moment": "~2.20.0"
   },
   "devDependencies": {
@@ -30,7 +32,6 @@
     "css-loader": "~0.28.0",
     "enzyme": "~3.3.0",
     "enzyme-to-json": "~3.3.0",
-    "eslint": "~4.19.0",
     "eslint-config-standard": "~11.0.0",
     "eslint-plugin-import": "~2.11.0",
     "eslint-plugin-node": "~6.0.0",

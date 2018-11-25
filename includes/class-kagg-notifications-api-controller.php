@@ -1,8 +1,8 @@
 <?php
 /**
- * Class KAGG_Notification_API_Controller
+ * Class KAGG_Notifications_API_Controller
  */
-class KAGG_Notification_API_Controller extends WP_REST_Controller {
+class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 
 	/**
 	 * Endpoint namespace.
@@ -33,11 +33,10 @@ class KAGG_Notification_API_Controller extends WP_REST_Controller {
 	public $list_in_meta = null;
 
 	public function __construct() {
-		$this->includes();
+		$this->init();
 	}
 
-	private function includes() {
-		include_once KAGG_NOTIFICATION_PATH . '/includes/class-kagg-notification-api-controller.php';
+	private function init() {
 		$this->list_in_meta = new KAGG_List_In_Meta();
 	}
 
@@ -220,6 +219,10 @@ class KAGG_Notification_API_Controller extends WP_REST_Controller {
 			return $post_id;
 		}
 
+		if ( isset( $request['users'] ) ) {
+			$this->set_user_list( $post_id, $request['users'] );
+		}
+
 		$this->add_taxonomies( $post_id, $request );
 
 		$object = get_post( $post_id );
@@ -283,6 +286,10 @@ class KAGG_Notification_API_Controller extends WP_REST_Controller {
 			$this->set_read_status( $post_id, $request['read'] );
 		}
 
+		if ( isset( $request['users'] ) ) {
+			$this->set_user_list( $post_id, $request['users'] );
+		}
+
 		$this->add_taxonomies( $post_id, $request );
 
 		$object = get_post( $post_id );
@@ -327,7 +334,7 @@ class KAGG_Notification_API_Controller extends WP_REST_Controller {
 
 		if ( ! $result ) {
 			return new WP_Error(
-				'KAGG_NOTIFICATION_rest_cannot_delete',
+				'KAGG_NOTIFICATIONS_rest_cannot_delete',
 				__( 'The item cannot be deleted.', 'kagg-notification' ),
 				array(
 					'status' => 500,
@@ -455,6 +462,21 @@ class KAGG_Notification_API_Controller extends WP_REST_Controller {
 			$query_args['orderby'] = 'post__in';
 		} elseif ( 'id' === $orderby ) {
 			$query_args['orderby'] = 'ID'; // ID must be capitalized.
+		}
+
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			$query_args['meta_query'] = array(
+				'relation' => 'OR',
+				array(
+					'key'     => KAGG_Notification::USERS_META_KEY,
+					'value'   => KAGG_List_In_Meta::get_prepared_item( wp_get_current_user()->ID ),
+					'compare' => 'LIKE',
+				),
+				array(
+					'key'     => KAGG_Notification::USERS_META_KEY,
+					'compare' => 'NOT EXISTS',
+				),
+			);
 		}
 
 		return $query_args;
@@ -585,6 +607,10 @@ class KAGG_Notification_API_Controller extends WP_REST_Controller {
 			'read'    => $this->get_read_status( $notification->ID ),
 		);
 
+		if ( current_user_can( 'edit_posts' ) ) {
+			$data['users'] = $this->get_user_list( $notification->ID );
+		}
+
 		return $data;
 	}
 
@@ -624,7 +650,8 @@ class KAGG_Notification_API_Controller extends WP_REST_Controller {
 	 * @return bool
 	 */
 	protected function get_read_status( $id ) {
-		return $this->list_in_meta->is_listed_in_meta( $id, '_read', wp_get_current_user()->ID );
+		$notification = new KAGG_Notification( $id );
+		return $notification->get_read_status();
 	}
 
 	/**
@@ -634,12 +661,31 @@ class KAGG_Notification_API_Controller extends WP_REST_Controller {
 	 * @param bool $read_status Read status.
 	 */
 	protected function set_read_status( $id, $read_status ) {
-		$user_id = wp_get_current_user()->ID;
-		if ( $read_status ) {
-			$this->list_in_meta->add_to_list_in_meta( $id, '_read', $user_id );
-		} else {
-			$this->list_in_meta->remove_from_list_in_meta( $id, '_read', $user_id );
-		}
+		$notification = new KAGG_Notification( $id );
+		$notification->set_read_status( $read_status );
+	}
+
+	/**
+	 * Get list of users as comma-separated string.
+	 *
+	 * @param int $id Notification ID.
+	 *
+	 * @return string
+	 */
+	protected function get_user_list( $id ) {
+		$notification = new KAGG_Notification( $id );
+		return $notification->get_user_list();
+	}
+
+	/**
+	 * Set list of users defined by the comma-separated string.
+	 *
+	 * @param int $id Notification ID.
+	 * @param string $users User list as comma-separated string.
+	 */
+	protected function set_user_list( $id, $users ) {
+		$notification = new KAGG_Notification( $id );
+		$notification->set_user_list( $users );
 	}
 
 	/**
