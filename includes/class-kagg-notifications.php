@@ -87,6 +87,8 @@ class KAGG_Notifications {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 		add_action( 'add_meta_boxes', array( $this, 'remove_meta_boxes' ) );
 		add_action( 'save_post', array( $this, 'save_meta_boxes' ), 0, 3 );
+
+		add_action( 'update_unread_counts', array( $this, 'update_unread_counts' ) );
 	}
 
 	/**
@@ -136,7 +138,7 @@ class KAGG_Notifications {
 
 		// Plugin RESTful script.
 		wp_enqueue_script(
-			'kagg-notification',
+			'kagg-notifications',
 			KAGG_NOTIFICATIONS_URL . '/dist/js/notificationsRESTAPI/app.js',
 			array( 'wp-api' ),
 			KAGG_NOTIFICATIONS_VERSION,
@@ -144,7 +146,7 @@ class KAGG_Notifications {
 		);
 
 		wp_enqueue_style(
-			'kagg-notification',
+			'kagg-notifications',
 			KAGG_NOTIFICATIONS_URL . '/css/style.css',
 			array(),
 			KAGG_NOTIFICATIONS_VERSION
@@ -156,7 +158,7 @@ class KAGG_Notifications {
 	 */
 	public function admin_enqueue_scripts() {
 		wp_enqueue_style(
-			'kagg-notification',
+			'kagg-notifications',
 			KAGG_NOTIFICATIONS_URL . '/css/admin-style.css',
 			array(),
 			KAGG_NOTIFICATIONS_VERSION
@@ -437,23 +439,76 @@ class KAGG_Notifications {
 	 * @return int
 	 */
 	public function get_unread_count() {
+		$read_value = KAGG_List_In_Meta::get_prepared_item( wp_get_current_user()->ID );
+
+		$read_meta_query = array(
+			'relation' => 'OR',
+			array(
+				'relation' => 'AND',
+				array(
+					'key'     => KAGG_Notification::READ_STATUS_META_KEY,
+					'value'   => $read_value,
+					'compare' => 'NOT LIKE',
+				),
+				array(
+					'key'     => KAGG_Notification::READ_STATUS_META_KEY,
+					'compare' => 'EXISTS',
+				),
+			),
+			array(
+				'key'     => KAGG_Notification::READ_STATUS_META_KEY,
+				'compare' => 'NOT EXISTS',
+			),
+		);
+
+		$users_meta_query = array(
+			'relation' => 'OR',
+			array(
+				'relation' => 'AND',
+				array(
+					'key'     => KAGG_Notification::USERS_META_KEY,
+					'value'   => KAGG_List_In_Meta::get_prepared_item( wp_get_current_user()->ID ),
+					'compare' => 'LIKE',
+				),
+				array(
+					'key'     => KAGG_Notification::USERS_META_KEY,
+					'compare' => 'EXISTS',
+				),
+			),
+			array(
+				'key'     => KAGG_Notification::USERS_META_KEY,
+				'compare' => 'NOT EXISTS',
+			),
+		);
+
+		if ( current_user_can( 'edit_posts' ) ) {
+			// Allow privileged user to see notifications for all users.
+			$users_meta_query = array();
+		}
+
 		$args = array(
 			'post_type'  => 'notification',
 			'status'     => 'publish',
 			'meta_query' => array(
-				array(
-					'key'     => KAGG_Notification::READ_STATUS_META_KEY,
-					'value'   => KAGG_List_In_Meta::get_prepared_item( wp_get_current_user()->ID ),
-					'compare' => 'LIKE',
-				),
+				'relation' => 'AND',
+				$read_meta_query,
+				$users_meta_query,
 			),
 		);
 
 		$query = new WP_Query( $args );
 
-		$total_count = wp_count_posts( 'notification' );
+		return $query->found_posts;
+	}
 
-		return $total_count->publish - $query->found_posts;
+	public function update_unread_counts() {
+		$count = $this->get_unread_count();
+		?>
+		<script type='text/javascript'>
+			document.dispatchEvent( new CustomEvent( 'update_unread_counts', { 'detail': <?php echo intval( $count ); ?>} ) );
+			console.log( 'done' );
+		</script>
+		<?php
 	}
 
 	/**
@@ -470,7 +525,6 @@ class KAGG_Notifications {
 			'high'
 		);
 	}
-
 
 	/**
 	 * Remove unnecessary meta boxes for notifications.

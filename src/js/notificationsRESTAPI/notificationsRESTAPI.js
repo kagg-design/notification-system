@@ -261,21 +261,26 @@ class NotificationsRESTAPI {
 			tbody.innerHTML = notificationsList;
 		}
 
-		const unreadCountElement = document.getElementById( this.UNREAD_COUNT );
-		if ( unreadCountElement ) {
-			if ( 9 > unreadCount ) {
-				unreadCountElement.innerText = unreadCount.toString();
-			} else {
-				unreadCountElement.innerText = '9+';
-			}
-			if ( unreadCount ) {
-				unreadCountElement.style.display = 'block';
-			} else {
-				unreadCountElement.style.display = 'none';
-			}
-		}
+		this.updateUnreadCountElements( unreadCount );
 
 		this.bindEvents();
+	}
+
+	updateUnreadCountElements( unreadCount ) {
+		const unreadCountElements       = document.getElementsByClassName( this.UNREAD_COUNT );
+		const unreadCountElementsLength = unreadCountElements.length;
+		for ( let i = 0; i < unreadCountElementsLength; i ++ ) {
+			if ( 9 > unreadCount ) {
+				unreadCountElements[i].innerText = unreadCount.toString();
+			} else {
+				unreadCountElements[i].innerText = '9+';
+			}
+			if ( unreadCount ) {
+				unreadCountElements[i].style.display = 'inline-block';
+			} else {
+				unreadCountElements[i].style.display = 'none';
+			}
+		}
 	}
 
 	/**
@@ -306,6 +311,10 @@ class NotificationsRESTAPI {
 		const cells = document.getElementsByClassName( 'notification-cell' );
 		for ( let cell of cells ) {
 			cell.onclick = event => {
+
+				if ( 'A' === event.target.tagName ) {
+					return true;
+				}
 
 				const cell = event.target.closest( '.notification-cell' );
 				cell.classList.toggle( 'read' );
@@ -423,6 +432,13 @@ class NotificationsRESTAPI {
 				showNotifications();
 			};
 		}
+
+		document.addEventListener(
+			'update_unread_counts',
+			event => {
+				this.updateUnreadCountElements( event.detail );
+			}
+		);
 	}
 
 	/**
