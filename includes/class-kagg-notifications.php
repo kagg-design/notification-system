@@ -78,7 +78,7 @@ class KAGG_Notifications {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 20 );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 
-		add_action( 'init', array( $this, 'notifications_page' ) );
+		add_action( 'template_redirect', array( $this, 'notifications_page' ) );
 		add_shortcode( 'notifications', array( $this, 'notifications_shortcode' ) );
 
 		add_action( 'wp_ajax_kagg_notification_get_popup_content', array( $this, 'get_popup_content' ) );
