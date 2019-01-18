@@ -79,6 +79,8 @@ class KAGG_Notifications {
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 
 		add_action( 'template_redirect', array( $this, 'notifications_page' ) );
+		add_filter( 'pre_get_document_title', array( $this, 'notifications_page_document_title' ), 20 );
+		add_filter( 'wpseo_breadcrumb_links', array( $this, 'wpseo_breadcrumb_links' ) );
 		add_shortcode( 'notifications', array( $this, 'notifications_shortcode' ) );
 
 		add_action( 'wp_ajax_kagg_notification_get_popup_content', array( $this, 'get_popup_content' ) );
@@ -278,15 +280,55 @@ class KAGG_Notifications {
 	 * Template for the plugin frontend page.
 	 */
 	public function notifications_page() {
-		$uri  = $_SERVER['REQUEST_URI'];
-		$path = wp_parse_url( $uri, PHP_URL_PATH );
-
-		if ( '/' . trailingslashit( $this->page_slug ) === trailingslashit( $path ) ) {
+		if ( $this->is_notification_page() ) {
 			get_header();
 			echo do_shortcode( '[notifications]' );
 			get_footer();
 			exit;
 		}
+	}
+
+	/**
+	 * Filters the document title before it is generated.
+	 *
+	 * @param string $title Page title.
+	 *
+	 * @return string
+	 */
+	public function notifications_page_document_title( $title ) {
+		if ( $this->is_notification_page() ) {
+			return esc_html__( 'Notifications', 'kagg-notification' );
+		}
+
+		return $title;
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function is_notification_page() {
+		$uri  = $_SERVER['REQUEST_URI'];
+		$path = wp_parse_url( $uri, PHP_URL_PATH );
+
+		if ( '/' . trailingslashit( $this->page_slug ) === trailingslashit( $path ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param array $crumbs The crumbs array.
+	 *
+	 * @return array
+	 */
+	public function wpseo_breadcrumb_links( $crumbs ) {
+		if ( $this->is_notification_page() ) {
+			$crumbs[1]['text'] = esc_html__( 'Notifications', 'kagg-notification' );
+			return $crumbs;
+		}
+
+		return $crumbs;
 	}
 
 	/**
