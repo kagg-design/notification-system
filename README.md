@@ -17,6 +17,33 @@ KAGG Notifications plugin creates and maintains notification system for users on
 
 Plugin has options page in the site console, with relevant buttons and controls. Please see screenshots.
 
+## Backend
+
+Notifications are custom posts of type notification. There is a standard custom post interface, with menu in admin.
+
+Administrator can create, edit, and delete notifications. One taxonomy is available: Channel. Administrator is able to add, edit, and delete taxonomy terms.
+
+## Frontend
+
+Plugin creates page /notifications "on the fly" - it does not exists in database. Information on this page is visible only to logged in users (restricted by permissions in REST API Controller).
+
+Logged-in users can list notifications, and filter them by channel.
+
+Show more button provides pagination of the notifications list.
+
+For those users who have capability 'edit_posts', additional buttons are shown: Create, Update, and Delete. Popup windows provide relevant inputs.
+
+## Translation-ready
+
+Plugin is prepared for translation. All strings are output via gettext fucntions. There is a .pot file in /language directory with strings collected.
+
+## Code
+
+php code conforms to php 5.2.4 level.
+js code conforms to ES6 level.
+
+All code is checked by php Code Sniffer, and conforms to WordPress Coding Standards.
+
 ## Installation
 
 The KAGG Notifications can be installed directly into your plugins folder "as-is".
@@ -36,6 +63,20 @@ The WordPress Plugin KAGG Notifications uses a variable to store the text domain
 * [i18n](https://github.com/grappler/i18n)
 
 Any of the above tools should provide you with the proper tooling to internationalize the plugin.
+
+## Development
+
+git clone https://github.com/kagg-design/kagg-notifications.git
+
+cd kagg-notifications
+
+composer install
+
+cd src
+
+yarn
+
+yarn run build:dev
 
 ## License
 

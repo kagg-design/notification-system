@@ -1,19 +1,28 @@
 <?php
+/**
+ * KAGG Notification Meta Box.
+ *
+ * @package kagg-notifications
+ */
 
 /**
  * Class KAGG_Notification_Meta_Box
  */
 class KAGG_Notification_Meta_Box {
+	/**
+	 * Ajax save action name.
+	 */
 	const SAVE_ACTION = 'notification_save_data';
 
+	/**
+	 * Ajax save action nonce name.
+	 */
 	const SAVE_NONCE = 'notification_meta_nonce';
-
-	const NOTICES_OPTION = 'kagg_notification_box_notices';
 
 	/**
 	 * Output the metabox.
 	 *
-	 * @param WP_Post $post
+	 * @param WP_Post $post Notification post.
 	 */
 	public static function output( $post ) {
 		wp_nonce_field( self::SAVE_ACTION, self::SAVE_NONCE );
@@ -50,7 +59,7 @@ class KAGG_Notification_Meta_Box {
 	/**
 	 * Save meta box data.
 	 *
-	 * @param int $post_id
+	 * @param int $post_id Notification post id.
 	 */
 	public static function save( $post_id ) {
 		// Check the nonce.

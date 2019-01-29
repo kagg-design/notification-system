@@ -1,3 +1,12 @@
+/**
+ * Notifications REST API.
+ *
+ * @package kagg-notifications.
+ */
+
+/**
+ * Class NotificationsRESTAPI.
+ */
 class NotificationsRESTAPI {
 	constructor() {
 
@@ -10,7 +19,6 @@ class NotificationsRESTAPI {
 		}
 
 		// Init.
-
 		// Initialize the wp.api object with the custom namespace.
 		wp.api.init(
 			{ 'versionString': 'kagg/v1/' }
@@ -23,17 +31,15 @@ class NotificationsRESTAPI {
 		if ( notificationsContent ) {
 
 			// Standard page.
-			// eslint-disable-next-line
 			this.getNotifications( [] );
 			return;
 		}
 
 		// No notifications content.
-		// eslint-disable-next-line
 		if ( '#' + this.POPUP_HASH === window.location.hash.split( '?' )[0] ) {
-			this.showPopup(); // URL with #POPUP_HASH
+			this.showPopup(); // URL with #POPUP_HASH.
 		} else {
-			this.bindEvents(); // Any page
+			this.bindEvents(); // Any page.
 		}
 	}
 
@@ -44,7 +50,6 @@ class NotificationsRESTAPI {
 		let query      = [];
 		const elements = document.querySelectorAll( '#notifications-header select' );
 		const count    = elements.length;
-		// eslint-disable-next-line
 		for ( let i = 0; i < count; i ++ ) {
 			const e     = elements[i];
 			const value = e.options[e.selectedIndex].value;
@@ -74,7 +79,6 @@ class NotificationsRESTAPI {
 						let sep = ( 0 === i ) ? '?' : '&';
 
 						queryString += sep + key + '=' + query[key];
-						// eslint-disable-next-line
 						i ++;
 					}
 				}
@@ -123,7 +127,6 @@ class NotificationsRESTAPI {
 		const getNotifications = () => this.getNotifications();
 		wp.api.loadPromise.done(
 			() => {
-				// eslint-disable-next-line
 				let notification = new wp.api.models.Notifications( {} );
 
 				for ( let key in query ) {
@@ -150,7 +153,6 @@ class NotificationsRESTAPI {
 		const getNotifications = () => this.getNotifications();
 		wp.api.loadPromise.done(
 			function() {
-				// eslint-disable-next-line
 				let notification = new wp.api.models.Notifications( {} );
 
 				for ( let key in query ) {
@@ -179,7 +181,6 @@ class NotificationsRESTAPI {
 		const getNotifications = () => this.getNotifications();
 		wp.api.loadPromise.done(
 			function() {
-				// eslint-disable-next-line
 				let notification = new wp.api.models.Notifications( {} );
 
 				notification.attributes.id = id;
@@ -225,7 +226,6 @@ class NotificationsRESTAPI {
 				if ( notification.attributes.read ) {
 					readClass = ' read';
 				} else {
-					// eslint-disable-next-line
 					unreadCount ++;
 				}
 				notificationsList += '<tr>';
@@ -461,7 +461,6 @@ class NotificationsRESTAPI {
 		};
 
 		const encodedData = Object.keys( data )
-		// eslint-disable-next-line
 			.map( ( key ) => encodeURIComponent( key ) + '=' + encodeURIComponent( data[key] ) )
 			.join( '&' );
 
@@ -516,7 +515,6 @@ class NotificationsRESTAPI {
 			response => {
 				const modalContent     = document.getElementsByClassName( 'notifications-modal-content' )[0];
 				modalContent.innerHTML = '<span class="close">&times;</span>' + response;
-				// eslint-disable-next-line
 				this.getNotifications( [] );
 				popup.style.display = 'block';
 			}

@@ -1,19 +1,41 @@
 <?php
+/**
+ * KAGG Notification.
+ *
+ * @package kagg-notifications
+ */
 
 /**
  * Class KAGG_Notification
  */
 class KAGG_Notification {
-	/** @var string */
+
+	/**
+	 * Read status meta key.
+	 *
+	 * @var string
+	 */
 	const READ_STATUS_META_KEY = '_read';
 
-	/** @var string */
+	/**
+	 * Users meta key.
+	 *
+	 * @var string
+	 */
 	const USERS_META_KEY = '_users';
 
-	/** @var int ID of this notification. */
+	/**
+	 * ID of this notification.
+	 *
+	 * @var int
+	 */
 	protected $id = 0;
 
-	/** @var KAGG_List_In_Meta Instance of List In Meta class. */
+	/**
+	 * Instance of List In Meta class.
+	 *
+	 * @var KAGG_List_In_Meta
+	 */
 	protected $list_in_meta;
 
 	/**

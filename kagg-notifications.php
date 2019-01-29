@@ -20,9 +20,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+/**
+ * Plugin path.
+ */
 define( 'KAGG_NOTIFICATIONS_PATH', dirname( __FILE__ ) );
+
+/**
+ * Plugin url.
+ */
 define( 'KAGG_NOTIFICATIONS_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
+
+/**
+ * Plugin main file.
+ */
 define( 'KAGG_NOTIFICATIONS_FILE', __FILE__ );
+
+/**
+ * Plugin version.
+ */
 define( 'KAGG_NOTIFICATIONS_VERSION', '1.0.0' );
 
 /**
@@ -32,13 +47,11 @@ define( 'KAGG_NOTIFICATIONS_VERSION', '1.0.0' );
 static $plugin;
 
 if ( ! isset( $plugin ) ) {
-	$autoloader_dir = KAGG_NOTIFICATIONS_PATH . '/vendor';
 	if ( version_compare( PHP_VERSION, '5.3.0' ) >= 0 ) {
-		$autoloader = $autoloader_dir . '/autoload.php';
+		require_once KAGG_NOTIFICATIONS_PATH . '/vendor/autoload.php';
 	} else {
-		$autoloader = $autoloader_dir . '/autoload_52.php';
+		require_once KAGG_NOTIFICATIONS_PATH . '/vendor/autoload_52.php';
 	}
-	require_once $autoloader;
 
 	$plugin = new KAGG_Notifications();
 }
