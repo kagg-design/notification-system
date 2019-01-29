@@ -1,5 +1,11 @@
 <?php
 /**
+ * KAGG Notifications API Controller.
+ *
+ * @package kagg-notifications
+ */
+
+/**
  * Class KAGG_Notifications_API_Controller
  */
 class KAGG_Notifications_API_Controller extends WP_REST_Controller {
@@ -32,10 +38,16 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 */
 	public $list_in_meta = null;
 
+	/**
+	 * KAGG_Notifications_API_Controller constructor.
+	 */
 	public function __construct() {
 		$this->init();
 	}
 
+	/**
+	 * Init controller.
+	 */
 	private function init() {
 		$this->list_in_meta = new KAGG_List_In_Meta();
 	}
@@ -149,8 +161,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 * @return array Endpoint arguments.
 	 */
 	public function get_endpoint_args_for_item_schema( $method = WP_REST_Server::CREATABLE ) {
-		//@todo Expand.
-
+		// @todo Expand.
 		$endpoint_args = array();
 
 		return $endpoint_args;
@@ -440,8 +451,8 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 * Determine the allowed query_vars for a get_items() response and
 	 * prepare for WP_Query.
 	 *
-	 * @param array $prepared_args Prepared arguments.
-	 * @param WP_REST_Request $request Request object.
+	 * @param array           $prepared_args Prepared arguments.
+	 * @param WP_REST_Request $request       Request object.
 	 *
 	 * @return array          $query_args
 	 */
@@ -512,7 +523,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			 * `add_filter( 'kagg_notification_rest_private_query_vars', '__return_empty_array' );`
 			 *
 			 * @param array $private_query_vars Array of allowed query vars for authorized users.
-			 * }
+			 *                                  }
 			 */
 			$private    = $wp->private_query_vars;
 			$valid_vars = array_merge( $valid_vars, $private );
@@ -570,7 +581,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * Prepare a single notification output for response.
 	 *
-	 * @param  WP_Post $object Object data.
+	 * @param  WP_Post         $object  Object data.
 	 * @param  WP_REST_Request $request Request object.
 	 *
 	 * @return WP_REST_Response
@@ -591,8 +602,8 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 * Get notification data.
 	 *
 	 * @param WP_Post $notification notification post.
-	 * @param string $context Request context.
-	 *                        Options: 'view' and 'edit'.
+	 * @param string  $context      Request context.
+	 *                              Options: 'view' and 'edit'.
 	 *
 	 * @return array
 	 */
@@ -617,9 +628,9 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * Get term names as list.
 	 *
-	 * @param $id int Post ID.
-	 * @param $taxonomy string Taxonomy name.
-	 * @param $sep string List separator.
+	 * @param int    $id       Post ID.
+	 * @param string $taxonomy Taxonomy name.
+	 * @param string $sep      List separator.
 	 *
 	 * @return string
 	 */
@@ -651,13 +662,14 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 */
 	protected function get_read_status( $id ) {
 		$notification = new KAGG_Notification( $id );
+
 		return $notification->get_read_status();
 	}
 
 	/**
 	 * Set read status of the notification for current user.
 	 *
-	 * @param int $id Notification ID.
+	 * @param int  $id          Notification ID.
 	 * @param bool $read_status Read status.
 	 */
 	protected function set_read_status( $id, $read_status ) {
@@ -674,13 +686,14 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 */
 	protected function get_user_list( $id ) {
 		$notification = new KAGG_Notification( $id );
+
 		return $notification->get_user_list();
 	}
 
 	/**
 	 * Set list of users defined by the comma-separated string.
 	 *
-	 * @param int $id Notification ID.
+	 * @param int    $id    Notification ID.
 	 * @param string $users User list as comma-separated string.
 	 */
 	protected function set_user_list( $id, $users ) {
@@ -691,7 +704,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * Prepare links for the request.
 	 *
-	 * @param WP_Post $object Object data.
+	 * @param WP_Post         $object  Object data.
 	 * @param WP_REST_Request $request Request object.
 	 *
 	 * @return array          Links for the given post.
@@ -816,8 +829,8 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * Add taxonomies specified in the request to the post.
 	 *
-	 * @param $post_id int Post ID.
-	 * @param $request WP_REST_Request Full details about the request.
+	 * @param int             $post_id Post ID.
+	 * @param WP_REST_Request $request Full details about the request.
 	 */
 	protected function add_taxonomies( $post_id, $request ) {
 		$taxonomies = array( 'channel' );
@@ -847,6 +860,13 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		}
 	}
 
+	/**
+	 * Get time past from now.
+	 *
+	 * @param string $datetime Date and time in the past.
+	 *
+	 * @return bool|int|string
+	 */
 	protected function time_ago( $datetime ) {
 		$time = strtotime( $datetime . ' +0000' );
 

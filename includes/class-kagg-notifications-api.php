@@ -1,5 +1,11 @@
 <?php
 /**
+ * KAGG Notifications API.
+ *
+ * @package kagg-notifications
+ */
+
+/**
  * Class KAGG_Notifications_API
  */
 class KAGG_Notifications_API {
@@ -30,7 +36,6 @@ class KAGG_Notifications_API {
 	 */
 	public function register_rest_routes() {
 		// Register settings to the REST API.
-
 		$controllers = array(
 			'KAGG_Notifications_API_Controller',
 		);

@@ -1,13 +1,19 @@
 <?php
+/**
+ * Input fields.
+ *
+ * @package kagg-notifications
+ */
 
 /**
  * Class KAGG_Input_Fields
  */
 class KAGG_Input_Fields {
+
 	/**
 	 * Output a text input box.
 	 *
-	 * @param array $field
+	 * @param array $field Text input field.
 	 */
 	public static function text_input( $field ) {
 		global $post;
@@ -22,7 +28,7 @@ class KAGG_Input_Fields {
 		$field['type']          = isset( $field['type'] ) ? $field['type'] : 'text';
 		$field['desc_tip']      = isset( $field['desc_tip'] ) ? $field['desc_tip'] : false;
 
-		// Custom attribute handling
+		// Custom attribute handling.
 		$custom_attributes = array();
 
 		if ( ! empty( $field['custom_attributes'] ) && is_array( $field['custom_attributes'] ) ) {
@@ -35,13 +41,13 @@ class KAGG_Input_Fields {
 		<label for="' . esc_attr( $field['id'] ) . '">' . wp_kses_post( $field['label'] ) . '</label>';
 
 		if ( ! empty( $field['description'] ) && false !== $field['desc_tip'] ) {
-			echo self::help_tip( $field['description'] );  // WPCS: XSS ok.
+			echo self::help_tip( $field['description'] );
 		}
 
-		//@codingStandardsIgnoreStart
+		// @codingStandardsIgnoreStart
 		// Output $custom_attributes without esc_attr(), as they are already well formed.
 		echo '<input type="' . esc_attr( $field['type'] ) . '" class="' . esc_attr( $field['class'] ) . '" style="' . esc_attr( $field['style'] ) . '" name="' . esc_attr( $field['name'] ) . '" id="' . esc_attr( $field['id'] ) . '" value="' . esc_attr( $field['value'] ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" ' . implode( ' ', $custom_attributes ) . ' /> ';
-		//@codingStandardsIgnoreEnd
+		// @codingStandardsIgnoreEnd
 
 		if ( ! empty( $field['description'] ) && false === $field['desc_tip'] ) {
 			echo '<span class="description">' . wp_kses_post( $field['description'] ) . '</span>';
@@ -53,8 +59,8 @@ class KAGG_Input_Fields {
 	/**
 	 * Display a help tip.
 	 *
-	 * @param  string $tip Help tip text.
-	 * @param  bool $allow_html Allow sanitized HTML if true or escape.
+	 * @param  string $tip        Help tip text.
+	 * @param  bool   $allow_html Allow sanitized HTML if true or escape.
 	 *
 	 * @return string
 	 */
@@ -135,14 +141,14 @@ class KAGG_Input_Fields {
 		$tooltip     = ! empty( $field['description'] ) && false !== $field['desc_tip'] ? $field['description'] : '';
 		$description = ! empty( $field['description'] ) && false === $field['desc_tip'] ? $field['description'] : '';
 		?>
-		<p <?php echo self::implode_html_attributes( $wrapper_attributes ); // WPCS: XSS ok. ?>>
-			<label <?php echo self::implode_html_attributes( $label_attributes ); // WPCS: XSS ok. ?>>
+		<p <?php echo self::implode_html_attributes( $wrapper_attributes ); ?>>
+			<label <?php echo self::implode_html_attributes( $label_attributes ); ?>>
 				<?php echo wp_kses_post( $field['label'] ); ?>
 			</label>
 			<?php if ( $tooltip ) : ?>
-				<?php echo self::help_tip( $tooltip ); // WPCS: XSS ok. ?>
+				<?php echo self::help_tip( $tooltip ); ?>
 			<?php endif; ?>
-			<select <?php echo self::implode_html_attributes( $field_attributes ); // WPCS: XSS ok. ?> title="">
+			<select <?php echo self::implode_html_attributes( $field_attributes ); ?> title="">
 				<?php
 				foreach ( $field['options'] as $key => $value ) {
 					//@codingStandardsIgnoreStart
@@ -178,7 +184,7 @@ class KAGG_Input_Fields {
 	 * Return the html selected attribute if stringified $value is found in array of stringified $options
 	 * or if stringified $value is the same as scalar stringified $options.
 	 *
-	 * @param string|int $value Value to find within options.
+	 * @param string|int       $value   Value to find within options.
 	 * @param string|int|array $options Options to go through when looking for value.
 	 *
 	 * @return string

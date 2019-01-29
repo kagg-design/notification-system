@@ -1,11 +1,12 @@
 <?php
+/**
+ * KAGG Notifications Main Class.
+ *
+ * @package kagg-notifications
+ */
 
 /**
  * Class KAGG_Notifications
- * Main class of the KAGG Notification plugin.
- *
- * @package agg-notification
- * Version 1.0.0
  */
 class KAGG_Notifications {
 
@@ -14,7 +15,7 @@ class KAGG_Notifications {
 	 *
 	 * @var KAGG_Notifications
 	 */
-	protected static $_instance = null;
+	protected static $instance = null;
 
 	/**
 	 * API instance.
@@ -47,11 +48,11 @@ class KAGG_Notifications {
 	 * @return KAGG_Notifications - Main instance.
 	 */
 	public static function instance() {
-		if ( is_null( self::$_instance ) ) {
-			self::$_instance = new self();
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
 		}
 
-		return self::$_instance;
+		return self::$instance;
 	}
 
 	/**
@@ -205,7 +206,7 @@ class KAGG_Notifications {
 	/**
 	 * Add query vars.
 	 *
-	 * @param $vars array Query vars.
+	 * @param array $vars Query vars.
 	 *
 	 * @return array
 	 */
@@ -325,7 +326,7 @@ class KAGG_Notifications {
 						</div>
 						<table id="notifications-list">
 							<tbody>
-							<?php // Here will be the javascript output ?>
+							<?php // Here will be the javascript output. ?>
 							</tbody>
 						</table>
 						<?php
@@ -348,7 +349,7 @@ class KAGG_Notifications {
 					</article><!-- #notifications-page -->
 				</main><!-- #main -->
 
-				<?php // Create modal window ?>
+				<?php // Create modal window. ?>
 				<?php
 				if ( current_user_can( 'edit_posts' ) ) {
 					?>
@@ -381,7 +382,7 @@ class KAGG_Notifications {
 				}
 				?>
 
-				<?php // Update modal window ?>
+				<?php // Update modal window. ?>
 				<?php
 				if ( current_user_can( 'edit_posts' ) ) {
 					?>
@@ -484,9 +485,9 @@ class KAGG_Notifications {
 	/**
 	 * Check if we're saving, the trigger an action based on the post type.
 	 *
-	 * @param  int $post_id Post Id.
-	 * @param  WP_Post $post Post instance.
-	 * @param  bool $update Is post updated.
+	 * @param  int     $post_id Post Id.
+	 * @param  WP_Post $post    Post instance.
+	 * @param  bool    $update  Is post updated.
 	 */
 	public function save_meta_boxes( $post_id, $post, $update ) {
 		// $post_id and $post are required
@@ -494,12 +495,12 @@ class KAGG_Notifications {
 			return;
 		}
 
-		// Dont' save meta boxes for revisions or autosaves
+		// Dont' save meta boxes for revisions or autosaves.
 		if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || is_int( wp_is_post_revision( $post ) ) || is_int( wp_is_post_autosave( $post ) ) ) {
 			return;
 		}
 
-		// Check the nonce
+		// Check the nonce.
 		if (
 			empty( $_POST[ KAGG_Notification_Meta_Box::SAVE_NONCE ] ) ||
 			! wp_verify_nonce( $_POST[ KAGG_Notification_Meta_Box::SAVE_NONCE ], KAGG_Notification_Meta_Box::SAVE_ACTION )
@@ -507,12 +508,12 @@ class KAGG_Notifications {
 			return;
 		}
 
-		// Check the post being saved == the $post_id to prevent triggering this call for other save_post events
+		// Check the post being saved == the $post_id to prevent triggering this call for other save_post events.
 		if ( empty( $_POST['post_ID'] ) || ( intval( $_POST['post_ID'] ) !== $post_id ) ) {
 			return;
 		}
 
-		// Check user has permission to edit
+		// Check user has permission to edit.
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
 			return;
 		}
@@ -526,8 +527,8 @@ class KAGG_Notifications {
 	/**
 	 * Output select element for selection of a taxonomy.
 	 *
-	 * @param $taxonomy string Taxonomy slug.
-	 * @param $select_header string Taxonomy name.
+	 * @param string $taxonomy      Taxonomy slug.
+	 * @param string $select_header Taxonomy name.
 	 */
 	protected function select_terms( $taxonomy, $select_header ) {
 		if ( ! $taxonomy ) {

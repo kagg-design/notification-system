@@ -1,10 +1,10 @@
 === KAGG Notifications ===
 Author: KAGG Design
-Author URI: http://kagg.eu/en/
+Author URI: https://kagg.eu/en/
 Contributors: kaggdesign
 Tags: notification
 Requires at least: 4.4
-Tested up to: 5.0
+Tested up to: 5.1
 Version: 1.0.0
 Stable tag: 1.0.0
 License: GPLv2 or later
@@ -18,43 +18,21 @@ KAGG Notifications plugin creates and maintains notification system for users on
 
 Plugin has options page in the site console, with relevant buttons and controls. Please see screenshots.
 
-= REST API =
-
-Get all notifications
-http://site.org/wp-json/kagg/v1/notifications
-
-Get notifications by taxonomies
-Available taxonomies are: ...
-http://site.org/wp-json/kagg/v1/notifications?location=Estonia&brand=Premium&dealer_type=point-of-sales
-
-Get dealer by id (for instance, id=8)
-http://site.org/wp-json/kagg/v1/notifications/8
-
-Get dealer by slug
-http://site.org/wp-json/kagg/v1/notifications/slug=fun-cars
-
-Get dealer by status
-http://site.org/wp-json/kagg/v1/notifications/status=publish
-
-notifications can be created, read, updated, and deleted via REST API. Javascript interface is based on ES6 + Backbone.
-
 = Backend =
 
 Notifications are custom posts of type notification. There is a standard custom post interface, with menu in admin.
 
-Administrator can create, edit, and delete notifications. 3 taxonomies are available: location, types, brand. Administrator is able to add, edit, and delete taxonomy terms.
+Administrator can create, edit, and delete notifications. One taxonomy is available: Channel. Administrator is able to add, edit, and delete taxonomy terms.
 
 = Frontend =
 
 Plugin creates page /notifications "on the fly" - it does not exists in database. Information on this page is visible only to logged in users (restricted by permissions in REST API Controller).
 
-Logged-in users can list notifications, and filter them by location, brand, and type.
+Logged-in users can list notifications, and filter them by channel.
 
 Show more button provides pagination of the notifications list.
 
-For those users who have capability 'edit_posts', additional buttons are shown: Create Dealer, Update, and Delete. Popup windows provide relevant inputs.
-
-Any logged-on user can click on "Make Order" button and make an "order", which is done via AJAX XMLHttpRequest.
+For those users who have capability 'edit_posts', additional buttons are shown: Create, Update, and Delete. Popup windows provide relevant inputs.
 
 = Translation-ready =
 
@@ -65,7 +43,7 @@ Plugin is prepared for translation. All strings are output via gettext fucntions
 php code conforms to php 5.2.4 level.
 js code conforms to ES6 level.
 
-All code is checked by php Code Sniffer, and conforms to WordPress Extra standard.
+All code is checked by php Code Sniffer, and conforms to WordPress Coding Standards.
 
 == Installation ==
 
