@@ -8,6 +8,8 @@ KAGG Notifications plugin creates and maintains notification system for users on
 
 Plugin has options page in the site console, with relevant buttons and controls. Please see screenshots.
 
+![](./assets/banner-772x250.png)
+
 ## Backend
 
 Notifications are custom posts of type notification. There is a standard custom post interface, with menu in admin.

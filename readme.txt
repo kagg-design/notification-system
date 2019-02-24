@@ -75,7 +75,8 @@ If you get stuck, you can ask for help in the [KAGG Notifications Plugin Forum](
 
 == Screenshots ==
 
-1. The KAGG Notifications /notifications page (frontend).
+1. The KAGG Notifications /#notifications popup (frontend).
+2. The KAGG Notifications Update Notification popup.
 
 == Changelog ==
 
