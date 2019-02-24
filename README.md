@@ -2,15 +2,6 @@
 
 KAGG Notifications plugin creates and maintains notification system for users on WordPress site.
 
-## Contents
-
-The WordPress Plugin KAGG Notifications includes the following files:
-
-* `.gitignore`. Used to exclude certain files from the repository.
-* `CHANGELOG.md`. The list of changes to the core project.
-* `README.md`. The file that you’re currently reading.
-* A `plugin-name` directory that contains the source code - a fully executable WordPress plugin.
-
 ## Features
 
 KAGG Notifications plugin creates and maintains notification system for users on WordPress site.
@@ -46,11 +37,25 @@ All code is checked by php Code Sniffer, and conforms to WordPress Coding Standa
 
 ## Installation
 
-The KAGG Notifications can be installed directly into your plugins folder "as-is".
+```
+git clone https://github.com/kagg-design/kagg-notifications
+cd kagg-notifications
+composer install --no-dev
+cd src
+yarn
+yarn run build:prod
+```
 
-## WordPress.org Preparation
+## Development
 
-The original launch of this version of the KAGG Notifications included the folder structure needed for using your plugin on the WordPress.org. That folder structure has been moved to its own repo here: https://github.com/kagg/
+```
+git clone https://github.com/kagg-design/kagg-notifications
+cd kagg-notifications
+composer install
+cd src
+yarn
+yarn run build:dev
+```
 
 ## Recommended Tools
 
@@ -63,20 +68,6 @@ The WordPress Plugin KAGG Notifications uses a variable to store the text domain
 * [i18n](https://github.com/grappler/i18n)
 
 Any of the above tools should provide you with the proper tooling to internationalize the plugin.
-
-## Development
-
-git clone https://github.com/kagg-design/kagg-notifications.git
-
-cd kagg-notifications
-
-composer install
-
-cd src
-
-yarn
-
-yarn run build:dev
 
 ## License
 

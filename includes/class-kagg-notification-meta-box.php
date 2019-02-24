@@ -1,6 +1,6 @@
 <?php
 /**
- * KAGG Notification Meta Box.
+ * KAGG_Notification_Meta_Box class file.
  *
  * @package kagg-notifications
  */
@@ -32,9 +32,9 @@ class KAGG_Notification_Meta_Box {
 		$users           = $notification->get_user_list();
 		?>
 
-		<div id="coupon_options" class="panel-wrap coupon_data">
+		<div id="notification_options" class="panel-wrap notification_data">
 
-			<div id="general_coupon_data" class="panel fq_options_panel">
+			<div id="general_notification_data" class="panel fq_options_panel">
 				<?php
 
 				// Amount.
@@ -63,11 +63,24 @@ class KAGG_Notification_Meta_Box {
 	 */
 	public static function save( $post_id ) {
 		// Check the nonce.
-		if ( empty( $_POST[ self::SAVE_NONCE ] ) || ! wp_verify_nonce( $_POST[ self::SAVE_NONCE ], self::SAVE_ACTION ) ) {
+		if (
+			empty( $_POST[ self::SAVE_NONCE ] ) ||
+			! wp_verify_nonce(
+				filter_input( INPUT_POST, self::SAVE_NONCE, FILTER_SANITIZE_STRING ),
+				self::SAVE_ACTION
+			)
+		) {
 			return;
 		}
 
+		// Proper sanitization is performed in clean().
+		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 		$users = KAGG_Input_Fields::clean( $_POST['users'] );
+		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
+		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		$notification = new KAGG_Notification( $post_id );
 		$notification->set_user_list( $users );

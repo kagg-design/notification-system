@@ -5,8 +5,9 @@ Contributors: kaggdesign
 Tags: notification
 Requires at least: 4.4
 Tested up to: 5.1
-Version: 1.0.0
-Stable tag: 1.0.0
+Version: 1.0.1
+Stable tag: 1.0.1
+Requires PHP: 5.2.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -77,6 +78,9 @@ If you get stuck, you can ask for help in the [KAGG Notifications Plugin Forum](
 1. The KAGG Notifications /notifications page (frontend).
 
 == Changelog ==
+
+= 1.0.1 =
+* Code refactoring to conform WordPress Coding Standards.
 
 = 1.0.0 =
 * Initial release.

@@ -1,6 +1,6 @@
 <?php
 /**
- * Input fields.
+ * KAGG_Input_Fields class file.
  *
  * @package kagg-notifications
  */
@@ -23,7 +23,9 @@ class KAGG_Input_Fields {
 		$field['class']         = isset( $field['class'] ) ? $field['class'] : 'short';
 		$field['style']         = isset( $field['style'] ) ? $field['style'] : '';
 		$field['wrapper_class'] = isset( $field['wrapper_class'] ) ? $field['wrapper_class'] : '';
-		$field['value']         = isset( $field['value'] ) ? $field['value'] : get_post_meta( $the_post_id, $field['id'], true );
+		$field['value']         = isset( $field['value'] ) ?
+			$field['value'] :
+			get_post_meta( $the_post_id, $field['id'], true );
 		$field['name']          = isset( $field['name'] ) ? $field['name'] : $field['id'];
 		$field['type']          = isset( $field['type'] ) ? $field['type'] : 'text';
 		$field['desc_tip']      = isset( $field['desc_tip'] ) ? $field['desc_tip'] : false;
@@ -41,13 +43,19 @@ class KAGG_Input_Fields {
 		<label for="' . esc_attr( $field['id'] ) . '">' . wp_kses_post( $field['label'] ) . '</label>';
 
 		if ( ! empty( $field['description'] ) && false !== $field['desc_tip'] ) {
+			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo self::help_tip( $field['description'] );
+			// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
-		// @codingStandardsIgnoreStart
 		// Output $custom_attributes without esc_attr(), as they are already well formed.
-		echo '<input type="' . esc_attr( $field['type'] ) . '" class="' . esc_attr( $field['class'] ) . '" style="' . esc_attr( $field['style'] ) . '" name="' . esc_attr( $field['name'] ) . '" id="' . esc_attr( $field['id'] ) . '" value="' . esc_attr( $field['value'] ) . '" placeholder="' . esc_attr( $field['placeholder'] ) . '" ' . implode( ' ', $custom_attributes ) . ' /> ';
-		// @codingStandardsIgnoreEnd
+		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '<input type="' . esc_attr( $field['type'] ) . '" class="' . esc_attr( $field['class'] ) . '"';
+		echo ' style="' . esc_attr( $field['style'] ) . '" name="' . esc_attr( $field['name'] ) . '"';
+		echo ' id="' . esc_attr( $field['id'] ) . '" value="' . esc_attr( $field['value'] ) . '"';
+		echo ' placeholder="' . esc_attr( $field['placeholder'] ) . '"';
+		echo ' ' . implode( ' ', $custom_attributes ) . ' /> ';
+		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		if ( ! empty( $field['description'] ) && false === $field['desc_tip'] ) {
 			echo '<span class="description">' . wp_kses_post( $field['description'] ) . '</span>';
@@ -141,19 +149,44 @@ class KAGG_Input_Fields {
 		$tooltip     = ! empty( $field['description'] ) && false !== $field['desc_tip'] ? $field['description'] : '';
 		$description = ! empty( $field['description'] ) && false === $field['desc_tip'] ? $field['description'] : '';
 		?>
-		<p <?php echo self::implode_html_attributes( $wrapper_attributes ); ?>>
-			<label <?php echo self::implode_html_attributes( $label_attributes ); ?>>
+		<p
+			<?php
+			// Output $custom_attributes without esc_attr(), as they are already well formed.
+			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo ' ' . self::implode_html_attributes( $wrapper_attributes );
+			// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+			?>
+		>
+			<label
+				<?php
+				// Output $custom_attributes without esc_attr(), as they are already well formed.
+				// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo ' ' . self::implode_html_attributes( $label_attributes );
+				// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+				?>
+			>
 				<?php echo wp_kses_post( $field['label'] ); ?>
 			</label>
 			<?php if ( $tooltip ) : ?>
-				<?php echo self::help_tip( $tooltip ); ?>
+				<?php
+				// Output $custom_attributes without esc_attr(), as they are already well formed.
+				// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo self::help_tip( $tooltip );
+				// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+				?>
 			<?php endif; ?>
-			<select <?php echo self::implode_html_attributes( $field_attributes ); ?> title="">
+			<select
+				<?php
+				// Output $custom_attributes without esc_attr(), as they are already well formed.
+				// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo ' ' . self::implode_html_attributes( $field_attributes );
+				// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+				?>
+					title="">
 				<?php
 				foreach ( $field['options'] as $key => $value ) {
-					//@codingStandardsIgnoreStart
-					echo '<option value="' . esc_attr( $key ) . '" ' . selected( $key, $field['value'] ) . '>' . esc_html( $value ) . '</option>';
-					//@codingStandardsIgnoreEnd
+					echo '<option value="' . esc_attr( $key ) . '" ' . selected( $key, $field['value'] ) . '>';
+					echo esc_html( $value ) . '</option>';
 				}
 				?>
 			</select>

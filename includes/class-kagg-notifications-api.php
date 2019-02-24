@@ -1,6 +1,6 @@
 <?php
 /**
- * KAGG Notifications API.
+ * KAGG_Notifications_API class file.
  *
  * @package kagg-notifications
  */

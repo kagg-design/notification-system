@@ -1,6 +1,6 @@
 <?php
 /**
- * KAGG Notifications API Controller.
+ * KAGG_Notifications_API_Controller class file.
  *
  * @package kagg-notifications
  */
@@ -82,7 +82,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			array(
 				'args'   => array(
 					'id' => array(
-						'description' => __( 'Unique identifier for the resource.', 'kagg-notification' ),
+						'description' => __( 'Unique identifier for the resource.', 'kagg-notifications' ),
 						'type'        => 'integer',
 					),
 				),
@@ -111,7 +111,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 					'args'                => array(
 						'force' => array(
 							'default'     => false,
-							'description' => __( 'Whether to bypass trash and force deletion.', 'kagg-notification' ),
+							'description' => __( 'Whether to bypass trash and force deletion.', 'kagg-notifications' ),
 							'type'        => 'boolean',
 						),
 					),
@@ -128,20 +128,20 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 */
 	public function get_collection_params() {
 		$params['slug']    = array(
-			'description'       => __( 'Limit result set to notification with a specific slug.', 'kagg-notification' ),
+			'description'       => __( 'Limit result set to notification with a specific slug.', 'kagg-notifications' ),
 			'type'              => 'string',
 			'validate_callback' => 'rest_validate_request_arg',
 		);
 		$params['status']  = array(
 			'default'           => 'any',
-			'description'       => __( 'Limit result set to notifications assigned a specific status.', 'kagg-notification' ),
+			'description'       => __( 'Limit result set to notifications assigned a specific status.', 'kagg-notifications' ),
 			'type'              => 'string',
 			'enum'              => array_merge( array( 'any' ), array_keys( get_post_statuses() ) ),
 			'sanitize_callback' => 'sanitize_key',
 			'validate_callback' => 'rest_validate_request_arg',
 		);
 		$params['channel'] = array(
-			'description'       => __( 'Limit result set to notifications assigned a specific channel.', 'kagg-notification' ),
+			'description'       => __( 'Limit result set to notifications assigned a specific channel.', 'kagg-notifications' ),
 			'type'              => 'string',
 			'sanitize_callback' => 'wp_parse_slug_list',
 			'validate_callback' => 'rest_validate_request_arg',
@@ -180,7 +180,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		if ( ! $object ) {
 			return new WP_Error(
 				'KAGG_Notification_rest_invalid_id',
-				__( 'Invalid ID.', 'kagg-notification' ),
+				__( 'Invalid ID.', 'kagg-notifications' ),
 				array( 'status' => 404 )
 			);
 		}
@@ -202,7 +202,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		if ( ! empty( $request['id'] ) ) {
 			return new WP_Error(
 				'KAGG_Notification_rest_exists',
-				__( 'Cannot create existing post.', 'kagg-notification' ),
+				__( 'Cannot create existing post.', 'kagg-notifications' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -266,7 +266,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		if ( ! $object || 0 === $object->ID ) {
 			return new WP_Error(
 				'KAGG_Notification_invalid_id',
-				__( 'Invalid ID.', 'kagg-notification' ),
+				__( 'Invalid ID.', 'kagg-notifications' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -331,7 +331,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		if ( ! $object || 0 === $object->ID ) {
 			return new WP_Error(
 				'KAGG_Notification_invalid_id',
-				__( 'Invalid ID.', 'kagg-notification' ),
+				__( 'Invalid ID.', 'kagg-notifications' ),
 				array(
 					'status' => 404,
 				)
@@ -346,7 +346,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		if ( ! $result ) {
 			return new WP_Error(
 				'KAGG_NOTIFICATIONS_rest_cannot_delete',
-				__( 'The item cannot be deleted.', 'kagg-notification' ),
+				__( 'The item cannot be deleted.', 'kagg-notifications' ),
 				array(
 					'status' => 500,
 				)
@@ -476,6 +476,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		}
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
+			// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			$query_args['meta_query'] = array(
 				'relation' => 'OR',
 				array(
@@ -488,6 +489,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 					'compare' => 'NOT EXISTS',
 				),
 			);
+			// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 		}
 
 		return $query_args;
@@ -733,7 +735,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		if ( ! current_user_can( 'read' ) ) {
 			return new WP_Error(
 				'KAGG_Notification_rest_cannot_create',
-				__( 'Sorry, you cannot view resources.', 'kagg-notification' ),
+				__( 'Sorry, you cannot view resources.', 'kagg-notifications' ),
 				array( 'status' => rest_authorization_required_code() )
 			);
 		}
@@ -752,7 +754,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		if ( ! current_user_can( 'read' ) ) {
 			return new WP_Error(
 				'KAGG_Notification_rest_cannot_create',
-				__( 'Sorry, you cannot view resources.', 'kagg-notification' ),
+				__( 'Sorry, you cannot view resources.', 'kagg-notifications' ),
 				array( 'status' => rest_authorization_required_code() )
 			);
 		}
@@ -771,7 +773,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			return new WP_Error(
 				'KAGG_Notification_rest_cannot_create',
-				__( 'Sorry, you cannot create resources.', 'kagg-notification' ),
+				__( 'Sorry, you cannot create resources.', 'kagg-notifications' ),
 				array( 'status' => rest_authorization_required_code() )
 			);
 		}
@@ -799,7 +801,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			return new WP_Error(
 				'KAGG_Notification_rest_cannot_update',
-				__( 'Sorry, you cannot update resources.', 'kagg-notification' ),
+				__( 'Sorry, you cannot update resources.', 'kagg-notifications' ),
 				array( 'status' => rest_authorization_required_code() )
 			);
 		}
@@ -818,7 +820,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			return new WP_Error(
 				'KAGG_Notification_rest_cannot_delete',
-				__( 'Sorry, you cannot delete resources.', 'kagg-notification' ),
+				__( 'Sorry, you cannot delete resources.', 'kagg-notifications' ),
 				array( 'status' => rest_authorization_required_code() )
 			);
 		}
@@ -873,12 +875,12 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		$time_diff = time() - $time;
 
 		if ( 0 === $time_diff ) {
-			$h_time = __( 'Right now', 'kagg-notification' );
+			$h_time = __( 'Right now', 'kagg-notifications' );
 		} elseif ( $time_diff > 0 && $time_diff < MINUTE_IN_SECONDS ) {
-			$h_time = __( 'Seconds ago', 'kagg-notification' );
+			$h_time = __( 'Seconds ago', 'kagg-notifications' );
 		} elseif ( $time_diff > 0 && $time_diff < DAY_IN_SECONDS ) {
 			/* translators: days/hours/minutes etc. ago */
-			$h_time = sprintf( __( '%s ago', 'kagg-notification' ), human_time_diff( $time ) );
+			$h_time = sprintf( __( '%s ago', 'kagg-notifications' ), human_time_diff( $time ) );
 		} else {
 			$h_time = mysql2date( get_option( 'date_format' ), $datetime, true );
 		}
