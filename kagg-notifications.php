@@ -4,41 +4,51 @@
  * Description: Creates and maintains notification system for users on WordPress site.
  * Author: KAGG Design
  * Author URI: http://kagg.eu/en/
- * Version: 1.0.0
+ * Version: 1.0.1
  * Plugin Slug: kagg-notifications
  * Requires at least: 4.4
  * Tested up to: 5.0
+ * Requires PHP: 5.2.4
  *
  * Text Domain: kagg-notifications
  * Domain Path: /languages/
  *
  * @package kagg-notifications
- * @author KAGG Design
+ * @author  KAGG Design
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-/**
- * Plugin path.
- */
-define( 'KAGG_NOTIFICATIONS_PATH', dirname( __FILE__ ) );
+if ( ! defined( 'KAGG_NOTIFICATIONS_PATH' ) ) {
+	/**
+	 * Plugin path.
+	 */
 
-/**
- * Plugin url.
- */
-define( 'KAGG_NOTIFICATIONS_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
+	define( 'KAGG_NOTIFICATIONS_PATH', dirname( __FILE__ ) );
+}
 
-/**
- * Plugin main file.
- */
-define( 'KAGG_NOTIFICATIONS_FILE', __FILE__ );
+if ( ! defined( 'KAGG_NOTIFICATIONS_URL' ) ) {
+	/**
+	 * Plugin url.
+	 */
+	define( 'KAGG_NOTIFICATIONS_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
+}
 
-/**
- * Plugin version.
- */
-define( 'KAGG_NOTIFICATIONS_VERSION', '1.0.0' );
+if ( ! defined( 'KAGG_NOTIFICATIONS_FILE' ) ) {
+	/**
+	 * Plugin main file.
+	 */
+	define( 'KAGG_NOTIFICATIONS_FILE', __FILE__ );
+}
+
+if ( ! defined( 'KAGG_NOTIFICATIONS_VERSION' ) ) {
+	/**
+	 * Plugin version.
+	 */
+	define( 'KAGG_NOTIFICATIONS_VERSION', '1.0.1' );
+}
 
 /**
  * Init plugin class on plugin load.

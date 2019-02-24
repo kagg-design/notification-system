@@ -125,6 +125,7 @@ class NotificationsRESTAPI {
 	 */
 	createNotification( query ) {
 		const getNotifications = () => this.getNotifications();
+
 		wp.api.loadPromise.done(
 			() => {
 				let notification = new wp.api.models.Notifications( {} );

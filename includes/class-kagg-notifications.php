@@ -9,7 +9,6 @@
  * Class KAGG_Notifications
  */
 class KAGG_Notifications {
-
 	/**
 	 * The single instance of the class.
 	 *
@@ -87,7 +86,9 @@ class KAGG_Notifications {
 
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 		add_action( 'add_meta_boxes', array( $this, 'remove_meta_boxes' ) );
-		add_action( 'save_post', array( $this, 'save_meta_boxes' ), 0, 3 );
+		add_action( 'save_post', array( $this, 'save_meta_boxes' ), 0, 2 );
+
+		add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
 	}
 
 	/**
@@ -137,7 +138,7 @@ class KAGG_Notifications {
 
 		// Plugin RESTful script.
 		wp_enqueue_script(
-			'kagg-notification',
+			'kagg-notifications',
 			KAGG_NOTIFICATIONS_URL . '/dist/js/notificationsRESTAPI/app.js',
 			array( 'wp-api' ),
 			KAGG_NOTIFICATIONS_VERSION,
@@ -145,7 +146,7 @@ class KAGG_Notifications {
 		);
 
 		wp_enqueue_style(
-			'kagg-notification',
+			'kagg-notifications',
 			KAGG_NOTIFICATIONS_URL . '/css/style.css',
 			array(),
 			KAGG_NOTIFICATIONS_VERSION
@@ -157,7 +158,7 @@ class KAGG_Notifications {
 	 */
 	public function admin_enqueue_scripts() {
 		wp_enqueue_style(
-			'kagg-notification',
+			'kagg-notifications',
 			KAGG_NOTIFICATIONS_URL . '/css/admin-style.css',
 			array(),
 			KAGG_NOTIFICATIONS_VERSION
@@ -170,19 +171,19 @@ class KAGG_Notifications {
 	public function register_taxonomies() {
 		$args = array(
 			'labels'            => array(
-				'name'              => __( 'Channels', 'kagg-notification' ),
-				'singular_name'     => __( 'Channel', 'kagg-notification' ),
-				'search_items'      => __( 'Search Channels', 'kagg-notification' ),
-				'all_items'         => __( 'All Channels', 'kagg-notification' ),
-				'parent_item'       => __( 'Parent Channel', 'kagg-notification' ),
-				'parent_item_colon' => __( 'Parent Channel:', 'kagg-notification' ),
-				'edit_item'         => __( 'Edit Channel', 'kagg-notification' ),
-				'update_item'       => __( 'Update Channel', 'kagg-notification' ),
-				'add_new_item'      => __( 'Add New Channel', 'kagg-notification' ),
-				'new_item_name'     => __( 'New Channel', 'kagg-notification' ),
-				'menu_name'         => __( 'Channels', 'kagg-notification' ),
+				'name'              => __( 'Channels', 'kagg-notifications' ),
+				'singular_name'     => __( 'Channel', 'kagg-notifications' ),
+				'search_items'      => __( 'Search Channels', 'kagg-notifications' ),
+				'all_items'         => __( 'All Channels', 'kagg-notifications' ),
+				'parent_item'       => __( 'Parent Channel', 'kagg-notifications' ),
+				'parent_item_colon' => __( 'Parent Channel:', 'kagg-notifications' ),
+				'edit_item'         => __( 'Edit Channel', 'kagg-notifications' ),
+				'update_item'       => __( 'Update Channel', 'kagg-notifications' ),
+				'add_new_item'      => __( 'Add New Channel', 'kagg-notifications' ),
+				'new_item_name'     => __( 'New Channel', 'kagg-notifications' ),
+				'menu_name'         => __( 'Channels', 'kagg-notifications' ),
 			),
-			'description'       => __( 'Notification Channels', 'kagg-notification' ),
+			'description'       => __( 'Notification Channels', 'kagg-notifications' ),
 			'public'            => true,
 			'show_ui'           => true,
 			'hierarchical'      => false,
@@ -221,25 +222,25 @@ class KAGG_Notifications {
 	 */
 	public function register_cpt_notification() {
 		$labels = array(
-			'name'               => __( 'Notifications', 'kagg-notification' ),
-			'singular_name'      => __( 'Notification', 'kagg-notification' ),
-			'add_new'            => __( 'Add New', 'kagg-notification' ),
-			'add_new_item'       => __( 'Add New Notification', 'kagg-notification' ),
-			'edit_item'          => __( 'Edit Notification', 'kagg-notification' ),
-			'new_item'           => __( 'New Notification', 'kagg-notification' ),
-			'view_item'          => __( 'View Notification', 'kagg-notification' ),
-			'search_items'       => __( 'Search Notifications', 'kagg-notification' ),
-			'not_found'          => __( 'Not Found', 'kagg-notification' ),
-			'not_found_in_trash' => __( 'Not Found In Trash', 'kagg-notification' ),
-			'parent_item'        => __( 'Parent', 'kagg-notification' ),
-			'parent_item_colon'  => __( 'Parent:', 'kagg-notification' ),
-			'menu_name'          => __( 'Notifications', 'kagg-notification' ),
+			'name'               => __( 'Notifications', 'kagg-notifications' ),
+			'singular_name'      => __( 'Notification', 'kagg-notifications' ),
+			'add_new'            => __( 'Add New', 'kagg-notifications' ),
+			'add_new_item'       => __( 'Add New Notification', 'kagg-notifications' ),
+			'edit_item'          => __( 'Edit Notification', 'kagg-notifications' ),
+			'new_item'           => __( 'New Notification', 'kagg-notifications' ),
+			'view_item'          => __( 'View Notification', 'kagg-notifications' ),
+			'search_items'       => __( 'Search Notifications', 'kagg-notifications' ),
+			'not_found'          => __( 'Not Found', 'kagg-notifications' ),
+			'not_found_in_trash' => __( 'Not Found In Trash', 'kagg-notifications' ),
+			'parent_item'        => __( 'Parent', 'kagg-notifications' ),
+			'parent_item_colon'  => __( 'Parent:', 'kagg-notifications' ),
+			'menu_name'          => __( 'Notifications', 'kagg-notifications' ),
 		);
 
 		$args = array(
 			'labels'                => $labels,
 			'hierarchical'          => false,
-			'description'           => __( 'Notifications', 'kagg-notification' ),
+			'description'           => __( 'Notifications', 'kagg-notifications' ),
 			'supports'              => array(
 				'title',
 				'editor',
@@ -252,8 +253,9 @@ class KAGG_Notifications {
 			'public'                => true,
 			'show_ui'               => true,
 			'show_in_menu'          => true,
-			//@codingStandardsIgnoreLine
+			// phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 			'menu_icon'             => 'data:image/svg+xml;base64,' . base64_encode( '<svg height="20" viewBox="0 85.5 1024 855" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M490.666667 938.666667c46.933333 0 85.333333-38.4 85.333333-85.333334h-170.666667c0 46.933333 38.4 85.333333 85.333334 85.333334z m277.333333-256V448c0-130.986667-90.88-240.64-213.333333-269.653333V149.333333c0-35.413333-28.586667-64-64-64s-64 28.586667-64 64v29.013334C304.213333 207.36 213.333333 317.013333 213.333333 448v234.666667l-85.333333 85.333333v42.666667h725.333333v-42.666667l-85.333333-85.333333z" fill="black" /> </svg>' ),
+			// phpcs:enable WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 			'show_in_nav_menus'     => true,
 			'publicly_queryable'    => true,
 			'exclude_from_search'   => false,
@@ -277,7 +279,7 @@ class KAGG_Notifications {
 	 * Template for the plugin frontend page.
 	 */
 	public function notifications_page() {
-		$uri  = $_SERVER['REQUEST_URI'];
+		$uri  = filter_input( INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING );
 		$path = wp_parse_url( $uri, PHP_URL_PATH );
 
 		if ( '/' . trailingslashit( $this->page_slug ) === trailingslashit( $path ) ) {
@@ -308,18 +310,18 @@ class KAGG_Notifications {
 					<article id="notifications-page" <?php post_class(); ?>>
 						<header class="entry-header">
 							<h1>
-								<?php esc_html_e( 'Notifications', 'kagg-notification' ); ?>
+								<?php esc_html_e( 'Notifications', 'kagg-notifications' ); ?>
 							</h1>
 						</header><!-- .entry-header -->
 						<div id="notifications-header">
 								<span>
-									<?php esc_html_e( 'Message', 'kagg-notification' ); ?>
+									<?php esc_html_e( 'Message', 'kagg-notifications' ); ?>
 								</span>
 							<span>
 									<?php
 									$this->select_terms(
 										'channel',
-										__( 'Select channel', 'kagg-notification' )
+										__( 'Select channel', 'kagg-notifications' )
 									);
 									?>
 								</span>
@@ -334,7 +336,7 @@ class KAGG_Notifications {
 							?>
 							<input
 									type='button' id='more-button'
-									value='<?php esc_html_e( 'Show more...', 'kagg-notification' ); ?>'>
+									value='<?php esc_html_e( 'Show more...', 'kagg-notifications' ); ?>'>
 							<?php
 						}
 
@@ -342,7 +344,7 @@ class KAGG_Notifications {
 							?>
 							<input
 									type='button' id='create-notification-button'
-									value='<?php esc_html_e( 'Create Notification', 'kagg-notification' ); ?>'>
+									value='<?php esc_html_e( 'Create Notification', 'kagg-notifications' ); ?>'>
 							<?php
 						}
 						?>
@@ -356,26 +358,26 @@ class KAGG_Notifications {
 					<div id="create-modal" class="notifications-modal">
 						<div class="notifications-modal-content">
 							<span class="close">&times;</span>
-							<h3><?php esc_html_e( 'Create new notification', 'kagg-notification' ); ?></h3>
+							<h3><?php esc_html_e( 'Create new notification', 'kagg-notifications' ); ?></h3>
 							<label for="title-text">
-								<?php echo esc_html__( 'Title', 'kagg-notification' ) . ' *'; ?>
+								<?php echo esc_html__( 'Title', 'kagg-notifications' ) . ' *'; ?>
 							</label>
 							<input type="text" id="title-text" required="required">
 							<label for="content-text">
-								<?php echo esc_html__( 'Content', 'kagg-notification' ) . ' *'; ?>
+								<?php echo esc_html__( 'Content', 'kagg-notifications' ) . ' *'; ?>
 							</label>
 							<div contenteditable="true" id="content-text"></div>
 							<label for="channel-text">
-								<?php esc_html_e( 'Channel(s), separated by comma', 'kagg-notification' ); ?>
+								<?php esc_html_e( 'Channel(s), separated by comma', 'kagg-notifications' ); ?>
 							</label>
 							<input type="text" id="channel-text">
 							<label for="users-text">
-								<?php esc_html_e( 'User(s), separated by comma', 'kagg-notification' ); ?>
+								<?php esc_html_e( 'User(s), separated by comma', 'kagg-notifications' ); ?>
 							</label>
 							<input type="text" id="users-text">
 							<input
 									type='button' id='create-button'
-									value='<?php esc_html_e( 'Create', 'kagg-notification' ); ?>'>
+									value='<?php esc_html_e( 'Create', 'kagg-notifications' ); ?>'>
 						</div>
 					</div>
 					<?php
@@ -389,26 +391,26 @@ class KAGG_Notifications {
 					<div id="update-modal" class="notifications-modal">
 						<div class="notifications-modal-content">
 							<span class="close">&times;</span>
-							<h3><?php esc_html_e( 'Update notification', 'kagg-notification' ); ?></h3>
+							<h3><?php esc_html_e( 'Update notification', 'kagg-notifications' ); ?></h3>
 							<label for="update-title-text">
-								<?php echo esc_html__( 'Title', 'kagg-notification' ) . ' *'; ?>
+								<?php echo esc_html__( 'Title', 'kagg-notifications' ) . ' *'; ?>
 							</label>
 							<input type="text" id="update-title-text" required="required">
 							<label for="update-content-text">
-								<?php echo esc_html__( 'Content', 'kagg-notification' ) . ' *'; ?>
+								<?php echo esc_html__( 'Content', 'kagg-notifications' ) . ' *'; ?>
 							</label>
 							<div contenteditable="true" id="update-content-text"></div>
 							<label for="update-channel-text">
-								<?php esc_html_e( 'Channel(s), separated by comma', 'kagg-notification' ); ?>
+								<?php esc_html_e( 'Channel(s), separated by comma', 'kagg-notifications' ); ?>
 							</label>
 							<input type="text" id="update-channel-text">
 							<label for="update-users-text">
-								<?php esc_html_e( 'User(s), separated by comma', 'kagg-notification' ); ?>
+								<?php esc_html_e( 'User(s), separated by comma', 'kagg-notifications' ); ?>
 							</label>
 							<input type="text" id="update-users-text">
 							<input
 									type='button' id='update-button'
-									value='<?php esc_html_e( 'Update', 'kagg-notification' ); ?>'>
+									value='<?php esc_html_e( 'Update', 'kagg-notifications' ); ?>'>
 						</div>
 					</div>
 					<?php
@@ -425,8 +427,12 @@ class KAGG_Notifications {
 	 * AJAX callback function to get popup content.
 	 */
 	public function get_popup_content() {
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'kagg-notification-rest' ) ) {
-			wp_send_json_error( __( 'Bad nonce!', 'kagg-notification' ) );
+		if ( ! wp_verify_nonce(
+			filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING ),
+			'kagg-notification-rest'
+		)
+		) {
+			wp_send_json_error( __( 'Bad nonce!', 'kagg-notifications' ) );
 		}
 
 		wp_send_json_success( $this->notifications_shortcode() );
@@ -441,6 +447,7 @@ class KAGG_Notifications {
 		$args = array(
 			'post_type'  => 'notification',
 			'status'     => 'publish',
+			// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 			'meta_query' => array(
 				array(
 					'key'     => KAGG_Notification::READ_STATUS_META_KEY,
@@ -448,6 +455,7 @@ class KAGG_Notifications {
 					'compare' => 'LIKE',
 				),
 			),
+			// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 		);
 
 		$query = new WP_Query( $args );
@@ -458,13 +466,24 @@ class KAGG_Notifications {
 	}
 
 	/**
+	 * Load plugin text domain.
+	 */
+	public function load_plugin_textdomain() {
+		load_plugin_textdomain(
+			'kagg-notifications',
+			false,
+			dirname( plugin_basename( KAGG_NOTIFICATIONS_FILE ) ) . '/languages/'
+		);
+	}
+
+	/**
 	 * Add meta boxes for notifications.
 	 */
 	public function add_meta_boxes() {
 		$metabox = new KAGG_Notification_Meta_Box();
 		add_meta_box(
 			'notification-data',
-			__( 'Notification data', 'kagg-notification' ),
+			__( 'Notification data', 'kagg-notifications' ),
 			array( $metabox, 'output' ),
 			'notification',
 			'normal',
@@ -487,23 +506,28 @@ class KAGG_Notifications {
 	 *
 	 * @param  int     $post_id Post Id.
 	 * @param  WP_Post $post    Post instance.
-	 * @param  bool    $update  Is post updated.
 	 */
-	public function save_meta_boxes( $post_id, $post, $update ) {
+	public function save_meta_boxes( $post_id, $post ) {
 		// $post_id and $post are required
 		if ( empty( $post_id ) || empty( $post ) ) {
 			return;
 		}
 
 		// Dont' save meta boxes for revisions or autosaves.
-		if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || is_int( wp_is_post_revision( $post ) ) || is_int( wp_is_post_autosave( $post ) ) ) {
+		if (
+			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || is_int( wp_is_post_revision( $post ) ) ||
+			is_int( wp_is_post_autosave( $post ) )
+		) {
 			return;
 		}
 
 		// Check the nonce.
 		if (
 			empty( $_POST[ KAGG_Notification_Meta_Box::SAVE_NONCE ] ) ||
-			! wp_verify_nonce( $_POST[ KAGG_Notification_Meta_Box::SAVE_NONCE ], KAGG_Notification_Meta_Box::SAVE_ACTION )
+			! wp_verify_nonce(
+				filter_input( INPUT_POST, KAGG_Notification_Meta_Box::SAVE_NONCE, FILTER_SANITIZE_STRING ),
+				KAGG_Notification_Meta_Box::SAVE_ACTION
+			)
 		) {
 			return;
 		}
@@ -542,7 +566,7 @@ class KAGG_Notifications {
 
 		$terms = get_terms( $args );
 		?>
-		<select name="<?php echo esc_attr( $taxonomy ); ?>" title="">
+		<select id="select-channel" name="<?php echo esc_attr( $taxonomy ); ?>" title="">
 			<option value="">
 				<?php
 				echo esc_html( ' -- ' . $select_header . ' -- ' );
