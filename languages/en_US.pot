@@ -1,271 +1,210 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: otgs-senior-developer-test-001\n"
-"POT-Creation-Date: 2018-07-16 21:50+0300\n"
+"Project-Id-Version: kagg-notifications\n"
+"POT-Creation-Date: 2019-01-30 00:58+0200\n"
 "PO-Revision-Date: 2018-07-14 16:09+0300\n"
-"Last-Translator: \n"
+"Last-Translator: KAGG Design <info@kagg.eu>\n"
 "Language-Team: KAGG Design\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.9\n"
+"X-Generator: Poedit 2.2.1\n"
 "X-Poedit-Basepath: ..\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"Language: ru\n"
-"X-Poedit-KeywordsList: __\n"
+"X-Poedit-KeywordsList: __;esc_html__;esc_attr__\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: bin\n"
+"X-Poedit-SearchPathExcluded-1: dist\n"
+"X-Poedit-SearchPathExcluded-2: tests\n"
+"X-Poedit-SearchPathExcluded-3: vendor\n"
+"X-Poedit-SearchPathExcluded-4: src\n"
 
-#: includes/class-otgs-sdt001-api-controller.php:64
+#: includes/class-kagg-notification-meta-box.php:44
+msgid "Show to users"
+msgstr ""
+
+#: includes/class-kagg-notification-meta-box.php:45
+msgid "List of users to whom to show this notification."
+msgstr ""
+
+#: includes/class-kagg-notifications-api-controller.php:85
 msgid "Unique identifier for the resource."
 msgstr ""
 
-#: includes/class-otgs-sdt001-api-controller.php:93
+#: includes/class-kagg-notifications-api-controller.php:114
 msgid "Whether to bypass trash and force deletion."
 msgstr ""
 
-#: includes/class-otgs-sdt001-api-controller.php:111
-msgid "Limit result set to dealer with a specific slug."
+#: includes/class-kagg-notifications-api-controller.php:131
+msgid "Limit result set to notification with a specific slug."
 msgstr ""
 
-#: includes/class-otgs-sdt001-api-controller.php:117
-msgid "Limit result set to dealers assigned a specific status."
+#: includes/class-kagg-notifications-api-controller.php:137
+msgid "Limit result set to notifications assigned a specific status."
 msgstr ""
 
-#: includes/class-otgs-sdt001-api-controller.php:124
-msgid "Limit result set to dealers with a specific location."
+#: includes/class-kagg-notifications-api-controller.php:144
+msgid "Limit result set to notifications assigned a specific channel."
 msgstr ""
 
-#: includes/class-otgs-sdt001-api-controller.php:130
-msgid "Limit result set to dealers of specific type."
-msgstr ""
-
-#: includes/class-otgs-sdt001-api-controller.php:136
-msgid "Limit result set to dealers assigned a specific brand."
-msgstr ""
-
-#: includes/class-otgs-sdt001-api-controller.php:174
-#: includes/class-otgs-sdt001-api-controller.php:256
-#: includes/class-otgs-sdt001-api-controller.php:323
+#: includes/class-kagg-notifications-api-controller.php:183
+#: includes/class-kagg-notifications-api-controller.php:269
+#: includes/class-kagg-notifications-api-controller.php:334
 msgid "Invalid ID."
 msgstr ""
 
-#: includes/class-otgs-sdt001-api-controller.php:192
+#: includes/class-kagg-notifications-api-controller.php:205
 msgid "Cannot create existing post."
 msgstr ""
 
-#: includes/class-otgs-sdt001-api-controller.php:336
+#: includes/class-kagg-notifications-api-controller.php:349
 msgid "The item cannot be deleted."
 msgstr ""
 
-#: includes/class-otgs-sdt001-api-controller.php:650
-#: includes/class-otgs-sdt001-api-controller.php:665
+#: includes/class-kagg-notifications-api-controller.php:736
+#: includes/class-kagg-notifications-api-controller.php:755
 msgid "Sorry, you cannot view resources."
 msgstr ""
 
-#: includes/class-otgs-sdt001-api-controller.php:680
+#: includes/class-kagg-notifications-api-controller.php:774
 msgid "Sorry, you cannot create resources."
 msgstr ""
 
-#: includes/class-otgs-sdt001-api-controller.php:695
+#: includes/class-kagg-notifications-api-controller.php:802
 msgid "Sorry, you cannot update resources."
 msgstr ""
 
-#: includes/class-otgs-sdt001-api-controller.php:710
+#: includes/class-kagg-notifications-api-controller.php:821
 msgid "Sorry, you cannot delete resources."
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:127 includes/class-otgs-sdt001.php:137
-msgid "Locations"
+#: includes/class-kagg-notifications-api-controller.php:876
+msgid "Right now"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:128 includes/page-dealers.php:31
-msgid "Location"
+#: includes/class-kagg-notifications-api-controller.php:878
+msgid "Seconds ago"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:129
-msgid "Search Locations"
+#: includes/class-kagg-notifications-api-controller.php:881
+#, php-format
+msgid "%s ago"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:130
-msgid "All Locations"
+#: includes/class-kagg-notifications.php:173
+#: includes/class-kagg-notifications.php:183
+msgid "Channels"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:131
-msgid "Parent Location"
+#: includes/class-kagg-notifications.php:174
+msgid "Channel"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:132
-msgid "Parent Location:"
+#: includes/class-kagg-notifications.php:175
+msgid "Search Channels"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:133
-msgid "Edit Location"
+#: includes/class-kagg-notifications.php:176
+msgid "All Channels"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:134
-msgid "Update Location"
+#: includes/class-kagg-notifications.php:177
+msgid "Parent Channel"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:135
-msgid "Add New Location"
+#: includes/class-kagg-notifications.php:178
+msgid "Parent Channel:"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:136
-msgid "New Location"
+#: includes/class-kagg-notifications.php:179
+msgid "Edit Channel"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:139
-msgid "Dealer Location"
+#: includes/class-kagg-notifications.php:180
+msgid "Update Channel"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:150 includes/class-otgs-sdt001.php:160
-msgid "Types"
+#: includes/class-kagg-notifications.php:181
+msgid "Add New Channel"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:151 includes/page-dealers.php:47
-msgid "Type"
+#: includes/class-kagg-notifications.php:182
+msgid "New Channel"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:152
-msgid "Search Types"
+#: includes/class-kagg-notifications.php:185
+msgid "Notification Channels"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:153
-msgid "All Types"
+#: includes/class-kagg-notifications.php:224
+#: includes/class-kagg-notifications.php:236
+#: includes/class-kagg-notifications.php:242
+msgid "Notifications"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:154
-msgid "Parent Type"
+#: includes/class-kagg-notifications.php:225
+msgid "Notification"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:155
-msgid "Parent Type:"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:156
-msgid "Edit Type"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:157
-msgid "Update Type"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:158
-msgid "Add New Type"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:159
-msgid "New Type"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:162
-msgid "Dealer Type: Dealer or Point of Sale"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:173 includes/class-otgs-sdt001.php:183
-#: includes/page-dealers.php:39
-msgid "Brands"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:174
-msgid "Brand"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:175
-msgid "Search Brands"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:176
-msgid "All Brands"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:177
-msgid "Parent Brand"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:178
-msgid "Parent Brand:"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:179
-msgid "Edit Brand"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:180
-msgid "Update Brand"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:181
-msgid "Add New Brand"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:182
-msgid "New Brand"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:185
-msgid "Dealer Brands"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:228
-msgid "Dealers"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:229
-msgid "Dealer"
-msgstr ""
-
-#: includes/class-otgs-sdt001.php:230
+#: includes/class-kagg-notifications.php:226
 msgid "Add New"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:231
-msgid "Add New Dealer"
+#: includes/class-kagg-notifications.php:227
+msgid "Add New Notification"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:232
-msgid "Edit Dealer"
+#: includes/class-kagg-notifications.php:228
+msgid "Edit Notification"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:233
-msgid "New Dealer"
+#: includes/class-kagg-notifications.php:229
+msgid "New Notification"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:234
-msgid "View Dealer"
+#: includes/class-kagg-notifications.php:230
+msgid "View Notification"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:235
-msgid "Search Dealers"
+#: includes/class-kagg-notifications.php:231
+msgid "Search Notifications"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:236
+#: includes/class-kagg-notifications.php:232
 msgid "Not Found"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:237
+#: includes/class-kagg-notifications.php:233
 msgid "Not Found In Trash"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:238
+#: includes/class-kagg-notifications.php:234
 msgid "Parent"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:239
+#: includes/class-kagg-notifications.php:235
 msgid "Parent:"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:240 includes/class-otgs-sdt001.php:246
-msgid "Automotive Oils Dealers"
+#: includes/class-kagg-notifications.php:322
+msgid "Select channel"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:330
+#: includes/class-kagg-notifications.php:361
+#: includes/class-kagg-notifications.php:394
+msgid "Title"
+msgstr ""
+
+#: includes/class-kagg-notifications.php:365
+#: includes/class-kagg-notifications.php:398
+msgid "Content"
+msgstr ""
+
+#: includes/class-kagg-notifications.php:429
 msgid "Bad nonce!"
 msgstr ""
 
-#: includes/class-otgs-sdt001.php:336
-msgid "Your order was processed."
+#: includes/class-kagg-notifications.php:467
+msgid "Notification data"
 msgstr ""
