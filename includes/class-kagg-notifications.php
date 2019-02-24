@@ -306,10 +306,12 @@ class KAGG_Notifications {
 	}
 
 	/**
+	 * Check if it is notifications page.
+	 *
 	 * @return bool
 	 */
 	private function is_notification_page() {
-		$uri  = $_SERVER['REQUEST_URI'];
+		$uri  = filter_input( INPUT_SERVER, 'REQUEST_URI' );
 		$path = wp_parse_url( $uri, PHP_URL_PATH );
 
 		if ( '/' . trailingslashit( $this->page_slug ) === trailingslashit( $path ) ) {
@@ -320,6 +322,8 @@ class KAGG_Notifications {
 	}
 
 	/**
+	 * Filter Yoast SEO breadcrumbs and set proper page name.
+	 *
 	 * @param array $crumbs The crumbs array.
 	 *
 	 * @return array
@@ -327,6 +331,7 @@ class KAGG_Notifications {
 	public function wpseo_breadcrumb_links( $crumbs ) {
 		if ( $this->is_notification_page() ) {
 			$crumbs[1]['text'] = esc_html__( 'Notifications', 'kagg-notification' );
+
 			return $crumbs;
 		}
 
@@ -551,12 +556,19 @@ class KAGG_Notifications {
 		return $query->found_posts;
 	}
 
+	/**
+	 * Update unread counts.
+	 */
 	public function update_unread_counts() {
 		$count = $this->get_unread_count();
 		?>
 		<script type='text/javascript'>
-			document.dispatchEvent( new CustomEvent( 'update_unread_counts', { 'detail': <?php echo intval( $count ); ?>} ) );
-			console.log( 'done' );
+			document.dispatchEvent(
+				new CustomEvent(
+					'update_unread_counts',
+					{ 'detail': <?php echo intval( $count ); ?>}
+				)
+			);
 		</script>
 		<?php
 	}
