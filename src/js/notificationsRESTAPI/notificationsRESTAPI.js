@@ -517,6 +517,8 @@ class NotificationsRESTAPI {
 				const modalContent     = document.getElementsByClassName( 'notifications-modal-content' )[0];
 				modalContent.innerHTML = '<span class="close">&times;</span>' + response;
 				this.getNotifications( [] );
+				document.body.appendChild( document.getElementById( 'create-modal' ) );
+				document.body.appendChild( document.getElementById( 'update-modal' ) );
 				popup.style.display = 'block';
 			}
 		);
