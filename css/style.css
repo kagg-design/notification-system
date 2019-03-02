@@ -199,6 +199,39 @@ div#notifications-header {
 
 /* End Modal */
 
+/* Menu */
+
+.menu-item-notifications {position: relative;display: inline-block;vertical-align: middle;width: 1.2em;height: 1.2em;font-size: 1.125em;margin-left: 0.1em;}
+
+.menu-item-notifications svg.icon {
+	position: absolute;
+	opacity: 0.7;
+	height: 1em;
+	width: 1em;
+	font-size: 1.125em;
+	display: inline-block !important;
+}
+
+.menu-item-notifications svg.icon path {
+	fill: #111;
+}
+
+.unread-notifications-count {
+	background: #f00 center center;
+	color: #fff;
+	border-radius: 50%;
+	position: absolute;
+	font-size: 0.7em;
+	line-height: 1.35em;
+	top: -0.8em;
+	right: -0.7em;
+	height: 1.4em;
+	width: 1.4em;
+	text-align: center;
+}
+
+/* End Menu */
+
 /* Media */
 
 @media (max-width: 767px ) {

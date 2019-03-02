@@ -9,6 +9,24 @@
  * Class KAGG_Notifications
  */
 class KAGG_Notifications {
+
+	/**
+	 * Slug of virtual page with frontend.
+	 * By default, works on site.org/notifications
+	 */
+	const PAGE_SLUG = 'notifications';
+
+	/**
+	 * Hash in link which opens popup with frontend.
+	 * By default, works on site.org/any-url#notifications*
+	 */
+	const POPUP_HASH = 'notifications';
+
+	/**
+	 * Such menu title will be replaced by icon and unread count.
+	 */
+	const EMPTY_MENU = '-';
+
 	/**
 	 * The single instance of the class.
 	 *
@@ -22,14 +40,6 @@ class KAGG_Notifications {
 	 * @var KAGG_Notifications_API
 	 */
 	public $api = null;
-
-	/**
-	 * Slug of virtual page with frontend.
-	 * By default, works on site.org/notifications
-	 *
-	 * @var string
-	 */
-	protected $page_slug = 'notifications';
 
 	/**
 	 * KAGG_Notifications constructor.
@@ -90,6 +100,7 @@ class KAGG_Notifications {
 		add_action( 'add_meta_boxes', array( $this, 'remove_meta_boxes' ) );
 		add_action( 'save_post', array( $this, 'save_meta_boxes' ), 0, 2 );
 		add_action( 'update_unread_counts', array( $this, 'update_unread_counts' ) );
+		add_filter( 'wp_nav_menu_objects', array( $this, 'update_nav_menu_item' ), 10 );
 
 		add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
 	}
@@ -311,13 +322,15 @@ class KAGG_Notifications {
 	 * @return bool
 	 */
 	private function is_notification_page() {
-		$uri = isset( $_SERVER['REQUEST_URI'] ) ?
-			filter_var( wp_unslash( $_SERVER['REQUEST_URI'] ), FILTER_SANITIZE_STRING ) :
-			'';
+		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
+			$uri = filter_var( wp_unslash( $_SERVER['REQUEST_URI'] ), FILTER_SANITIZE_STRING );
+		} else {
+			return false;
+		}
 
 		$path = wp_parse_url( $uri, PHP_URL_PATH );
 
-		if ( '/' . trailingslashit( $this->page_slug ) === trailingslashit( $path ) ) {
+		if ( '/' . trailingslashit( self::PAGE_SLUG ) === trailingslashit( $path ) ) {
 			return true;
 		}
 
@@ -656,6 +669,45 @@ class KAGG_Notifications {
 		$metabox = new KAGG_Notification_Meta_Box();
 		$metabox->save( $post_id );
 		add_action( 'save_post', array( $this, 'save_meta_boxes' ), 0, 3 );
+	}
+
+	/**
+	 * Update Notifications item in nav menu.
+	 * Add to it svg icon and unread count.
+	 *
+	 * @param array $sorted_menu_items The menu items, sorted by each menu item's menu order.
+	 *
+	 * @return mixed
+	 */
+	public function update_nav_menu_item( $sorted_menu_items ) {
+		$hash = '#' . self::POPUP_HASH;
+		foreach ( $sorted_menu_items as $item ) {
+			if ( ! isset( $item->url ) ) {
+				continue;
+			}
+			if ( false !== mb_strpos( $item->url, $hash ) ) {
+				if ( self::EMPTY_MENU === trim( $item->title ) ) {
+					$item->title = '';
+				};
+
+				$count = $this->get_unread_count();
+				if ( 0 === $count ) {
+					$display_span = 'none';
+				} else {
+					$display_span = 'inline-block';
+					if ( $count > 9 ) {
+						$count = '9+';
+					}
+				}
+				$count_span = '<span class="unread-notifications-count" style="display: ' . $display_span . '">' . $count . '</span>';
+
+				$svg = '<svg class="icon" height="20" viewBox="0 85.5 1024 855" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M490.666667 938.666667c46.933333 0 85.333333-38.4 85.333333-85.333334h-170.666667c0 46.933333 38.4 85.333333 85.333334 85.333334z m277.333333-256V448c0-130.986667-90.88-240.64-213.333333-269.653333V149.333333c0-35.413333-28.586667-64-64-64s-64 28.586667-64 64v29.013334C304.213333 207.36 213.333333 317.013333 213.333333 448v234.666667l-85.333333 85.333333v42.666667h725.333333v-42.666667l-85.333333-85.333333z" fill="black" /> </svg>';
+
+				$item->title .= '<span class="menu-item-notifications">' . $svg . $count_span . '</span>';
+			}
+		}
+
+		return $sorted_menu_items;
 	}
 
 	/**

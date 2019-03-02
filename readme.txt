@@ -30,11 +30,33 @@ Administrator can create, edit, and delete notifications. One taxonomy is availa
 
 Plugin creates page /notifications "on the fly" - it does not exists in database. Information on this page is visible only to logged in users (restricted by permissions in REST API Controller).
 
+Plugin creates popup window if url contains hash #notifications, like that: `http://my.site.org/some-url#notifications`. This is an easy way to show popup window with notifications from anywhere. Just create a link like `<a href="http://my.site.org#notifications">Notifications</a>` and a click on this link will open popup window with notifications.
+
 Logged-in users can list notifications, and filter them by channel.
 
 Show more button provides pagination of the notifications list.
 
-For those users who have capability 'edit_posts', additional buttons are shown: Create, Update, and Delete. Popup windows provide relevant inputs.
+For those users who have capability 'edit_posts', additional buttons are shown: Create, Update, and Delete. Popup windows provide relevant inputs. All notifications can be edited right from the frontend.
+
+= Site administrators  =
+
+Add a custom link to the menu, with `#notifications` url. Use any navigation label, or space(s) for empty label. Save menu. On site frontend, you will see a new menu item with icon and unread count. By click on this menu item a popup window with notifications will be opened.
+
+= Developers =
+
+Create an element(s) with the class 'unread-notifications-count'. The best place for such element(s) is somewhere in header or menu. It(they) can be updated by plugin during custom JS event 'update_unread_counts'. Example:
+
+    const count = 5;
+    document.dispatchEvent(
+        new CustomEvent(
+            'update_unread_counts',
+            { 'detail': count }
+        )
+    );
+
+From php code, count element(s) for current user can be updated using 'update_unread_counts' action. Example:
+
+    do_action( 'update_unread_counts' );
 
 = Translation-ready =
 
