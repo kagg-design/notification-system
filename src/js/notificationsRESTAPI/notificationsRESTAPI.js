@@ -1,7 +1,7 @@
 /**
  * Notifications REST API.
  *
- * @package kagg-notifications.
+ * @package notification-system.
  */
 
 /**

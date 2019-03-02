@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: kagg-notifications\n"
-"POT-Creation-Date: 2019-02-24 19:23+0200\n"
-"PO-Revision-Date: 2019-02-24 19:26+0200\n"
+"POT-Creation-Date: 2019-03-02 15:51+0200\n"
+"PO-Revision-Date: 2019-03-02 15:51+0200\n"
 "Last-Translator: KAGG Design <info@kagg.eu>\n"
 "Language-Team: KAGG Design\n"
 "Language: ru_RU\n"
@@ -94,158 +94,160 @@ msgstr "Несколько секунд назад"
 msgid "%s ago"
 msgstr "%s тому назад"
 
-#: includes/class-kagg-notifications.php:174
-#: includes/class-kagg-notifications.php:184
+#: includes/class-kagg-notifications.php:177
+#: includes/class-kagg-notifications.php:187
 msgid "Channels"
 msgstr "Каналы"
 
-#: includes/class-kagg-notifications.php:175
+#: includes/class-kagg-notifications.php:178
 msgid "Channel"
 msgstr "Канал"
 
-#: includes/class-kagg-notifications.php:176
+#: includes/class-kagg-notifications.php:179
 msgid "Search Channels"
 msgstr "Искать каналы"
 
-#: includes/class-kagg-notifications.php:177
+#: includes/class-kagg-notifications.php:180
 msgid "All Channels"
 msgstr "Все каналы"
 
-#: includes/class-kagg-notifications.php:178
+#: includes/class-kagg-notifications.php:181
 msgid "Parent Channel"
 msgstr "Родительский канал"
 
-#: includes/class-kagg-notifications.php:179
+#: includes/class-kagg-notifications.php:182
 msgid "Parent Channel:"
 msgstr "Родительский канал:"
 
-#: includes/class-kagg-notifications.php:180
+#: includes/class-kagg-notifications.php:183
 msgid "Edit Channel"
 msgstr "Редактировать канал"
 
-#: includes/class-kagg-notifications.php:181
+#: includes/class-kagg-notifications.php:184
 msgid "Update Channel"
 msgstr "Обновить канал"
 
-#: includes/class-kagg-notifications.php:182
+#: includes/class-kagg-notifications.php:185
 msgid "Add New Channel"
 msgstr "Добавить новый канал"
 
-#: includes/class-kagg-notifications.php:183
+#: includes/class-kagg-notifications.php:186
 msgid "New Channel"
 msgstr "Новый канал"
 
-#: includes/class-kagg-notifications.php:186
+#: includes/class-kagg-notifications.php:189
 msgid "Notification Channels"
 msgstr "Канал уведомлений"
 
-#: includes/class-kagg-notifications.php:225
-#: includes/class-kagg-notifications.php:237
-#: includes/class-kagg-notifications.php:243
-#: includes/class-kagg-notifications.php:313
+#: includes/class-kagg-notifications.php:228
+#: includes/class-kagg-notifications.php:240
+#: includes/class-kagg-notifications.php:246
+#: includes/class-kagg-notifications.php:302
+#: includes/class-kagg-notifications.php:333
+#: includes/class-kagg-notifications.php:361
 msgid "Notifications"
 msgstr "Уведомления"
 
-#: includes/class-kagg-notifications.php:226
+#: includes/class-kagg-notifications.php:229
 msgid "Notification"
 msgstr "Уведомление"
 
-#: includes/class-kagg-notifications.php:227
+#: includes/class-kagg-notifications.php:230
 msgid "Add New"
 msgstr "Добавить новое"
 
-#: includes/class-kagg-notifications.php:228
+#: includes/class-kagg-notifications.php:231
 msgid "Add New Notification"
 msgstr "Добавить новое уведомление"
 
-#: includes/class-kagg-notifications.php:229
+#: includes/class-kagg-notifications.php:232
 msgid "Edit Notification"
 msgstr "Редактировать уведомление"
 
-#: includes/class-kagg-notifications.php:230
+#: includes/class-kagg-notifications.php:233
 msgid "New Notification"
 msgstr "Новое уведомление"
 
-#: includes/class-kagg-notifications.php:231
+#: includes/class-kagg-notifications.php:234
 msgid "View Notification"
 msgstr "Просмотреть уведомление"
 
-#: includes/class-kagg-notifications.php:232
+#: includes/class-kagg-notifications.php:235
 msgid "Search Notifications"
 msgstr "Поиск уведомлений"
 
-#: includes/class-kagg-notifications.php:233
+#: includes/class-kagg-notifications.php:236
 msgid "Not Found"
 msgstr "Не найдено"
 
-#: includes/class-kagg-notifications.php:234
+#: includes/class-kagg-notifications.php:237
 msgid "Not Found In Trash"
 msgstr "Не найдено в корзине"
 
-#: includes/class-kagg-notifications.php:235
+#: includes/class-kagg-notifications.php:238
 msgid "Parent"
 msgstr "Родитель"
 
-#: includes/class-kagg-notifications.php:236
+#: includes/class-kagg-notifications.php:239
 msgid "Parent:"
 msgstr "Родитель:"
 
-#: includes/class-kagg-notifications.php:318
+#: includes/class-kagg-notifications.php:366
 msgid "Message"
 msgstr "Сообщение"
 
-#: includes/class-kagg-notifications.php:324
+#: includes/class-kagg-notifications.php:372
 msgid "Select channel"
 msgstr "Выбрать канал"
 
-#: includes/class-kagg-notifications.php:339
+#: includes/class-kagg-notifications.php:387
 msgid "Show more..."
 msgstr "Показать ещё..."
 
-#: includes/class-kagg-notifications.php:347
+#: includes/class-kagg-notifications.php:395
 msgid "Create Notification"
 msgstr "Создать уведомление"
 
-#: includes/class-kagg-notifications.php:361
+#: includes/class-kagg-notifications.php:409
 msgid "Create new notification"
 msgstr "Создать новое уведомление"
 
-#: includes/class-kagg-notifications.php:363
-#: includes/class-kagg-notifications.php:396
+#: includes/class-kagg-notifications.php:411
+#: includes/class-kagg-notifications.php:444
 msgid "Title"
 msgstr "Заголовок"
 
-#: includes/class-kagg-notifications.php:367
-#: includes/class-kagg-notifications.php:400
+#: includes/class-kagg-notifications.php:415
+#: includes/class-kagg-notifications.php:448
 msgid "Content"
 msgstr "Содержание"
 
-#: includes/class-kagg-notifications.php:371
-#: includes/class-kagg-notifications.php:404
+#: includes/class-kagg-notifications.php:419
+#: includes/class-kagg-notifications.php:452
 msgid "Channel(s), separated by comma"
 msgstr "Каналы, разделённые запятыми"
 
-#: includes/class-kagg-notifications.php:375
-#: includes/class-kagg-notifications.php:408
+#: includes/class-kagg-notifications.php:423
+#: includes/class-kagg-notifications.php:456
 msgid "User(s), separated by comma"
 msgstr "Пользователи, разделённые запятыми"
 
-#: includes/class-kagg-notifications.php:380
+#: includes/class-kagg-notifications.php:428
 msgid "Create"
 msgstr "Создать"
 
-#: includes/class-kagg-notifications.php:394
+#: includes/class-kagg-notifications.php:442
 msgid "Update notification"
 msgstr "Обновить уведомление"
 
-#: includes/class-kagg-notifications.php:413
+#: includes/class-kagg-notifications.php:461
 msgid "Update"
 msgstr "Обновить"
 
-#: includes/class-kagg-notifications.php:435
+#: includes/class-kagg-notifications.php:483
 msgid "Bad nonce!"
 msgstr "Неправильный nonce!"
 
-#: includes/class-kagg-notifications.php:486
+#: includes/class-kagg-notifications.php:594
 msgid "Notification data"
 msgstr "Данные уведомления"

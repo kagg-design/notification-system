@@ -1,7 +1,7 @@
 /**
  * Notifications REST API App.
  *
- * @package kagg-notifications.
+ * @package notification-system.
  */
 
 import NotificationsRESTAPI from './notificationsRESTAPI';

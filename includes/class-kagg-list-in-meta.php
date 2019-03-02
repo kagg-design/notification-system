@@ -2,7 +2,7 @@
 /**
  * KAGG_List_In_Meta class file.
  *
- * @package kagg-notifications
+ * @package notification-system
  */
 
 /**

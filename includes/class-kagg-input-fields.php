@@ -2,7 +2,7 @@
 /**
  * KAGG_Input_Fields class file.
  *
- * @package kagg-notifications
+ * @package notification-system
  */
 
 /**

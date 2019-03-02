@@ -2,7 +2,7 @@
 /**
  * KAGG_Notification class file.
  *
- * @package kagg-notifications
+ * @package notification-system
  */
 
 /**

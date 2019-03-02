@@ -1,8 +1,9 @@
-=== KAGG Notifications ===
+=== Notification system ===
 Author: KAGG Design
 Author URI: https://kagg.eu/en/
 Contributors: kaggdesign
-Tags: notification
+Tags: notification, notification system, user notification, notification channel
+Donate link: https://www.paypal.me/kagg
 Requires at least: 4.4
 Tested up to: 5.1
 Version: 1.0.1
@@ -11,11 +12,11 @@ Requires PHP: 5.2.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-KAGG Notifications plugin creates and maintains notification system for users on WordPress site.
+Notification System plugin creates and maintains notification system for users on WordPress site.
 
 == Description ==
 
-KAGG Notifications plugin creates and maintains notification system for users on WordPress site.
+Notification System plugin creates and maintains notification system for users on WordPress site.
 
 Plugin has options page in the site console, with relevant buttons and controls. Please see screenshots.
 
@@ -87,3 +88,6 @@ If you get stuck, you can ask for help in the [KAGG Notifications Plugin Forum](
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.0.0 =
+It is initial release. No special upgrade notices so far.

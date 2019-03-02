@@ -5,15 +5,15 @@
  * Author: KAGG Design
  * Author URI: http://kagg.eu/en/
  * Version: 1.0.1
- * Plugin Slug: kagg-notifications
+ * Plugin Slug: notification-system
  * Requires at least: 4.4
  * Tested up to: 5.0
  * Requires PHP: 5.2.4
  *
- * Text Domain: kagg-notifications
+ * Text Domain: notification-system
  * Domain Path: /languages/
  *
- * @package kagg-notifications
+ * @package notification-system
  * @author  KAGG Design
  */
 

@@ -2,7 +2,7 @@
 /**
  * KAGG_Notification_Meta_Box class file.
  *
- * @package kagg-notifications
+ * @package notification-system
  */
 
 /**
@@ -41,8 +41,8 @@ class KAGG_Notification_Meta_Box {
 				KAGG_Input_Fields::text_input(
 					array(
 						'id'          => 'users',
-						'label'       => __( 'Show to users', 'kagg-notifications' ),
-						'description' => __( 'List of users to whom to show this notification.', 'kagg-notifications' ),
+						'label'       => __( 'Show to users', 'notification-system' ),
+						'description' => __( 'List of users to whom to show this notification.', 'notification-system' ),
 						'desc_tip'    => true,
 						'type'        => 'text',
 						'value'       => $users,

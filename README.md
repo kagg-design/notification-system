@@ -1,10 +1,10 @@
-# WordPress Plugin KAGG Notifications
+# WordPress Plugin Notification System
 
-KAGG Notifications plugin creates and maintains notification system for users on WordPress site.
+Notification System plugin creates and maintains notification system for users on WordPress site.
 
 ## Features
 
-KAGG Notifications plugin creates and maintains notification system for users on WordPress site.
+Notification System plugin creates and maintains notification system for users on WordPress site.
 
 Plugin has options page in the site console, with relevant buttons and controls. Please see screenshots.
 
