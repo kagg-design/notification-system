@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Notifications
+ * Plugin Name: Notification system
  * Description: Creates and maintains notification system for users on WordPress site.
  * Author: KAGG Design
  * Author URI: http://kagg.eu/en/
