@@ -311,7 +311,10 @@ class KAGG_Notifications {
 	 * @return bool
 	 */
 	private function is_notification_page() {
-		$uri  = filter_input( INPUT_SERVER, 'REQUEST_URI' );
+		$uri = isset( $_SERVER['REQUEST_URI'] ) ?
+			filter_var( wp_unslash( $_SERVER['REQUEST_URI'] ), FILTER_SANITIZE_STRING ) :
+			'';
+
 		$path = wp_parse_url( $uri, PHP_URL_PATH );
 
 		if ( '/' . trailingslashit( $this->page_slug ) === trailingslashit( $path ) ) {
