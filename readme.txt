@@ -60,7 +60,7 @@ From php code, count element(s) for current user can be updated using 'update_un
 
 = Translation-ready =
 
-Plugin is prepared for translation. All strings are output via gettext fucntions. There is a .pot file in /language directory with strings collected.
+Plugin is prepared for translation. All strings are output via gettext functions. There is a .pot file in /language directory with strings collected.
 
 = Code =
 
