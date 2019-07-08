@@ -237,7 +237,11 @@ class NotificationsRESTAPI {
 				notificationsList += ' data-users="' + notification.attributes.users + '"';
 				notificationsList += ' data-title="' + notification.attributes.title + '"';
 				notificationsList += '>';
-				notificationsList += notification.attributes.content;
+				if ( notification.attributes.content ) {
+					notificationsList += notification.attributes.content;
+				} else {
+					notificationsList += notification.attributes.title;
+				}
 				notificationsList += '</div>';
 				notificationsList += '<div class="notification-data">';
 				notificationsList += '<span class="notification-channel">' + notification.attributes.channel + '</span>';

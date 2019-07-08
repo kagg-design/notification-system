@@ -32,7 +32,7 @@ Plugin is prepared for translation. All strings are output via gettext fucntions
 
 ## Code
 
-php code conforms to php 5.2.4 level.
+php code conforms to php 5.6 level.
 js code conforms to ES6 level.
 
 All code is checked by php Code Sniffer, and conforms to WordPress Coding Standards.

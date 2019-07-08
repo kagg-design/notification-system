@@ -5,10 +5,10 @@ Contributors: kaggdesign
 Tags: notification, notification system, user notification, notification channel
 Donate link: https://www.paypal.me/kagg
 Requires at least: 4.4
-Tested up to: 5.1
-Version: 1.0.1
-Stable tag: 1.0.1
-Requires PHP: 5.2.4
+Tested up to: 5.2
+Version: 1.0.2
+Stable tag: 1.0.2
+Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,7 +64,7 @@ Plugin is prepared for translation. All strings are output via gettext functions
 
 = Code =
 
-php code conforms to php 5.2.4 level.
+php code conforms to php 5.6 level.
 js code conforms to ES6 level.
 
 All code is checked by php Code Sniffer, and conforms to WordPress Coding Standards.
@@ -73,7 +73,7 @@ All code is checked by php Code Sniffer, and conforms to WordPress Coding Standa
 
 = Minimum Requirements =
 
-* PHP version 5.2.4 or greater (PHP 7.2 or greater is recommended)
+* PHP version 5.6 or greater (PHP 7.3 or greater is recommended)
 * MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended)
 
 = Automatic installation =
@@ -102,14 +102,12 @@ If you get stuck, you can ask for help in the [KAGG Notifications Plugin Forum](
 2. The KAGG Notifications Update Notification popup.
 
 == Changelog ==
+= 1.0.2 =
+* Php version bumped up to 5.6
+* Tested with WordPress 5.2
 
 = 1.0.1 =
 * Code refactoring to conform WordPress Coding Standards.
 
 = 1.0.0 =
 * Initial release.
-
-== Upgrade Notice ==
-
-= 1.0.0 =
-It is initial release. No special upgrade notices so far.
