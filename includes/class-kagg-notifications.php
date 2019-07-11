@@ -198,7 +198,7 @@ class KAGG_Notifications {
 				'menu_name'         => __( 'Channels', 'notification-system' ),
 			),
 			'description'       => __( 'Notification Channels', 'notification-system' ),
-			'public'            => true,
+			'public'            => false,
 			'show_ui'           => true,
 			'hierarchical'      => false,
 			'meta_box_cb'       => null,
