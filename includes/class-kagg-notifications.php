@@ -680,6 +680,10 @@ class KAGG_Notifications {
 	 * @return mixed
 	 */
 	public function update_nav_menu_item( $sorted_menu_items ) {
+		if ( ! is_user_logged_in() ) {
+			return $sorted_menu_items;
+		}
+
 		$hash = '#' . self::POPUP_HASH;
 		foreach ( $sorted_menu_items as $item ) {
 			if ( ! isset( $item->url ) ) {
