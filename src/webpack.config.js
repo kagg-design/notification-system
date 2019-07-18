@@ -8,7 +8,7 @@ const webPackModule = ( production = true ) => {
 			test: /\.js$/,
 			exclude: /node_modules/,
 			query: {
-				presets: [ 'es2015' ]
+				presets: [ 'env' ]
 			}
 		}, {
 			test: /\.s?css$/,

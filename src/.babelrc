@@ -1,8 +1,6 @@
 {
   "presets": [
-    ["env", {
-      "useBuiltIns": true
-    }]
+    ["env", { "useBuiltIns": true }]
   ],
   "plugins": [
     "transform-class-properties",
