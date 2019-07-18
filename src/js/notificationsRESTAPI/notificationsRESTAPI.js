@@ -21,7 +21,7 @@ class NotificationsRESTAPI {
 		// Init.
 		// Initialize the wp.api object with the custom namespace.
 		wp.api.init(
-			{ 'versionString': 'kagg/v1/' }
+			{ 'versionString': 'wp/v2/kagg/v1/' }
 		);
 
 		// Get content.

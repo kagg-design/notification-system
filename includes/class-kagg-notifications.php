@@ -142,7 +142,7 @@ class KAGG_Notifications {
 			'WPAPISettings',
 			array(
 				'root'      => rest_url(),
-				'base'      => 'kagg/v1/notifications',
+				'base'      => 'wp/v2/kagg/v1/notification',
 				'pluginURL' => KAGG_NOTIFICATIONS_URL,
 				'ajaxURL'   => admin_url( 'admin-ajax.php' ),
 				'nonce'     => wp_create_nonce( 'kagg-notification-rest' ),
@@ -277,7 +277,7 @@ class KAGG_Notifications {
 				'with_front' => false,
 			),
 			'capability_type'       => 'post',
-			'show_in_rest'          => false,
+			'show_in_rest'          => true,
 			'rest_base'             => 'kagg/v1/notification',
 			'rest_controller_class' => 'KAGG_Notifications_API_Controller',
 		);

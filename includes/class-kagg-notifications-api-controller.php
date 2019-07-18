@@ -8,7 +8,7 @@
 /**
  * Class KAGG_Notifications_API_Controller
  */
-class KAGG_Notifications_API_Controller extends WP_REST_Controller {
+class KAGG_Notifications_API_Controller extends WP_REST_Posts_Controller {
 
 	/**
 	 * Endpoint namespace.
@@ -42,6 +42,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 * KAGG_Notifications_API_Controller constructor.
 	 */
 	public function __construct() {
+		parent::__construct( $this->post_type );
 		$this->init();
 	}
 
@@ -55,7 +56,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * Register routes for API.
 	 */
-	public function register_routes() {
+	public function register_routes_unused() {
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
@@ -174,7 +175,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 *
 	 * @return WP_Error|WP_REST_Response
 	 */
-	public function get_item( $request ) {
+	public function get_item_unused( $request ) {
 		$object = get_post( (int) $request['id'] );
 
 		if ( ! $object ) {
@@ -363,7 +364,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 *
 	 * @return WP_Error|WP_REST_Response
 	 */
-	public function get_items( $request ) {
+	public function get_items_unused( $request ) {
 		$query_args    = $this->prepare_objects_query( $request );
 		$query_results = $this->get_objects( $query_args );
 
@@ -706,12 +707,11 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * Prepare links for the request.
 	 *
-	 * @param WP_Post         $object  Object data.
-	 * @param WP_REST_Request $request Request object.
+	 * @param WP_Post $object Object data.
 	 *
 	 * @return array          Links for the given post.
 	 */
-	protected function prepare_links( $object, $request ) {
+	protected function prepare_links( $object ) {
 		$links = array(
 			'self'       => array(
 				'href' => rest_url( sprintf( '/%s/%s/%d', $this->namespace, $this->rest_base, $object->ID ) ),
