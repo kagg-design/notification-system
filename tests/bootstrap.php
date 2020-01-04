@@ -2,13 +2,18 @@
 /**
  * PHPUnit bootstrap file
  *
- * @package Otgs_Senior_Developer_Test_001
+ * @package notification-system
  */
+
+/**
+ * Plugin main file.
+ */
+define( 'PLUGIN_MAIN_FILE', realpath( __DIR__ . '/../notification-system.php' ) );
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 
 if ( ! $_tests_dir ) {
-	$_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
+	$_tests_dir = realpath( __DIR__ . '/wordpress-tests-lib' );
 }
 
 if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
@@ -23,7 +28,7 @@ require_once $_tests_dir . '/includes/functions.php';
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-	require dirname( dirname( __FILE__ ) ) . '/notification-system.php';
+	require PLUGIN_MAIN_FILE;
 }
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 

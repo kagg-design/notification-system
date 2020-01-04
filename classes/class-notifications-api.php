@@ -1,17 +1,19 @@
 <?php
 /**
- * KAGG_Notifications_API class file.
+ * Notifications_API class file.
  *
  * @package notification-system
  */
 
+namespace KAGG\Notification_System;
+
 /**
- * Class KAGG_Notifications_API
+ * Class Notifications_API
  */
-class KAGG_Notifications_API {
+class Notifications_API {
 
 	/**
-	 * KAGG_Notifications_API constructor.
+	 * Notifications_API constructor.
 	 */
 	public function __construct() {
 		// Init REST API.
@@ -28,7 +30,7 @@ class KAGG_Notifications_API {
 		}
 
 		// Init REST API routes.
-		add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
+		add_action( 'rest_api_init', [ $this, 'register_rest_routes' ] );
 	}
 
 	/**
@@ -36,9 +38,9 @@ class KAGG_Notifications_API {
 	 */
 	public function register_rest_routes() {
 		// Register settings to the REST API.
-		$controllers = array(
-			'KAGG_Notifications_API_Controller',
-		);
+		$controllers = [
+			__NAMESPACE__ . '\Notifications_API_Controller',
+		];
 
 		foreach ( $controllers as $controller ) {
 			$this->$controller = new $controller();

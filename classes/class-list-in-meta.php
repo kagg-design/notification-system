@@ -1,14 +1,16 @@
 <?php
 /**
- * KAGG_List_In_Meta class file.
+ * List_In_Meta class file.
  *
  * @package notification-system
  */
 
+namespace KAGG\Notification_System;
+
 /**
- * Class KAGG_List_In_Meta
+ * Class List_In_Meta
  */
-class KAGG_List_In_Meta {
+class List_In_Meta {
 
 	/**
 	 * Delimiter in the list.
@@ -56,7 +58,7 @@ class KAGG_List_In_Meta {
 	 */
 	public function remove( $post_id, $meta_key, $value ) {
 		$meta_arr = $this->get_array( $post_id, $meta_key );
-		$meta_arr = array_diff( $meta_arr, array( $value ) );
+		$meta_arr = array_diff( $meta_arr, [ $value ] );
 		$this->update( $post_id, $meta_key, $meta_arr );
 	}
 

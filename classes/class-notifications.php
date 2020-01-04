@@ -1,14 +1,19 @@
 <?php
 /**
- * KAGG Notifications Main Class.
+ * Notifications System Main Class.
  *
  * @package notification-system
  */
 
+namespace KAGG\Notification_System;
+
+use WP_Post;
+use WP_Query;
+
 /**
- * Class KAGG_Notifications
+ * Class Notifications
  */
-class KAGG_Notifications {
+class Notifications {
 
 	/**
 	 * Slug of virtual page with frontend.
@@ -30,19 +35,19 @@ class KAGG_Notifications {
 	/**
 	 * The single instance of the class.
 	 *
-	 * @var KAGG_Notifications
+	 * @var Notifications
 	 */
 	protected static $instance = null;
 
 	/**
 	 * API instance.
 	 *
-	 * @var KAGG_Notifications_API
+	 * @var Notifications_API
 	 */
 	public $api = null;
 
 	/**
-	 * KAGG_Notifications constructor.
+	 * Notifications constructor.
 	 */
 	public function __construct() {
 		$this->init();
@@ -50,11 +55,11 @@ class KAGG_Notifications {
 	}
 
 	/**
-	 * Main KAGG_Notifications Instance.
+	 * Main Notifications Instance.
 	 *
-	 * Ensures only one instance of KAGG_Notifications is loaded or can be loaded.
+	 * Ensures only one instance of Notifications is loaded or can be loaded.
 	 *
-	 * @return KAGG_Notifications - Main instance.
+	 * @return Notifications - Main instance.
 	 */
 	public static function instance() {
 		if ( is_null( self::$instance ) ) {
@@ -68,41 +73,41 @@ class KAGG_Notifications {
 	 * Init class.
 	 */
 	protected function init() {
-		$this->api = new KAGG_Notifications_API();
+		$this->api = new Notifications_API();
 	}
 
 	/**
 	 * Init various hooks.
 	 */
 	protected function init_hooks() {
-		add_action( 'init', array( $this, 'register_taxonomies' ) );
-		add_action( 'init', array( $this, 'add_rewrite_rules' ) );
-		add_action( 'init', array( $this, 'register_cpt_notification' ) );
+		add_action( 'init', [ $this, 'register_taxonomies' ] );
+		add_action( 'init', [ $this, 'add_rewrite_rules' ] );
+		add_action( 'init', [ $this, 'register_cpt_notification' ] );
 
 		// Register activation hook to flush rewrite rules.
-		register_activation_hook( KAGG_NOTIFICATIONS_FILE, array( $this, 'activate_plugin' ) );
+		register_activation_hook( KAGG_NOTIFICATIONS_FILE, [ $this, 'activate_plugin' ] );
 
 		// Register deactivation hook to flush rewrite rules.
-		register_deactivation_hook( KAGG_NOTIFICATIONS_FILE, array( $this, 'deactivate_plugin' ) );
+		register_deactivation_hook( KAGG_NOTIFICATIONS_FILE, [ $this, 'deactivate_plugin' ] );
 
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ), 20 );
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ], 20 );
+		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
 
-		add_action( 'init', array( $this, 'notifications_page' ) );
-		add_filter( 'pre_get_document_title', array( $this, 'notifications_page_document_title' ), 20 );
-		add_filter( 'wpseo_breadcrumb_links', array( $this, 'wpseo_breadcrumb_links' ) );
-		add_shortcode( 'notifications', array( $this, 'notifications_shortcode' ) );
+		add_action( 'init', [ $this, 'notifications_page' ] );
+		add_filter( 'pre_get_document_title', [ $this, 'notifications_page_document_title' ], 20 );
+		add_filter( 'wpseo_breadcrumb_links', [ $this, 'wpseo_breadcrumb_links' ] );
+		add_shortcode( 'notifications', [ $this, 'notifications_shortcode' ] );
 
-		add_action( 'wp_ajax_kagg_notification_get_popup_content', array( $this, 'get_popup_content' ) );
-		add_action( 'wp_ajax_nopriv_kagg_notification_get_popup_content', array( $this, 'get_popup_content' ) );
+		add_action( 'wp_ajax_kagg_notification_get_popup_content', [ $this, 'get_popup_content' ] );
+		add_action( 'wp_ajax_nopriv_kagg_notification_get_popup_content', [ $this, 'get_popup_content' ] );
 
-		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
-		add_action( 'add_meta_boxes', array( $this, 'remove_meta_boxes' ) );
-		add_action( 'save_post', array( $this, 'save_meta_boxes' ), 0, 2 );
-		add_action( 'update_unread_counts', array( $this, 'update_unread_counts' ) );
-		add_filter( 'wp_nav_menu_objects', array( $this, 'update_nav_menu_item' ), 10 );
+		add_action( 'add_meta_boxes', [ $this, 'add_meta_boxes' ] );
+		add_action( 'add_meta_boxes', [ $this, 'remove_meta_boxes' ] );
+		add_action( 'save_post', [ $this, 'save_meta_boxes' ], 0, 2 );
+		add_action( 'update_unread_counts', [ $this, 'update_unread_counts' ] );
+		add_filter( 'wp_nav_menu_objects', [ $this, 'update_nav_menu_item' ], 10 );
 
-		add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
+		add_action( 'plugins_loaded', [ $this, 'load_plugin_textdomain' ] );
 	}
 
 	/**
@@ -140,13 +145,13 @@ class KAGG_Notifications {
 		wp_localize_script(
 			'wp-api',
 			'WPAPISettings',
-			array(
+			[
 				'root'      => rest_url(),
 				'base'      => 'kagg/v1/notifications',
 				'pluginURL' => KAGG_NOTIFICATIONS_URL,
 				'ajaxURL'   => admin_url( 'admin-ajax.php' ),
 				'nonce'     => wp_create_nonce( 'kagg-notification-rest' ),
-			)
+			]
 		);
 		wp_enqueue_script( 'wp-api' );
 
@@ -154,7 +159,7 @@ class KAGG_Notifications {
 		wp_enqueue_script(
 			'notification-system',
 			KAGG_NOTIFICATIONS_URL . '/dist/js/notificationsRESTAPI/app.js',
-			array( 'wp-api' ),
+			[ 'wp-api' ],
 			KAGG_NOTIFICATIONS_VERSION,
 			true
 		);
@@ -162,7 +167,7 @@ class KAGG_Notifications {
 		wp_enqueue_style(
 			'notification-system',
 			KAGG_NOTIFICATIONS_URL . '/css/style.css',
-			array(),
+			[],
 			KAGG_NOTIFICATIONS_VERSION
 		);
 	}
@@ -174,7 +179,7 @@ class KAGG_Notifications {
 		wp_enqueue_style(
 			'notification-system',
 			KAGG_NOTIFICATIONS_URL . '/css/admin-style.css',
-			array(),
+			[],
 			KAGG_NOTIFICATIONS_VERSION
 		);
 	}
@@ -183,8 +188,8 @@ class KAGG_Notifications {
 	 * Register taxonomies for Notification custom post type.
 	 */
 	public function register_taxonomies() {
-		$args = array(
-			'labels'            => array(
+		$args = [
+			'labels'            => [
 				'name'              => __( 'Channels', 'notification-system' ),
 				'singular_name'     => __( 'Channel', 'notification-system' ),
 				'search_items'      => __( 'Search Channels', 'notification-system' ),
@@ -196,15 +201,15 @@ class KAGG_Notifications {
 				'add_new_item'      => __( 'Add New Channel', 'notification-system' ),
 				'new_item_name'     => __( 'New Channel', 'notification-system' ),
 				'menu_name'         => __( 'Channels', 'notification-system' ),
-			),
+			],
 			'description'       => __( 'Notification Channels', 'notification-system' ),
 			'public'            => false,
 			'show_ui'           => true,
 			'hierarchical'      => false,
 			'meta_box_cb'       => null,
 			'show_admin_column' => false,
-		);
-		register_taxonomy( 'channel', array( 'notification' ), $args );
+		];
+		register_taxonomy( 'channel', [ 'notification' ], $args );
 	}
 
 	/**
@@ -215,7 +220,7 @@ class KAGG_Notifications {
 		add_rewrite_tag( '%channel%', '([^&]+)', 'channel=' );
 
 		// New query vars.
-		add_filter( 'query_vars', array( $this, 'add_query_vars' ) );
+		add_filter( 'query_vars', [ $this, 'add_query_vars' ] );
 	}
 
 	/**
@@ -235,7 +240,7 @@ class KAGG_Notifications {
 	 * Register Notification custom post type.
 	 */
 	public function register_cpt_notification() {
-		$labels = array(
+		$labels = [
 			'name'               => __( 'Notifications', 'notification-system' ),
 			'singular_name'      => __( 'Notification', 'notification-system' ),
 			'add_new'            => __( 'Add New', 'notification-system' ),
@@ -249,17 +254,17 @@ class KAGG_Notifications {
 			'parent_item'        => __( 'Parent', 'notification-system' ),
 			'parent_item_colon'  => __( 'Parent:', 'notification-system' ),
 			'menu_name'          => __( 'Notifications', 'notification-system' ),
-		);
+		];
 
-		$args = array(
+		$args = [
 			'labels'                => $labels,
 			'hierarchical'          => false,
 			'description'           => __( 'Notifications', 'notification-system' ),
-			'supports'              => array(
+			'supports'              => [
 				'title',
 				'editor',
-			),
-			'taxonomies'            => array( 'channel' ),
+			],
+			'taxonomies'            => [ 'channel' ],
 			'public'                => true,
 			'show_ui'               => true,
 			'show_in_menu'          => true,
@@ -272,15 +277,15 @@ class KAGG_Notifications {
 			'has_archive'           => false,
 			'query_var'             => true,
 			'can_export'            => true,
-			'rewrite'               => array(
+			'rewrite'               => [
 				'slug'       => 'notification',
 				'with_front' => false,
-			),
+			],
 			'capability_type'       => 'post',
 			'show_in_rest'          => false,
 			'rest_base'             => 'kagg/v1/notification',
-			'rest_controller_class' => 'KAGG_Notifications_API_Controller',
-		);
+			'rest_controller_class' => __NAMESPACE__ . '\Notifications_API_Controller',
+		];
 
 		register_post_type( 'notification', $args );
 	}
@@ -395,16 +400,16 @@ class KAGG_Notifications {
 						if ( current_user_can( 'read' ) ) {
 							?>
 							<input
-									type='button' id='more-button'
-									value='<?php esc_html_e( 'Show more...', 'notification-system' ); ?>'>
+								type='button' id='more-button'
+								value='<?php esc_html_e( 'Show more...', 'notification-system' ); ?>'>
 							<?php
 						}
 
 						if ( current_user_can( 'edit_posts' ) ) {
 							?>
 							<input
-									type='button' id='create-notification-button'
-									value='<?php esc_html_e( 'Create Notification', 'notification-system' ); ?>'>
+								type='button' id='create-notification-button'
+								value='<?php esc_html_e( 'Create Notification', 'notification-system' ); ?>'>
 							<?php
 						}
 						?>
@@ -436,8 +441,8 @@ class KAGG_Notifications {
 							</label>
 							<input type="text" id="users-text">
 							<input
-									type='button' id='create-button'
-									value='<?php esc_html_e( 'Create', 'notification-system' ); ?>'>
+								type='button' id='create-button'
+								value='<?php esc_html_e( 'Create', 'notification-system' ); ?>'>
 						</div>
 					</div>
 					<?php
@@ -469,8 +474,8 @@ class KAGG_Notifications {
 							</label>
 							<input type="text" id="update-users-text">
 							<input
-									type='button' id='update-button'
-									value='<?php esc_html_e( 'Update', 'notification-system' ); ?>'>
+								type='button' id='update-button'
+								value='<?php esc_html_e( 'Update', 'notification-system' ); ?>'>
 						</div>
 					</div>
 					<?php
@@ -504,64 +509,64 @@ class KAGG_Notifications {
 	 * @return int
 	 */
 	public function get_unread_count() {
-		$read_value = KAGG_List_In_Meta::get_prepared_item( wp_get_current_user()->ID );
+		$read_value = List_In_Meta::get_prepared_item( wp_get_current_user()->ID );
 
-		$read_meta_query = array(
+		$read_meta_query = [
 			'relation' => 'OR',
-			array(
+			[
 				'relation' => 'AND',
-				array(
-					'key'     => KAGG_Notification::READ_STATUS_META_KEY,
+				[
+					'key'     => Notification::READ_STATUS_META_KEY,
 					'value'   => $read_value,
 					'compare' => 'NOT LIKE',
-				),
-				array(
-					'key'     => KAGG_Notification::READ_STATUS_META_KEY,
+				],
+				[
+					'key'     => Notification::READ_STATUS_META_KEY,
 					'compare' => 'EXISTS',
-				),
-			),
-			array(
-				'key'     => KAGG_Notification::READ_STATUS_META_KEY,
+				],
+			],
+			[
+				'key'     => Notification::READ_STATUS_META_KEY,
 				'compare' => 'NOT EXISTS',
-			),
-		);
+			],
+		];
 
-		$users_meta_query = array(
+		$users_meta_query = [
 			'relation' => 'OR',
-			array(
+			[
 				'relation' => 'AND',
-				array(
-					'key'     => KAGG_Notification::USERS_META_KEY,
-					'value'   => KAGG_List_In_Meta::get_prepared_item( wp_get_current_user()->ID ),
+				[
+					'key'     => Notification::USERS_META_KEY,
+					'value'   => List_In_Meta::get_prepared_item( wp_get_current_user()->ID ),
 					'compare' => 'LIKE',
-				),
-				array(
-					'key'     => KAGG_Notification::USERS_META_KEY,
+				],
+				[
+					'key'     => Notification::USERS_META_KEY,
 					'compare' => 'EXISTS',
-				),
-			),
-			array(
-				'key'     => KAGG_Notification::USERS_META_KEY,
+				],
+			],
+			[
+				'key'     => Notification::USERS_META_KEY,
 				'compare' => 'NOT EXISTS',
-			),
-		);
+			],
+		];
 
 		if ( current_user_can( 'edit_posts' ) ) {
 			// Allow privileged user to see notifications for all users.
-			$users_meta_query = array();
+			$users_meta_query = [];
 		}
 
-		$args = array(
+		$args = [
 			'post_type'  => 'notification',
 			'status'     => 'publish',
 			// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-			'meta_query' => array(
+			'meta_query' => [
 				'relation' => 'AND',
 				$read_meta_query,
 				$users_meta_query,
-			),
+			],
 			// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-		);
+		];
 
 		$query = new WP_Query( $args );
 
@@ -578,8 +583,8 @@ class KAGG_Notifications {
 			document.dispatchEvent(
 				new CustomEvent(
 					'update_unread_counts',
-					{ 'detail': <?php echo intval( $count ); ?>}
-				)
+					{ 'detail': <?php echo intval( $count ); ?>},
+				),
 			);
 		</script>
 		<?php
@@ -600,11 +605,11 @@ class KAGG_Notifications {
 	 * Add meta boxes for notifications.
 	 */
 	public function add_meta_boxes() {
-		$metabox = new KAGG_Notification_Meta_Box();
+		$metabox = new Notification_Meta_Box();
 		add_meta_box(
 			'notification-data',
 			__( 'Notification data', 'notification-system' ),
-			array( $metabox, 'output' ),
+			[ $metabox, 'output' ],
 			'notification',
 			'normal',
 			'high'
@@ -623,8 +628,8 @@ class KAGG_Notifications {
 	/**
 	 * Check if we're saving, the trigger an action based on the post type.
 	 *
-	 * @param  int     $post_id Post Id.
-	 * @param  WP_Post $post    Post instance.
+	 * @param int     $post_id Post Id.
+	 * @param WP_Post $post    Post instance.
 	 */
 	public function save_meta_boxes( $post_id, $post ) {
 		// $post_id and $post are required
@@ -642,10 +647,10 @@ class KAGG_Notifications {
 
 		// Check the nonce.
 		if (
-			empty( $_POST[ KAGG_Notification_Meta_Box::SAVE_NONCE ] ) ||
+			empty( $_POST[ Notification_Meta_Box::SAVE_NONCE ] ) ||
 			! wp_verify_nonce(
-				filter_input( INPUT_POST, KAGG_Notification_Meta_Box::SAVE_NONCE, FILTER_SANITIZE_STRING ),
-				KAGG_Notification_Meta_Box::SAVE_ACTION
+				filter_input( INPUT_POST, Notification_Meta_Box::SAVE_NONCE, FILTER_SANITIZE_STRING ),
+				Notification_Meta_Box::SAVE_ACTION
 			)
 		) {
 			return;
@@ -661,10 +666,10 @@ class KAGG_Notifications {
 			return;
 		}
 
-		remove_action( 'save_post', array( $this, 'save_meta_boxes' ), 1 );
-		$metabox = new KAGG_Notification_Meta_Box();
+		remove_action( 'save_post', [ $this, 'save_meta_boxes' ], 1 );
+		$metabox = new Notification_Meta_Box();
 		$metabox->save( $post_id );
-		add_action( 'save_post', array( $this, 'save_meta_boxes' ), 0, 3 );
+		add_action( 'save_post', [ $this, 'save_meta_boxes' ], 0, 3 );
 	}
 
 	/**
@@ -721,10 +726,10 @@ class KAGG_Notifications {
 			return;
 		}
 
-		$args = array(
+		$args = [
 			'taxonomy'   => $taxonomy,
 			'hide_empty' => true,
-		);
+		];
 
 		$terms = get_terms( $args );
 		?>

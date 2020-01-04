@@ -1,14 +1,16 @@
 <?php
 /**
- * KAGG_Input_Fields class file.
+ * Input_Fields class file.
  *
  * @package notification-system
  */
 
+namespace KAGG\Notification_System;
+
 /**
- * Class KAGG_Input_Fields
+ * Class Input_Fields
  */
-class KAGG_Input_Fields {
+class Input_Fields {
 
 	/**
 	 * Output a text input box.
@@ -31,7 +33,7 @@ class KAGG_Input_Fields {
 		$field['desc_tip']      = isset( $field['desc_tip'] ) ? $field['desc_tip'] : false;
 
 		// Custom attribute handling.
-		$custom_attributes = array();
+		$custom_attributes = [];
 
 		if ( ! empty( $field['custom_attributes'] ) && is_array( $field['custom_attributes'] ) ) {
 			foreach ( $field['custom_attributes'] as $attribute => $value ) {
@@ -67,8 +69,8 @@ class KAGG_Input_Fields {
 	/**
 	 * Display a help tip.
 	 *
-	 * @param  string $tip        Help tip text.
-	 * @param  bool   $allow_html Allow sanitized HTML if true or escape.
+	 * @param string $tip        Help tip text.
+	 * @param bool   $allow_html Allow sanitized HTML if true or escape.
 	 *
 	 * @return string
 	 */
@@ -87,7 +89,7 @@ class KAGG_Input_Fields {
 	 *
 	 * Tooltips are encoded with htmlspecialchars to prevent XSS. Should not be used in conjunction with esc_attr().
 	 *
-	 * @param  string $var Data to sanitize.
+	 * @param string $var Data to sanitize.
 	 *
 	 * @return string
 	 */
@@ -95,17 +97,17 @@ class KAGG_Input_Fields {
 		return htmlspecialchars(
 			wp_kses(
 				html_entity_decode( $var ),
-				array(
-					'br'     => array(),
-					'em'     => array(),
-					'strong' => array(),
-					'small'  => array(),
-					'span'   => array(),
-					'ul'     => array(),
-					'li'     => array(),
-					'ol'     => array(),
-					'p'      => array(),
-				)
+				[
+					'br'     => [],
+					'em'     => [],
+					'strong' => [],
+					'small'  => [],
+					'span'   => [],
+					'ul'     => [],
+					'li'     => [],
+					'ol'     => [],
+					'p'      => [],
+				]
 			)
 		);
 	}
@@ -121,24 +123,24 @@ class KAGG_Input_Fields {
 		$the_post_id = $post->ID;
 		$field       = wp_parse_args(
 			$field,
-			array(
+			[
 				'class'             => 'select short',
 				'style'             => '',
 				'wrapper_class'     => '',
 				'value'             => get_post_meta( $the_post_id, $field['id'], true ),
 				'name'              => $field['id'],
 				'desc_tip'          => false,
-				'custom_attributes' => array(),
-			)
+				'custom_attributes' => [],
+			]
 		);
 
-		$wrapper_attributes = array(
+		$wrapper_attributes = [
 			'class' => $field['wrapper_class'] . " form-field {$field['id']}_field",
-		);
+		];
 
-		$label_attributes = array(
+		$label_attributes = [
 			'for' => $field['id'],
-		);
+		];
 
 		$field_attributes          = (array) $field['custom_attributes'];
 		$field_attributes['style'] = $field['style'];
@@ -148,41 +150,19 @@ class KAGG_Input_Fields {
 
 		$tooltip     = ! empty( $field['description'] ) && false !== $field['desc_tip'] ? $field['description'] : '';
 		$description = ! empty( $field['description'] ) && false === $field['desc_tip'] ? $field['description'] : '';
+		// Output $custom_attributes without esc_attr(), as they are already well formed.
+		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 		?>
-		<p
-			<?php
-			// Output $custom_attributes without esc_attr(), as they are already well formed.
-			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo ' ' . self::implode_html_attributes( $wrapper_attributes );
-			// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
-			?>
-		>
-			<label
-				<?php
-				// Output $custom_attributes without esc_attr(), as they are already well formed.
-				// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo ' ' . self::implode_html_attributes( $label_attributes );
-				// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
-				?>
-			>
+		<p <?php echo self::implode_html_attributes( $wrapper_attributes ); ?>>
+			<label <?php echo self::implode_html_attributes( $label_attributes ); ?>>
 				<?php echo wp_kses_post( $field['label'] ); ?>
 			</label>
-			<?php if ( $tooltip ) : ?>
-				<?php
-				// Output $custom_attributes without esc_attr(), as they are already well formed.
-				// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+			<?php
+			if ( $tooltip ) {
 				echo self::help_tip( $tooltip );
-				// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
-				?>
-			<?php endif; ?>
-			<select
-				<?php
-				// Output $custom_attributes without esc_attr(), as they are already well formed.
-				// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo ' ' . self::implode_html_attributes( $field_attributes );
-				// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
-				?>
-					title="">
+			}
+			?>
+			<select <?php echo self::implode_html_attributes( $field_attributes ); ?> title="">
 				<?php
 				foreach ( $field['options'] as $key => $value ) {
 					echo '<option value="' . esc_attr( $key ) . '" ' . selected( $key, $field['value'] ) . '>';
@@ -190,9 +170,14 @@ class KAGG_Input_Fields {
 				}
 				?>
 			</select>
-			<?php if ( $description ) : ?>
+			<?php
+			// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
+			if ( $description ) {
+				?>
 				<span class="description"><?php echo wp_kses_post( $description ); ?></span>
-			<?php endif; ?>
+				<?php
+			}
+			?>
 		</p>
 		<?php
 	}
@@ -205,7 +190,7 @@ class KAGG_Input_Fields {
 	 * @return string
 	 */
 	private static function implode_html_attributes( $raw_attributes ) {
-		$attributes = array();
+		$attributes = [];
 		foreach ( $raw_attributes as $name => $value ) {
 			$attributes[] = esc_attr( $name ) . '="' . esc_attr( $value ) . '"';
 		}

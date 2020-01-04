@@ -1,14 +1,18 @@
 <?php
 /**
- * KAGG_Notification_Meta_Box class file.
+ * Notification_Meta_Box class file.
  *
  * @package notification-system
  */
 
+namespace KAGG\Notification_System;
+
+use WP_Post;
+
 /**
- * Class KAGG_Notification_Meta_Box
+ * Class Notification_Meta_Box
  */
-class KAGG_Notification_Meta_Box {
+class Notification_Meta_Box {
 	/**
 	 * Ajax save action name.
 	 */
@@ -28,7 +32,7 @@ class KAGG_Notification_Meta_Box {
 		wp_nonce_field( self::SAVE_ACTION, self::SAVE_NONCE );
 
 		$notification_id = absint( $post->ID );
-		$notification    = new KAGG_Notification( $notification_id );
+		$notification    = new Notification( $notification_id );
 		$users           = $notification->get_user_list();
 		?>
 
@@ -38,15 +42,15 @@ class KAGG_Notification_Meta_Box {
 				<?php
 
 				// Amount.
-				KAGG_Input_Fields::text_input(
-					array(
+				Input_Fields::text_input(
+					[
 						'id'          => 'users',
 						'label'       => __( 'Show to users', 'notification-system' ),
 						'description' => __( 'List of users to whom to show this notification.', 'notification-system' ),
 						'desc_tip'    => true,
 						'type'        => 'text',
 						'value'       => $users,
-					)
+					]
 				);
 
 				?>
@@ -77,12 +81,12 @@ class KAGG_Notification_Meta_Box {
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-		$users = KAGG_Input_Fields::clean( $_POST['users'] );
+		$users = Input_Fields::clean( $_POST['users'] );
 		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-		$notification = new KAGG_Notification( $post_id );
+		$notification = new Notification( $post_id );
 		$notification->set_user_list( $users );
 		$notification->save();
 	}

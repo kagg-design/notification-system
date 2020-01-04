@@ -1,5 +1,5 @@
 {
-  "name": "kagg/Notification",
+  "name": "kagg/notification",
   "description": "KAGG Notification",
   "license": "GPL-2.0",
   "keywords": [
@@ -31,7 +31,7 @@
     }
   },
   "require": {
-    "composer/installers": "*"
+    "composer/installers": "^1.7"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
@@ -41,16 +41,17 @@
     "phpunit/phpunit": "^5.7",
     "squizlabs/php_codesniffer": "^3.0",
     "phpcompatibility/php-compatibility": "^9.0",
+    "phpcompatibility/phpcompatibility-wp": "^2.1.0",
     "wp-coding-standards/wpcs": "^2.0"
   },
   "autoload": {
     "classmap": [
-      "includes"
+      "classes"
     ]
   },
   "autoload-dev": {
     "classmap": [
-      "includes"
+      "classes"
     ]
   }
 }

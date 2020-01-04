@@ -1,14 +1,25 @@
 <?php
 /**
- * KAGG_Notifications_API_Controller class file.
+ * Notifications_API_Controller class file.
  *
  * @package notification-system
  */
 
+namespace KAGG\Notification_System;
+
+use Exception;
+use WP_Error;
+use WP_Post;
+use WP_Query;
+use WP_REST_Controller;
+use WP_REST_Request;
+use WP_REST_Response;
+use WP_REST_Server;
+
 /**
- * Class KAGG_Notifications_API_Controller
+ * Class Notifications_API_Controller
  */
-class KAGG_Notifications_API_Controller extends WP_REST_Controller {
+class Notifications_API_Controller extends WP_REST_Controller {
 
 	/**
 	 * Endpoint namespace.
@@ -34,12 +45,12 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * List_In_Meta instance.
 	 *
-	 * @var KAGG_List_In_Meta
+	 * @var List_In_Meta
 	 */
 	public $list_in_meta = null;
 
 	/**
-	 * KAGG_Notifications_API_Controller constructor.
+	 * Notifications_API_Controller constructor.
 	 */
 	public function __construct() {
 		$this->init();
@@ -49,7 +60,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 * Init controller.
 	 */
 	private function init() {
-		$this->list_in_meta = new KAGG_List_In_Meta();
+		$this->list_in_meta = new List_In_Meta();
 	}
 
 	/**
@@ -59,65 +70,65 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base,
-			array(
-				array(
+			[
+				[
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_items' ),
-					'permission_callback' => array( $this, 'get_items_permissions_check' ),
+					'callback'            => [ $this, 'get_items' ],
+					'permission_callback' => [ $this, 'get_items_permissions_check' ],
 					'args'                => $this->get_collection_params(),
-				),
-				array(
+				],
+				[
 					'methods'             => WP_REST_Server::CREATABLE,
-					'callback'            => array( $this, 'create_item' ),
-					'permission_callback' => array( $this, 'create_item_permissions_check' ),
+					'callback'            => [ $this, 'create_item' ],
+					'permission_callback' => [ $this, 'create_item_permissions_check' ],
 					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			)
+				],
+				'schema' => [ $this, 'get_public_item_schema' ],
+			]
 		);
 
 		register_rest_route(
 			$this->namespace,
 			'/' . $this->rest_base . '/(?P<id>[\d]+)',
-			array(
-				'args'   => array(
-					'id' => array(
+			[
+				'args'   => [
+					'id' => [
 						'description' => __( 'Unique identifier for the resource.', 'notification-system' ),
 						'type'        => 'integer',
-					),
-				),
-				array(
+					],
+				],
+				[
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => array( $this, 'get_item' ),
-					'permission_callback' => array( $this, 'get_item_permissions_check' ),
-					'args'                => array(
+					'callback'            => [ $this, 'get_item' ],
+					'permission_callback' => [ $this, 'get_item_permissions_check' ],
+					'args'                => [
 						'context' => $this->get_context_param(
-							array(
+							[
 								'default' => 'view',
-							)
+							]
 						),
-					),
-				),
-				array(
+					],
+				],
+				[
 					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => array( $this, 'update_item' ),
-					'permission_callback' => array( $this, 'update_item_permissions_check' ),
+					'callback'            => [ $this, 'update_item' ],
+					'permission_callback' => [ $this, 'update_item_permissions_check' ],
 					'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::EDITABLE ),
-				),
-				array(
+				],
+				[
 					'methods'             => WP_REST_Server::DELETABLE,
-					'callback'            => array( $this, 'delete_item' ),
-					'permission_callback' => array( $this, 'delete_item_permissions_check' ),
-					'args'                => array(
-						'force' => array(
+					'callback'            => [ $this, 'delete_item' ],
+					'permission_callback' => [ $this, 'delete_item_permissions_check' ],
+					'args'                => [
+						'force' => [
 							'default'     => false,
 							'description' => __( 'Whether to bypass trash and force deletion.', 'notification-system' ),
 							'type'        => 'boolean',
-						),
-					),
-				),
-				'schema' => array( $this, 'get_public_item_schema' ),
-			)
+						],
+					],
+				],
+				'schema' => [ $this, 'get_public_item_schema' ],
+			]
 		);
 	}
 
@@ -127,25 +138,25 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 * @return array
 	 */
 	public function get_collection_params() {
-		$params['slug']    = array(
+		$params['slug']    = [
 			'description'       => __( 'Limit result set to notification with a specific slug.', 'notification-system' ),
 			'type'              => 'string',
 			'validate_callback' => 'rest_validate_request_arg',
-		);
-		$params['status']  = array(
+		];
+		$params['status']  = [
 			'default'           => 'any',
 			'description'       => __( 'Limit result set to notifications assigned a specific status.', 'notification-system' ),
 			'type'              => 'string',
-			'enum'              => array_merge( array( 'any' ), array_keys( get_post_statuses() ) ),
+			'enum'              => array_merge( [ 'any' ], array_keys( get_post_statuses() ) ),
 			'sanitize_callback' => 'sanitize_key',
 			'validate_callback' => 'rest_validate_request_arg',
-		);
-		$params['channel'] = array(
+		];
+		$params['channel'] = [
 			'description'       => __( 'Limit result set to notifications assigned a specific channel.', 'notification-system' ),
 			'type'              => 'string',
 			'sanitize_callback' => 'wp_parse_slug_list',
 			'validate_callback' => 'rest_validate_request_arg',
-		);
+		];
 
 		return $params;
 	}
@@ -162,7 +173,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 */
 	public function get_endpoint_args_for_item_schema( $method = WP_REST_Server::CREATABLE ) {
 		// @todo Expand.
-		$endpoint_args = array();
+		$endpoint_args = [];
 
 		return $endpoint_args;
 	}
@@ -181,14 +192,18 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			return new WP_Error(
 				'KAGG_Notification_rest_invalid_id',
 				__( 'Invalid ID.', 'notification-system' ),
-				array( 'status' => 404 )
+				[ 'status' => 404 ]
 			);
 		}
 
-		$data     = $this->prepare_object_for_response( $object, $request );
-		$response = rest_ensure_response( $data );
+		/**
+		 * Post object for response.
+		 *
+		 * @var WP_Post $object
+		 */
+		$data = $this->prepare_object_for_response( $object, $request );
 
-		return $response;
+		return rest_ensure_response( $data );
 	}
 
 	/**
@@ -203,14 +218,14 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			return new WP_Error(
 				'KAGG_Notification_rest_exists',
 				__( 'Cannot create existing post.', 'notification-system' ),
-				array( 'status' => 400 )
+				[ 'status' => 400 ]
 			);
 		}
 
-		$postarr = array(
+		$postarr = [
 			'post_type'   => $this->post_type,
 			'post_status' => 'publish',
-		);
+		];
 
 		if ( isset( $request['slug'] ) ) {
 			$postarr['name'] = $request['slug'];
@@ -241,7 +256,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		try {
 			$this->update_additional_fields_for_object( $object, $request );
 		} catch ( Exception $e ) {
-			return new WP_Error( $e->getCode(), $e->getMessage(), array( 'status' => $e->getCode() ) );
+			return new WP_Error( $e->getCode(), $e->getMessage(), [ 'status' => $e->getCode() ] );
 		}
 
 		$request->set_param( 'context', 'edit' );
@@ -267,13 +282,13 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			return new WP_Error(
 				'KAGG_Notification_invalid_id',
 				__( 'Invalid ID.', 'notification-system' ),
-				array( 'status' => 400 )
+				[ 'status' => 400 ]
 			);
 		}
 
-		$postarr = array(
+		$postarr = [
 			'ID' => $object->ID,
-		);
+		];
 
 		if ( isset( $request['slug'] ) ) {
 			$postarr['name'] = $request['slug'];
@@ -308,7 +323,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		try {
 			$this->update_additional_fields_for_object( $object, $request );
 		} catch ( Exception $e ) {
-			return new WP_Error( $e->getCode(), $e->getMessage(), array( 'status' => $e->getCode() ) );
+			return new WP_Error( $e->getCode(), $e->getMessage(), [ 'status' => $e->getCode() ] );
 		}
 
 		$request->set_param( 'context', 'edit' );
@@ -332,9 +347,9 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			return new WP_Error(
 				'KAGG_Notification_invalid_id',
 				__( 'Invalid ID.', 'notification-system' ),
-				array(
+				[
 					'status' => 404,
-				)
+				]
 			);
 		}
 
@@ -347,9 +362,9 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			return new WP_Error(
 				'KAGG_NOTIFICATIONS_rest_cannot_delete',
 				__( 'The item cannot be deleted.', 'notification-system' ),
-				array(
+				[
 					'status' => 500,
-				)
+				]
 			);
 		}
 
@@ -367,7 +382,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 		$query_args    = $this->prepare_objects_query( $request );
 		$query_results = $this->get_objects( $query_args );
 
-		$objects = array();
+		$objects = [];
 		foreach ( $query_results['objects'] as $object ) {
 			$data      = $this->prepare_object_for_response( $object, $request );
 			$objects[] = $this->prepare_response_for_collection( $data );
@@ -406,12 +421,12 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * Prepare objects query.
 	 *
-	 * @param  WP_REST_Request $request Full details about the request.
+	 * @param WP_REST_Request $request Full details about the request.
 	 *
 	 * @return array
 	 */
 	protected function prepare_objects_query( $request ) {
-		$args                        = array();
+		$args                        = [];
 		$args['offset']              = $request['offset'];
 		$args['order']               = $request['order'];
 		$args['orderby']             = $request['orderby'];
@@ -430,7 +445,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			$args['orderby'] = 'date ID';
 		}
 
-		$args['date_query'] = array();
+		$args['date_query'] = [];
 		// Set before into date query. Date query must be specified as an array of an array.
 		if ( isset( $request['before'] ) ) {
 			$args['date_query'][0]['before'] = $request['before'];
@@ -456,10 +471,10 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 *
 	 * @return array          $query_args
 	 */
-	protected function prepare_items_query( $prepared_args = array(), $request = null ) {
+	protected function prepare_items_query( $prepared_args = [], $request = null ) {
 
 		$valid_vars = array_flip( $this->get_allowed_query_vars() );
-		$query_args = array();
+		$query_args = [];
 		foreach ( $valid_vars as $var => $index ) {
 			if ( isset( $prepared_args[ $var ] ) ) {
 				$query_args[ $var ] = $prepared_args[ $var ];
@@ -477,18 +492,18 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-			$query_args['meta_query'] = array(
+			$query_args['meta_query'] = [
 				'relation' => 'OR',
-				array(
-					'key'     => KAGG_Notification::USERS_META_KEY,
-					'value'   => KAGG_List_In_Meta::get_prepared_item( wp_get_current_user()->ID ),
+				[
+					'key'     => Notification::USERS_META_KEY,
+					'value'   => List_In_Meta::get_prepared_item( wp_get_current_user()->ID ),
 					'compare' => 'LIKE',
-				),
-				array(
-					'key'     => KAGG_Notification::USERS_META_KEY,
+				],
+				[
+					'key'     => Notification::USERS_META_KEY,
 					'compare' => 'NOT EXISTS',
-				),
-			);
+				],
+			];
 			// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 		}
 
@@ -531,7 +546,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			$valid_vars = array_merge( $valid_vars, $private );
 		}
 		// Define our own in addition to WP's normal vars.
-		$rest_valid = array(
+		$rest_valid = [
 			'date_query',
 			'ignore_sticky_posts',
 			'offset',
@@ -547,7 +562,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			'meta_value',
 			'meta_compare',
 			'meta_value_num',
-		);
+		];
 		$valid_vars = array_merge( $valid_vars, $rest_valid );
 
 		return $valid_vars;
@@ -556,7 +571,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * Get objects.
 	 *
-	 * @param  array $query_args Query args.
+	 * @param array $query_args Query args.
 	 *
 	 * @return array
 	 */
@@ -573,18 +588,18 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			$total_posts = $count_query->found_posts;
 		}
 
-		return array(
+		return [
 			'objects' => $result,
 			'total'   => (int) $total_posts,
 			'pages'   => (int) ceil( $total_posts / (int) $query->query_vars['posts_per_page'] ),
-		);
+		];
 	}
 
 	/**
 	 * Prepare a single notification output for response.
 	 *
-	 * @param  WP_Post         $object  Object data.
-	 * @param  WP_REST_Request $request Request object.
+	 * @param WP_Post         $object  Object data.
+	 * @param WP_REST_Request $request Request object.
 	 *
 	 * @return WP_REST_Response
 	 */
@@ -610,7 +625,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 * @return array
 	 */
 	protected function get_notification_data( $notification, $context = 'view' ) {
-		$data = array(
+		$data = [
 			'id'      => $notification->ID,
 			'title'   => $notification->post_title,
 			'slug'    => $notification->post_name,
@@ -618,7 +633,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			'date'    => $this->time_ago( $notification->post_date ),
 			'channel' => $this->get_terms_list( $notification->ID, 'channel', ', ' ),
 			'read'    => $this->get_read_status( $notification->ID ),
-		);
+		];
 
 		if ( current_user_can( 'edit_posts' ) ) {
 			$data['users'] = $this->get_user_list( $notification->ID );
@@ -647,7 +662,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			return '';
 		}
 
-		$names = array();
+		$names = [];
 		foreach ( $terms as $term ) {
 			$names[] = $term->name;
 		}
@@ -663,7 +678,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 * @return bool
 	 */
 	protected function get_read_status( $id ) {
-		$notification = new KAGG_Notification( $id );
+		$notification = new Notification( $id );
 
 		return $notification->get_read_status();
 	}
@@ -675,7 +690,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 * @param bool $read_status Read status.
 	 */
 	protected function set_read_status( $id, $read_status ) {
-		$notification = new KAGG_Notification( $id );
+		$notification = new Notification( $id );
 		$notification->set_read_status( $read_status );
 	}
 
@@ -687,7 +702,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 * @return string
 	 */
 	protected function get_user_list( $id ) {
-		$notification = new KAGG_Notification( $id );
+		$notification = new Notification( $id );
 
 		return $notification->get_user_list();
 	}
@@ -699,7 +714,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 * @param string $users User list as comma-separated string.
 	 */
 	protected function set_user_list( $id, $users ) {
-		$notification = new KAGG_Notification( $id );
+		$notification = new Notification( $id );
 		$notification->set_user_list( $users );
 	}
 
@@ -712,14 +727,14 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 * @return array          Links for the given post.
 	 */
 	protected function prepare_links( $object, $request ) {
-		$links = array(
-			'self'       => array(
+		$links = [
+			'self'       => [
 				'href' => rest_url( sprintf( '/%s/%s/%d', $this->namespace, $this->rest_base, $object->ID ) ),
-			),
-			'collection' => array(
+			],
+			'collection' => [
 				'href' => rest_url( sprintf( '/%s/%s', $this->namespace, $this->rest_base ) ),
-			),
-		);
+			],
+		];
 
 		return $links;
 	}
@@ -727,7 +742,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * Check if a given request has access to read items.
 	 *
-	 * @param  WP_REST_Request $request Full details about the request.
+	 * @param WP_REST_Request $request Full details about the request.
 	 *
 	 * @return WP_Error|boolean
 	 */
@@ -736,7 +751,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			return new WP_Error(
 				'KAGG_Notification_rest_cannot_create',
 				__( 'Sorry, you cannot view resources.', 'notification-system' ),
-				array( 'status' => rest_authorization_required_code() )
+				[ 'status' => rest_authorization_required_code() ]
 			);
 		}
 
@@ -746,7 +761,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * Check if a given request has access to read item.
 	 *
-	 * @param  WP_REST_Request $request Full details about the request.
+	 * @param WP_REST_Request $request Full details about the request.
 	 *
 	 * @return WP_Error|boolean
 	 */
@@ -755,7 +770,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			return new WP_Error(
 				'KAGG_Notification_rest_cannot_create',
 				__( 'Sorry, you cannot view resources.', 'notification-system' ),
-				array( 'status' => rest_authorization_required_code() )
+				[ 'status' => rest_authorization_required_code() ]
 			);
 		}
 
@@ -765,7 +780,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * Check if a given request has access to create items.
 	 *
-	 * @param  WP_REST_Request $request Full details about the request.
+	 * @param WP_REST_Request $request Full details about the request.
 	 *
 	 * @return WP_Error|boolean
 	 */
@@ -774,7 +789,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			return new WP_Error(
 				'KAGG_Notification_rest_cannot_create',
 				__( 'Sorry, you cannot create resources.', 'notification-system' ),
-				array( 'status' => rest_authorization_required_code() )
+				[ 'status' => rest_authorization_required_code() ]
 			);
 		}
 
@@ -784,13 +799,13 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * Check if a given request has access to update items.
 	 *
-	 * @param  WP_REST_Request $request Full details about the request.
+	 * @param WP_REST_Request $request Full details about the request.
 	 *
 	 * @return WP_Error|boolean
 	 */
 	public function update_item_permissions_check( $request ) {
 		$json          = $request->get_params();
-		$non_priv_keys = array( 'id', 'read' );
+		$non_priv_keys = [ 'id', 'read' ];
 		sort( $non_priv_keys );
 		$intersect = array_intersect_key( array_keys( $json ), $non_priv_keys );
 		sort( $intersect );
@@ -802,7 +817,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			return new WP_Error(
 				'KAGG_Notification_rest_cannot_update',
 				__( 'Sorry, you cannot update resources.', 'notification-system' ),
-				array( 'status' => rest_authorization_required_code() )
+				[ 'status' => rest_authorization_required_code() ]
 			);
 		}
 
@@ -812,7 +827,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * Check if a given request has access to delete items.
 	 *
-	 * @param  WP_REST_Request $request Full details about the request.
+	 * @param WP_REST_Request $request Full details about the request.
 	 *
 	 * @return WP_Error|boolean
 	 */
@@ -821,7 +836,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 			return new WP_Error(
 				'KAGG_Notification_rest_cannot_delete',
 				__( 'Sorry, you cannot delete resources.', 'notification-system' ),
-				array( 'status' => rest_authorization_required_code() )
+				[ 'status' => rest_authorization_required_code() ]
 			);
 		}
 
@@ -835,7 +850,7 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full details about the request.
 	 */
 	protected function add_taxonomies( $post_id, $request ) {
-		$taxonomies = array( 'channel' );
+		$taxonomies = [ 'channel' ];
 		foreach ( $taxonomies as $taxonomy ) {
 			$term_slug_list = isset( $request[ $taxonomy ] ) ? $request[ $taxonomy ] : null;
 			$term_slugs     = explode( '|', $term_slug_list );
@@ -845,9 +860,9 @@ class KAGG_Notifications_API_Controller extends WP_REST_Controller {
 				if ( $term_slug ) {
 					$term = get_term_by( 'slug', $term_slug, $taxonomy );
 					if ( $term ) {
-						wp_set_post_terms( $post_id, array( $term->term_id ), $taxonomy, $append );
+						wp_set_post_terms( $post_id, [ $term->term_id ], $taxonomy, $append );
 					} else {
-						$new_term_arr = wp_insert_term( $term_slug, $taxonomy, array() );
+						$new_term_arr = wp_insert_term( $term_slug, $taxonomy, [] );
 						if ( ! is_wp_error( $new_term_arr ) ) {
 							if ( is_taxonomy_hierarchical( $taxonomy ) ) {
 								wp_set_post_terms( $post_id, $new_term_arr['term_id'], $taxonomy, $append );

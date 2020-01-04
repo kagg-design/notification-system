@@ -1,14 +1,16 @@
 <?php
 /**
- * KAGG_Notification class file.
+ * Notification class file.
  *
  * @package notification-system
  */
 
+namespace KAGG\Notification_System;
+
 /**
- * Class KAGG_Notification
+ * Class Notification
  */
-class KAGG_Notification {
+class Notification {
 
 	/**
 	 * Read status meta key.
@@ -34,18 +36,18 @@ class KAGG_Notification {
 	/**
 	 * Instance of List In Meta class.
 	 *
-	 * @var KAGG_List_In_Meta
+	 * @var List_In_Meta
 	 */
 	protected $list_in_meta;
 
 	/**
-	 * KAGG_Notification constructor.
+	 * Notification constructor.
 	 *
 	 * @param int $id Notification post ID.
 	 */
 	public function __construct( $id ) {
 		$this->id           = absint( $id );
-		$this->list_in_meta = new KAGG_List_In_Meta();
+		$this->list_in_meta = new List_In_Meta();
 	}
 
 	/**
@@ -99,6 +101,7 @@ class KAGG_Notification {
 		foreach ( $users as $key => $user ) {
 			$users[ $key ] = get_userdata( $user )->user_login;
 		}
+
 		return implode( ', ', $users );
 	}
 
@@ -110,7 +113,7 @@ class KAGG_Notification {
 	public function set_user_list( $users ) {
 		$users         = preg_replace( '/\s+/', '', $users );
 		$users         = explode( ',', $users );
-		$users_to_save = array();
+		$users_to_save = [];
 		foreach ( $users as $key => $user ) {
 			$wp_user = get_user_by( 'login', $user );
 			if ( $wp_user ) {

@@ -5,9 +5,9 @@ Contributors: kaggdesign
 Tags: notification, notification system, user notification, notification channel
 Donate link: https://www.paypal.me/kagg
 Requires at least: 4.4
-Tested up to: 5.2
-Version: 1.0.2
-Stable tag: 1.0.2
+Tested up to: 5.3
+Version: 1.0.3
+Stable tag: 1.0.3
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -102,6 +102,9 @@ If you get stuck, you can ask for help in the [KAGG Notifications Plugin Forum](
 2. The KAGG Notifications Update Notification popup.
 
 == Changelog ==
+= 1.0.3 =
+* Tested with WordPress 5.3
+
 = 1.0.2 =
 * Php version bumped up to 5.6
 * Tested with WordPress 5.2
