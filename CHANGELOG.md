@@ -1,3 +1,6 @@
+## 1.0.4
+* Tested with WordPress 5.4
+
 ## 1.0.3
 * Tested with WordPress 5.3
 

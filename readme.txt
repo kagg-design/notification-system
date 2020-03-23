@@ -102,6 +102,9 @@ If you get stuck, you can ask for help in the [KAGG Notifications Plugin Forum](
 2. The KAGG Notifications Update Notification popup.
 
 == Changelog ==
+= 1.0.4 =
+* Tested with WordPress 5.4
+
 = 1.0.3 =
 * Tested with WordPress 5.3
 
