@@ -14,10 +14,7 @@
     ]
   },
   "dependencies": {
-    "classnames": "~2.2.6",
-    "cross-fetch": "~3.0.4",
-    "eslint": "^6.8.0",
-    "moment": "~2.24.0"
+    "cross-fetch": "~3.0.4"
   },
   "devDependencies": {
     "autoprefixer": "~9.7.4",
@@ -28,31 +25,19 @@
     "babel-plugin-transform-class-properties": "~6.24.1",
     "babel-plugin-transform-object-rest-spread": "~6.26.0",
     "babel-preset-env": "~1.7.0",
-    "commander": "^2.20.3",
-    "css-loader": "~3.4.2",
-    "enzyme": "~3.11.0",
-    "enzyme-to-json": "~3.4.4",
+    "core-js": "^3.6.4",
+    "eslint": "^6.8.0",
     "eslint-config-standard": "~13.0.1",
     "eslint-plugin-import": "~2.20.1",
     "eslint-plugin-node": "~9.2.0",
     "eslint-plugin-promise": "~4.2.1",
     "eslint-plugin-standard": "~4.0.1",
-    "eslint-utils": "^1.4.3",
-    "eslint-visitor-keys": "^1.1.0",
     "extract-text-webpack-plugin": "~4.0.0-beta.0",
     "handlebars": "^4.7.3",
     "jest": "~25.1.0",
     "jest-fetch-mock": "~2.1.2",
-    "node-sass": "~4.13.1",
-    "postcss": "~7.0.27",
-    "postcss-loader": "~3.0.0",
-    "raf": "~3.4.1",
-    "sass-loader": "~7.3.1",
-    "serialize-javascript": "^2.1.2",
-    "style-loader": "~0.23.1",
-    "uglify-js": "^3.8.0",
+    "mkdirp": "^1.0.3",
     "webpack": "~4.42.0",
-    "webpack-cli": "~3.3.11",
-    "mkdirp": "^1.0.3"
+    "webpack-cli": "~3.3.11"
   }
 }
