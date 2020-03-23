@@ -12,6 +12,6 @@ vendor/
 *.tar.gz
 *.zip
 *.lock
-*.opt
 .idea/
 !composer.lock
+!/src/yarn.lock
