@@ -40,8 +40,8 @@ All code is checked by php Code Sniffer, and conforms to WordPress Coding Standa
 ## Installation
 
 ```
-git clone https://github.com/kagg-design/kagg-notifications
-cd kagg-notifications
+git clone https://github.com/kagg-design/notification-system
+cd notification-system
 composer install --no-dev
 cd src
 yarn
@@ -51,8 +51,8 @@ yarn run build:prod
 ## Development
 
 ```
-git clone https://github.com/kagg-design/kagg-notifications
-cd kagg-notifications
+git clone https://github.com/kagg-design/notification-system
+cd notification-system
 composer install
 cd src
 yarn
@@ -63,7 +63,7 @@ yarn run build:dev
 
 ### i18n Tools
 
-The WordPress Plugin KAGG Notifications uses a variable to store the text domain used when internationalizing strings throughout the KAGG Notifications. To take advantage of this method, there are tools that are recommended for providing correct, translatable files:
+The WordPress Plugin Notification System uses a variable to store the text domain used when internationalizing strings throughout the KAGG Notifications. To take advantage of this method, there are tools that are recommended for providing correct, translatable files:
 
 * [Poedit](https://poedit.net/)
 * [makepot](http://i18n.svn.wordpress.org/tools/trunk/)
@@ -73,7 +73,7 @@ Any of the above tools should provide you with the proper tooling to internation
 
 ## License
 
-The WordPress Plugin KAGG Notifications is licensed under the GPL v2 or later.
+The WordPress Plugin Notification System is licensed under the GPL v2 or later.
 
 > This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License, version 2, as published by the Free Software Foundation.
 
@@ -81,19 +81,19 @@ The WordPress Plugin KAGG Notifications is licensed under the GPL v2 or later.
 
 > You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-A copy of the license is included in the root of the plugin’s directory. The file is named `LICENSE`.
+A copy of the license is included in the root of the plugin’s directory. The file name is `LICENSE`.
 
 ## Important Notes
 
 ### Licensing
 
-The WordPress Plugin KAGG Notifications is licensed under the GPL v2 or later; however, if you opt to use third-party code that is not compatible with v2, then you may need to switch to using code that is GPL v3 compatible.
+The WordPress Plugin Notification System is licensed under the GPL v2 or later; however, if you opt to use third-party code that is not compatible with v2, then you may need to switch to using code that is GPL v3 compatible.
 
 For reference, [here's a discussion](https://make.wordpress.org/themes/2013/03/04/licensing-note-apache-and-gpl/) that covers the Apache 2.0 License used by [Bootstrap](http://getbootstrap.com/2.3.2/).
 
 # Credits
 
-The current version of the KAGG Notifications was developed by [KAGG Design](https://kagg.eu/en/).
+Notification System plugin was developed by [KAGG Design](https://kagg.eu/en/).
 
 ## Documentation, FAQs, and More
 
