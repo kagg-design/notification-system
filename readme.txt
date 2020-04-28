@@ -78,9 +78,9 @@ All code is checked by php Code Sniffer, and conforms to WordPress Coding Standa
 
 = Automatic installation =
 
-Automatic installation is the easiest option as WordPress handles the file transfers itself and you don’t need to leave your web browser. To do an automatic install of KAGG Notifications plugin, log in to your WordPress dashboard, navigate to the Plugins menu and click Add New.
+Automatic installation is the easiest option as WordPress handles the file transfers itself and you don’t need to leave your web browser. To do an automatic install of Notification Systems plugin, log in to your WordPress dashboard, navigate to the Plugins menu and click Add New.
 
-In the search field type “KAGG Notifications” and click Search Plugins. Once you’ve found our plugin you can view details about it such as the point release, rating and description. Most importantly of course, you can install it by simply clicking “Install Now”.
+In the search field type “notification system” and click Search Plugins. Once you’ve found our plugin you can view details about it such as the point release, rating and description. Most importantly of course, you can install it by simply clicking “Install Now”.
 
 = Manual installation =
 
@@ -94,12 +94,12 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 
 = Where can I get support or talk to other users? =
 
-If you get stuck, you can ask for help in the [KAGG Notifications Plugin Forum](https://wordpress.org/support/plugin/kagg-notifications).
+If you get stuck, you can ask for help in the [Notification System Plugin Forum](https://wordpress.org/support/plugin/notification-system).
 
 == Screenshots ==
 
-1. The KAGG Notifications /#notifications popup (frontend).
-2. The KAGG Notifications Update Notification popup.
+1. The Notification System /#notifications popup (frontend).
+2. The Notification System Update Notification popup.
 
 == Changelog ==
 = 1.0.4 =
