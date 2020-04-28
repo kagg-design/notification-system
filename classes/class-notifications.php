@@ -33,13 +33,6 @@ class Notifications {
 	const EMPTY_MENU = '-';
 
 	/**
-	 * The single instance of the class.
-	 *
-	 * @var Notifications
-	 */
-	protected static $instance = null;
-
-	/**
 	 * API instance.
 	 *
 	 * @var Notifications_API
@@ -52,21 +45,6 @@ class Notifications {
 	public function __construct() {
 		$this->init();
 		$this->init_hooks();
-	}
-
-	/**
-	 * Main Notifications Instance.
-	 *
-	 * Ensures only one instance of Notifications is loaded or can be loaded.
-	 *
-	 * @return Notifications - Main instance.
-	 */
-	public static function instance() {
-		if ( is_null( self::$instance ) ) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
 	}
 
 	/**
