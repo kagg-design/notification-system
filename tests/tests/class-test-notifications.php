@@ -45,7 +45,7 @@ class Test_Notifications extends WP_UnitTestCase {
 		);
 
 		$this->assertEquals(
-			10,
+			PHP_INT_MAX,
 			$this->action_priority( 'init', __NAMESPACE__ . '\Notifications', 'notifications_page' )
 		);
 
