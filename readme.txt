@@ -104,6 +104,7 @@ If you get stuck, you can ask for help in the [Notification System Plugin Forum]
 
 = 1.1 =
 * Tested with WordPress 5.5
+* Fix notice in admin if user does ot exist anymore.
 
 = 1.0.4 =
 * Tested with WordPress 5.4
