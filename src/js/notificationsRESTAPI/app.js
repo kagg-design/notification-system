@@ -1,14 +1,11 @@
 /**
  * Notifications REST API App.
  *
- * @package notification-system.
+ * @package
  */
 
 import NotificationsRESTAPI from './notificationsRESTAPI';
 
-document.addEventListener(
-	'DOMContentLoaded',
-	() => {
-		new NotificationsRESTAPI();
-	}
-);
+document.addEventListener( 'DOMContentLoaded', () => {
+	new NotificationsRESTAPI();
+} );
