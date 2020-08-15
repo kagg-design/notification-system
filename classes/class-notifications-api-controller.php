@@ -438,12 +438,24 @@ class Notifications_API_Controller extends WP_REST_Controller {
 		$args['post_parent__in']     = $request['parent'];
 		$args['post_parent__not_in'] = $request['parent_exclude'];
 		$args['s']                   = $request['search'];
-		$args['channel']             = $request['channel'];
 		$args['read']                = $request['read'];
 
 		if ( 'date' === $args['orderby'] ) {
 			$args['orderby'] = 'date ID';
 		}
+
+		// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+		$args['tax_query'] = [];
+		if ( isset( $request['channel'] ) ) {
+			$args['tax_query'] = [
+				[
+					'taxonomy' => 'channel',
+					'field'    => 'slug',
+					'terms'    => $request['channel'],
+				],
+			];
+		}
+		// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 
 		$args['date_query'] = [];
 		// Set before into date query. Date query must be specified as an array of an array.
