@@ -49,21 +49,41 @@ class NotificationsRESTAPI {
 	}
 
 	/**
+	 * Get notifications list element.
+	 *
+	 * @return {null|HTMLDivElement} Element containing notifications list.
+	 */
+	getNotificationsListElement() {
+		const popup = document.querySelector( '#notifications-popup' );
+
+		if ( ! popup ) {
+			return document.querySelector( '#notifications-list tbody' );
+		}
+
+		if ( 'block' === popup.style.display ) {
+			return popup.querySelector( '.notifications-modal-content tbody' );
+		}
+
+		return null;
+	}
+
+	/**
 	 * Handler of change event on any select.
 	 */
 	changeEventHandler() {
 		const query = [];
-		const elements = document.querySelectorAll(
-			'#notifications-header select'
-		);
-		const count = elements.length;
-		for ( let i = 0; i < count; i++ ) {
-			const e = elements[ i ];
-			const value = e.options[ e.selectedIndex ].value;
-			if ( '' !== value ) {
-				query[ e.name ] = value;
+
+		[ ...document.querySelectorAll( 'select[name="channel"]' ) ].map(
+			( select ) => {
+				const value = select.options[ select.selectedIndex ].value;
+				if ( '' !== value ) {
+					query[ select.name ] = value;
+				}
+
+				return false;
 			}
-		}
+		);
+
 		this.getNotifications( query );
 	}
 
@@ -108,9 +128,7 @@ class NotificationsRESTAPI {
 					// eslint-disable-next-line
 					data: { per_page: this.PER_PAGE },
 					error: ( collection, response ) => {
-						document.querySelector(
-							'#notifications-list tbody'
-						).innerHTML =
+						this.getNotificationsListElement.innerHTML =
 							'<td colspan="4" class="notifications-error">' +
 							response.responseJSON.message +
 							'</td>';
@@ -197,8 +215,9 @@ class NotificationsRESTAPI {
 	 * @param {boolean} add bool Add to output area.
 	 */
 	showNotifications( notifications, add = false ) {
-		const tbody = document.querySelector( '#notifications-list tbody' );
-		if ( 0 === tbody.length ) {
+		const notificationsListElement = this.getNotificationsListElement();
+
+		if ( ! notificationsListElement ) {
 			return;
 		}
 
@@ -276,9 +295,9 @@ class NotificationsRESTAPI {
 		} );
 
 		if ( add ) {
-			tbody.innerHTML += notificationsList;
+			notificationsListElement.innerHTML += notificationsList;
 		} else {
-			tbody.innerHTML = notificationsList;
+			notificationsListElement.innerHTML = notificationsList;
 		}
 
 		this.updateUnreadCountElements( unreadCount );
@@ -475,10 +494,9 @@ class NotificationsRESTAPI {
 		};
 
 		// Select change handler.
-		const select = document.querySelector( '#notifications-header select' );
-		if ( null !== select ) {
-			select.onchange = () => this.changeEventHandler();
-		}
+		[ ...document.querySelectorAll( 'select[name="channel"]' ) ].map(
+			( select ) => ( select.onchange = () => this.changeEventHandler() )
+		);
 
 		// Show More button.
 		const moreButton = document.querySelector( '#more-button' );
@@ -555,6 +573,7 @@ class NotificationsRESTAPI {
 	 */
 	showPopup() {
 		let popup = document.getElementById( 'notifications-popup' );
+
 		if ( ! popup ) {
 			popup = document.createElement( 'div' );
 			popup.id = 'notifications-popup';
@@ -562,20 +581,25 @@ class NotificationsRESTAPI {
 			popup.innerHTML = '<div class="notifications-modal-content"></div>';
 			document.body.appendChild( popup );
 		}
+
 		this.getPopupContent().then( ( response ) => {
-			const modalContent = document.getElementsByClassName(
+			const modalContent = popup.getElementsByClassName(
 				'notifications-modal-content'
 			)[ 0 ];
 			modalContent.innerHTML =
 				'<span class="close">&times;</span>' + response;
-			this.getNotifications( [] );
+			popup.style.display = 'block';
+
+			this.bindEvents();
+
+			this.getNotifications();
+
 			document.body.appendChild(
 				document.getElementById( 'create-modal' )
 			);
 			document.body.appendChild(
 				document.getElementById( 'update-modal' )
 			);
-			popup.style.display = 'block';
 		} );
 	}
 }
