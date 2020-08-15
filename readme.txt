@@ -5,9 +5,8 @@ Contributors: kaggdesign
 Tags: notification, notification system, user notification, notification channel
 Donate link: https://www.paypal.me/kagg
 Requires at least: 4.4
-Tested up to: 5.4
-Version: 1.0.4
-Stable tag: 1.0.4
+Tested up to: 5.5
+Stable tag: 1.1
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -24,15 +23,15 @@ Plugin has options page in the site console, with relevant buttons and controls.
 
 Notifications are custom posts of type notification. There is a standard custom post interface, with menu in admin.
 
-Administrator can create, edit, and delete notifications. One taxonomy is available: Channel. Administrator is able to add, edit, and delete taxonomy terms.
+Administrator can create, edit, and delete notifications. One taxonomy is available: Channel. Administrator is able to add, edit, and delete taxonomy terms. To restrict notification to some users, add user logins as a comma-separated list.
 
 = Frontend =
 
-Plugin creates page /notifications "on the fly" - it does not exists in database. Information on this page is visible only to logged in users (restricted by permissions in REST API Controller).
+Plugin creates page /notifications "on the fly" - it does not exist in the database. Information on this page is visible only to logged in users (restricted by permissions in REST API Controller).
 
 Plugin creates popup window if url contains hash #notifications, like that: `http://my.site.org/some-url#notifications`. This is an easy way to show popup window with notifications from anywhere. Just create a link like `<a href="http://my.site.org#notifications">Notifications</a>` and a click on this link will open popup window with notifications.
 
-Logged-in users can list notifications, and filter them by channel.
+Logged-in users can list notifications, and filter them by a channel.
 
 Show more button provides pagination of the notifications list.
 
@@ -102,6 +101,10 @@ If you get stuck, you can ask for help in the [Notification System Plugin Forum]
 2. The Notification System Update Notification popup.
 
 == Changelog ==
+
+= 1.1 =
+* Tested with WordPress 5.5
+
 = 1.0.4 =
 * Tested with WordPress 5.4
 

@@ -4,10 +4,10 @@
  * Description: Creates and maintains notification system for users on WordPress site.
  * Author: KAGG Design
  * Author URI: http://kagg.eu/en/
- * Version: 1.0.4
+ * Version: 1.1
  * Plugin Slug: notification-system
  * Requires at least: 4.4
- * Tested up to: 5.4
+ * Tested up to: 5.5
  * Requires PHP: 5.6
  *
  * Text Domain: notification-system
@@ -30,7 +30,7 @@ if ( defined( 'KAGG_NOTIFICATIONS_VERSION' ) ) {
 /**
  * Plugin version.
  */
-define( 'KAGG_NOTIFICATIONS_VERSION', '1.0.4' );
+define( 'KAGG_NOTIFICATIONS_VERSION', '1.1' );
 
 /**
  * Plugin path.

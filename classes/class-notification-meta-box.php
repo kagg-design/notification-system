@@ -46,7 +46,7 @@ class Notification_Meta_Box {
 					[
 						'id'          => 'users',
 						'label'       => __( 'Show to users', 'notification-system' ),
-						'description' => __( 'List of users to whom to show this notification.', 'notification-system' ),
+						'description' => __( 'List of user logins to whom to show this notification.', 'notification-system' ),
 						'desc_tip'    => true,
 						'type'        => 'text',
 						'value'       => $users,
