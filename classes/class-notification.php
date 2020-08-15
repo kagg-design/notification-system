@@ -99,7 +99,10 @@ class Notification {
 	public function get_user_list() {
 		$users = $this->get_users();
 		foreach ( $users as $key => $user ) {
-			$users[ $key ] = get_userdata( $user )->user_login;
+			$user_data = get_userdata( $user );
+			if ( $user_data ) {
+				$users[ $key ] = $user_data->user_login;
+			}
 		}
 
 		return implode( ', ', $users );
