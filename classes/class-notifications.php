@@ -71,7 +71,7 @@ class Notifications {
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ], 20 );
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_enqueue_scripts' ] );
 
-		add_action( 'init', [ $this, 'notifications_page' ] );
+		add_action( 'init', [ $this, 'notifications_page' ], PHP_INT_MAX );
 		add_filter( 'pre_get_document_title', [ $this, 'notifications_page_document_title' ], 20 );
 		add_filter( 'wpseo_breadcrumb_links', [ $this, 'wpseo_breadcrumb_links' ] );
 		add_shortcode( 'notifications', [ $this, 'notifications_shortcode' ] );
