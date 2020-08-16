@@ -14,4 +14,3 @@ vendor/
 *.lock
 .idea/
 !composer.lock
-!/src/yarn.lock
