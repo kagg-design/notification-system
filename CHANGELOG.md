@@ -1,6 +1,7 @@
 ## 1.1
 * Tested with WordPress 5.5
-* Fix notice in admin if user does ot exist anymore.
+* Fix bug with inability to filter notifications by channel
+* Fix notice in admin if user does ot exist anymore
 
 ## 1.0.4
 * Tested with WordPress 5.4
