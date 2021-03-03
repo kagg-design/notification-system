@@ -3,7 +3,7 @@
   "license": "GPL-2.0-or-later",
   "scripts": {
     "build:dev": "webpack --mode development",
-    "build:prod": "webpack -p --env production --mode production",
+    "build:prod": "webpack --env production --mode production",
     "test": "jest",
     "coveralls": "jest --coverage && cat coverage/lcov.info | coveralls"
   },
