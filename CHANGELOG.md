@@ -1,3 +1,6 @@
+## 1.2
+* Tested with WordPress 5.7
+
 ## 1.1
 * Tested with WordPress 5.5
 * Fix bug with inability to filter notifications by channel

@@ -1,20 +1,24 @@
 <?php
 /**
- * Plugin Name: Notification System
- * Description: Creates and maintains notification system for users on WordPress site.
- * Author: KAGG Design
- * Author URI: http://kagg.eu/en/
- * Version: 1.1
- * Plugin Slug: notification-system
- * Requires at least: 4.4
- * Tested up to: 5.5
- * Requires PHP: 5.6
+ * Notification System
  *
- * Text Domain: notification-system
- * Domain Path: /languages/
+ * @package              notification-system
+ * @author               KAGG Design
+ * @license              GPL-2.0-or-later
+ * @wordpress-plugin
  *
- * @package notification-system
- * @author  KAGG Design
+ * Plugin Name:          Notification System
+ * Plugin URI:           https://wordpress.org/plugins/notification-system/
+ * Description:          Creates and maintains notification system for users on WordPress site.
+ * Version:              1.2
+ * Requires at least:    4.4
+ * Requires PHP:         5.6
+ * Author:               KAGG Design
+ * Author URI:           http://kagg.eu/en/
+ * License:              GPL v2 or later
+ * License URI:          https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:          notification-system
+ * Domain Path:          /languages/
  */
 
 namespace KAGG\Notification_System;
@@ -30,12 +34,12 @@ if ( defined( 'KAGG_NOTIFICATIONS_VERSION' ) ) {
 /**
  * Plugin version.
  */
-define( 'KAGG_NOTIFICATIONS_VERSION', '1.1' );
+define( 'KAGG_NOTIFICATIONS_VERSION', '1.2' );
 
 /**
  * Plugin path.
  */
-define( 'KAGG_NOTIFICATIONS_PATH', dirname( __FILE__ ) );
+define( 'KAGG_NOTIFICATIONS_PATH', __DIR__ );
 
 /**
  * Plugin url.
