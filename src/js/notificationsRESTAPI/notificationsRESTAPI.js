@@ -1,5 +1,3 @@
-import 'babel-polyfill';
-
 /* globals WPAPISettings */
 
 /**
@@ -146,7 +144,7 @@ class NotificationsRESTAPI {
 	/**
 	 * Create notification via REST API.
 	 *
-	 * @param {[]} query array of attributes.
+	 * @param {{}[]} query array of attributes.
 	 */
 	createNotification( query ) {
 		const getNotifications = () => this.getNotifications();
@@ -160,7 +158,7 @@ class NotificationsRESTAPI {
 				}
 			}
 
-			notification.save().done( function() {
+			notification.save().done( function () {
 				getNotifications();
 			} );
 		} );
@@ -169,11 +167,11 @@ class NotificationsRESTAPI {
 	/**
 	 * Update notification via REST API.
 	 *
-	 * @param {[]} query array of attributes.
+	 * @param {{}[]} query array of attributes.
 	 */
 	updateNotification( query ) {
 		const getNotifications = () => this.getNotifications();
-		wp.api.loadPromise.done( function() {
+		wp.api.loadPromise.done( function () {
 			const notification = new wp.api.models.Notifications( {} );
 
 			for ( const key in query ) {
@@ -184,7 +182,7 @@ class NotificationsRESTAPI {
 
 			notification.set();
 
-			notification.save().done( function() {
+			notification.save().done( function () {
 				getNotifications();
 			} );
 		} );
@@ -197,12 +195,12 @@ class NotificationsRESTAPI {
 	 */
 	deleteNotification( id ) {
 		const getNotifications = () => this.getNotifications();
-		wp.api.loadPromise.done( function() {
+		wp.api.loadPromise.done( function () {
 			const notification = new wp.api.models.Notifications( {} );
 
 			notification.attributes.id = id;
 
-			notification.destroy().done( function() {
+			notification.destroy().done( function () {
 				getNotifications();
 			} );
 		} );
@@ -243,7 +241,7 @@ class NotificationsRESTAPI {
 
 		let unreadCount = 0;
 		let notificationsList = '';
-		notifications.each( function( notification ) {
+		notifications.each( function ( notification ) {
 			let readClass = '';
 			if ( notification.attributes.read ) {
 				readClass = ' read';
@@ -341,7 +339,7 @@ class NotificationsRESTAPI {
 		const links = document.getElementsByTagName( 'a' );
 		for ( const link of links ) {
 			if ( this.hasPopupHash( link.hash ) ) {
-				link.onclick = function( event ) {
+				link.onclick = function ( event ) {
 					event.preventDefault();
 					showPopup();
 					return false;
@@ -371,7 +369,7 @@ class NotificationsRESTAPI {
 			};
 		}
 
-		window.onclick = function( event ) {
+		window.onclick = function ( event ) {
 			// When user clicks anywhere outside of the modal, close it.
 			if ( event.target.matches( '.notifications-modal' ) ) {
 				event.target.style.display = 'none';
