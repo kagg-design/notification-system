@@ -8,7 +8,7 @@
 /**
  * Plugin main file.
  */
-define( 'PLUGIN_MAIN_FILE', realpath( __DIR__ . '/../notification-system.php' ) );
+define( 'PLUGIN_MAIN_FILE', dirname( __DIR__ ) . '/notification-system.php' );
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 
