@@ -17,12 +17,6 @@
   "support": {
     "issues": "https://wordpress.org/support/plugin/kagg-notifications"
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/OnTheGoSystems/patchwork.git"
-    }
-  ],
   "minimum-stability": "dev",
   "prefer-stable": true,
   "config": {
@@ -30,16 +24,12 @@
       "php": "5.6"
     }
   },
-  "require": {
-    "composer/installers": "^1.9"
-  },
   "require-dev": {
     "roave/security-advisories": "dev-master",
     "antecedent/patchwork": "^2.0",
-    "sebastian/phpcpd": "^3.0",
     "10up/wp_mock": "~0.2",
     "phpunit/phpunit": "^5.7",
-    "squizlabs/php_codesniffer": "^3.0",
+    "squizlabs/php_codesniffer": "^3.6",
     "phpcompatibility/php-compatibility": "^9.3",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "wp-coding-standards/wpcs": "^2.3"
