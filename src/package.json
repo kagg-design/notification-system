@@ -2,7 +2,7 @@
   "name": "kagg-notification",
   "license": "GPL-2.0-or-later",
   "scripts": {
-    "build:dev": "webpack --mode development",
+    "build:dev": "webpack --mode development --watch",
     "build:prod": "webpack --env production --mode production",
     "test": "jest",
     "coveralls": "jest --coverage && cat coverage/lcov.info | coveralls"

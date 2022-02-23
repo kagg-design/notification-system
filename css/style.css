@@ -58,6 +58,7 @@ div#notifications-header {
 
 #notifications-list {
 	table-layout: fixed;
+	min-height: 100px;
 }
 
 #notifications-list th,
@@ -234,6 +235,13 @@ div#notifications-header {
 	text-align: center;
 }
 
+.buttons-block{
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: stretch;
+	justify-content: space-between;
+}
 /* End Menu */
 
 /* Media */

@@ -158,7 +158,7 @@ class NotificationsRESTAPI {
 				}
 			}
 
-			notification.save().done( function () {
+			notification.save().done( function() {
 				getNotifications();
 			} );
 		} );
@@ -171,7 +171,7 @@ class NotificationsRESTAPI {
 	 */
 	updateNotification( query ) {
 		const getNotifications = () => this.getNotifications();
-		wp.api.loadPromise.done( function () {
+		wp.api.loadPromise.done( function() {
 			const notification = new wp.api.models.Notifications( {} );
 
 			for ( const key in query ) {
@@ -182,7 +182,7 @@ class NotificationsRESTAPI {
 
 			notification.set();
 
-			notification.save().done( function () {
+			notification.save().done( function() {
 				getNotifications();
 			} );
 		} );
@@ -195,12 +195,12 @@ class NotificationsRESTAPI {
 	 */
 	deleteNotification( id ) {
 		const getNotifications = () => this.getNotifications();
-		wp.api.loadPromise.done( function () {
+		wp.api.loadPromise.done( function() {
 			const notification = new wp.api.models.Notifications( {} );
 
 			notification.attributes.id = id;
 
-			notification.destroy().done( function () {
+			notification.destroy().done( function() {
 				getNotifications();
 			} );
 		} );
@@ -241,7 +241,7 @@ class NotificationsRESTAPI {
 
 		let unreadCount = 0;
 		let notificationsList = '';
-		notifications.each( function ( notification ) {
+		notifications.each( function( notification ) {
 			let readClass = '';
 			if ( notification.attributes.read ) {
 				readClass = ' read';
@@ -301,6 +301,8 @@ class NotificationsRESTAPI {
 		this.updateUnreadCountElements( unreadCount );
 
 		this.bindEvents();
+
+		var notification = document.getElementsByClassName( 'notification-cell' );
 	}
 
 	updateUnreadCountElements( unreadCount ) {
@@ -339,7 +341,7 @@ class NotificationsRESTAPI {
 		const links = document.getElementsByTagName( 'a' );
 		for ( const link of links ) {
 			if ( this.hasPopupHash( link.hash ) ) {
-				link.onclick = function ( event ) {
+				link.onclick = function( event ) {
 					event.preventDefault();
 					showPopup();
 					return false;
@@ -369,7 +371,7 @@ class NotificationsRESTAPI {
 			};
 		}
 
-		window.onclick = function ( event ) {
+		window.onclick = function( event ) {
 			// When user clicks anywhere outside of the modal, close it.
 			if ( event.target.matches( '.notifications-modal' ) ) {
 				event.target.style.display = 'none';
@@ -482,7 +484,7 @@ class NotificationsRESTAPI {
 					// eslint-disable-next-line no-alert
 					confirm(
 						'Are you sure to delete the following notification?\n\n' +
-							text.innerText
+						text.innerText
 					)
 				) {
 					deleteId = text.dataset.id;
@@ -588,6 +590,7 @@ class NotificationsRESTAPI {
 				'<span class="close">&times;</span>' + response;
 			popup.style.display = 'block';
 
+
 			this.bindEvents();
 
 			this.getNotifications();
@@ -598,7 +601,65 @@ class NotificationsRESTAPI {
 			document.body.appendChild(
 				document.getElementById( 'update-modal' )
 			);
+			this.makeAllRead();
 		} );
+	}
+
+	makeAllRead() {
+		const button = document.getElementById( 'read-button' );
+
+		button.addEventListener( 'click', ( event ) => {
+			this.sendMakeReadAjax().then( ( response ) => {
+				const notifications = document.getElementsByClassName( 'notification-cell' )
+				if ( response === 'done' ) {
+					for ( const notification in notifications ) {
+						notifications.item( notification ).classList.add( 'read' );
+					}
+				}
+			} );
+		} );
+	}
+
+	sendMakeReadAjax() {
+		const data = {
+			action: 'kagg_notification_make_all_as_read',
+			nonce: WPAPISettings.nonce,
+			current_user: document.getElementById( 'current-user' ).value
+		};
+
+		const encodedData = Object.keys( data )
+			.map(
+				( key ) =>
+					encodeURIComponent( key ) +
+					'=' +
+					encodeURIComponent( data[ key ] )
+			)
+			.join( '&' );
+
+		return fetch( WPAPISettings.ajaxURL, {
+			method: 'POST',
+			body: encodedData,
+			headers: {
+				'Content-Type':
+					'application/x-www-form-urlencoded; charset=utf-8',
+			},
+			credentials: 'same-origin',
+		} )
+			.then( ( response ) => {
+				if ( ! response.ok ) {
+					throw new Error( response.statusText );
+				}
+				return response.json();
+			} )
+			.then( ( response ) => {
+				if ( response.success ) {
+					return response.data;
+				}
+				throw new Error( response.data );
+			} )
+			.catch( ( reason ) => {
+				return reason.message;
+			} );
 	}
 }
 
