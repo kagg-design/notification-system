@@ -37,7 +37,7 @@ class Notifications {
 	 *
 	 * @var Notifications_API
 	 */
-	public $api = null;
+	public $api;
 
 	/**
 	 * Notifications constructor.
@@ -93,7 +93,7 @@ class Notifications {
 	 */
 	public function activate_plugin() {
 		// Register entities as they do not exist when activation hook is fired.
-		// Otherwise flush_rewrite_rules() has nothing to do.
+		// Otherwise, flush_rewrite_rules() has nothing to do.
 		$this->register_taxonomies();
 		$this->add_rewrite_rules();
 		$this->register_cpt_notification();
@@ -106,7 +106,7 @@ class Notifications {
 	 */
 	public function deactivate_plugin() {
 		// Unregister entities here as they do already exist when deactivation hook is fired.
-		// Otherwise flush_rewrite_rules() has nothing to do.
+		// Otherwise, flush_rewrite_rules() has nothing to do.
 		remove_rewrite_tag( '%channel%' );
 
 		// This also unregisters taxonomies.
@@ -133,7 +133,7 @@ class Notifications {
 		);
 		wp_enqueue_script( 'wp-api' );
 
-		// Plugin RESTful script.
+		// Plugin REST script.
 		wp_enqueue_script(
 			'notification-system',
 			KAGG_NOTIFICATIONS_URL . '/dist/js/notificationsRESTAPI/app.js',
@@ -216,6 +216,8 @@ class Notifications {
 
 	/**
 	 * Register Notification custom post type.
+	 *
+	 * @noinspection HtmlDeprecatedAttribute
 	 */
 	public function register_cpt_notification() {
 		$labels = [
@@ -262,7 +264,7 @@ class Notifications {
 			'capability_type'       => 'post',
 			'show_in_rest'          => false,
 			'rest_base'             => 'kagg/v1/notification',
-			'rest_controller_class' => __NAMESPACE__ . '\Notifications_API_Controller',
+			'rest_controller_class' => Notifications_API_Controller::class,
 		];
 
 		register_post_type( 'notification', $args );
@@ -309,11 +311,7 @@ class Notifications {
 
 		$path = wp_parse_url( $uri, PHP_URL_PATH );
 
-		if ( '/' . trailingslashit( self::PAGE_SLUG ) === trailingslashit( $path ) ) {
-			return true;
-		}
-
-		return false;
+		return '/' . trailingslashit( self::PAGE_SLUG ) === trailingslashit( $path );
 	}
 
 	/**
@@ -546,9 +544,7 @@ class Notifications {
 			// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 		];
 
-		$query = new WP_Query( $args );
-
-		return $query->found_posts;
+		return ( new WP_Query( $args ) )->found_posts;
 	}
 
 	/**
@@ -561,7 +557,7 @@ class Notifications {
 			document.dispatchEvent(
 				new CustomEvent(
 					'update_unread_counts',
-					{ 'detail': <?php echo intval( $count ); ?>},
+					{ 'detail': <?php echo $count; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>},
 				),
 			);
 		</script>
@@ -606,16 +602,16 @@ class Notifications {
 	/**
 	 * Check if we're saving, the trigger an action based on the post type.
 	 *
-	 * @param int     $post_id Post Id.
+	 * @param int     $post_id Post ID.
 	 * @param WP_Post $post    Post instance.
 	 */
 	public function save_meta_boxes( $post_id, $post ) {
 		// $post_id and $post are required
-		if ( empty( $post_id ) || empty( $post ) ) {
+		if ( empty( $post_id ) || null === $post ) {
 			return;
 		}
 
-		// Dont' save meta boxes for revisions or autosaves.
+		// Don't save meta boxes for revision or autosave.
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || is_int( wp_is_post_revision( $post ) ) ||
 			is_int( wp_is_post_autosave( $post ) )
@@ -635,7 +631,7 @@ class Notifications {
 		}
 
 		// Check the post being saved == the $post_id to prevent triggering this call for other save_post events.
-		if ( empty( $_POST['post_ID'] ) || ( intval( $_POST['post_ID'] ) !== $post_id ) ) {
+		if ( empty( $_POST['post_ID'] ) || ( (int) $_POST['post_ID'] !== $post_id ) ) {
 			return;
 		}
 
@@ -646,7 +642,7 @@ class Notifications {
 
 		remove_action( 'save_post', [ $this, 'save_meta_boxes' ], 1 );
 		$metabox = new Notification_Meta_Box();
-		$metabox->save( $post_id );
+		$metabox::save( $post_id );
 		add_action( 'save_post', [ $this, 'save_meta_boxes' ], 0, 3 );
 	}
 
@@ -656,38 +652,29 @@ class Notifications {
 	 *
 	 * @param array $sorted_menu_items The menu items, sorted by each menu item's menu order.
 	 *
-	 * @return mixed
+	 * @return array
+	 * @noinspection HtmlDeprecatedAttribute
 	 */
 	public function update_nav_menu_item( $sorted_menu_items ) {
 		if ( ! is_user_logged_in() ) {
 			return $sorted_menu_items;
 		}
 
-		$hash = '#' . self::POPUP_HASH;
+		$hash         = '#' . self::POPUP_HASH;
+		$count        = $this->get_unread_count();
+		$count_str    = $count > 9 ? '9+' : (string) $count;
+		$display_span = 0 === $count ? 'none' : 'inline-block';
+
 		foreach ( $sorted_menu_items as $item ) {
-			if ( ! isset( $item->url ) ) {
+			if ( ! isset( $item->url ) || false === mb_strpos( $item->url, $hash ) ) {
 				continue;
 			}
-			if ( false !== mb_strpos( $item->url, $hash ) ) {
-				if ( self::EMPTY_MENU === trim( $item->title ) ) {
-					$item->title = '';
-				};
 
-				$count = $this->get_unread_count();
-				if ( 0 === $count ) {
-					$display_span = 'none';
-				} else {
-					$display_span = 'inline-block';
-					if ( $count > 9 ) {
-						$count = '9+';
-					}
-				}
-				$count_span = '<span class="unread-notifications-count" style="display: ' . $display_span . '">' . $count . '</span>';
+			$item->title = self::EMPTY_MENU === trim( $item->title ) ? '' : $item->title;
+			$count_span  = '<span class="unread-notifications-count" style="display: ' . $display_span . '">' . $count_str . '</span>';
+			$svg         = '<svg class="icon" height="20" viewBox="0 85.5 1024 855" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M490.666667 938.666667c46.933333 0 85.333333-38.4 85.333333-85.333334h-170.666667c0 46.933333 38.4 85.333333 85.333334 85.333334z m277.333333-256V448c0-130.986667-90.88-240.64-213.333333-269.653333V149.333333c0-35.413333-28.586667-64-64-64s-64 28.586667-64 64v29.013334C304.213333 207.36 213.333333 317.013333 213.333333 448v234.666667l-85.333333 85.333333v42.666667h725.333333v-42.666667l-85.333333-85.333333z" fill="black" /> </svg>';
 
-				$svg = '<svg class="icon" height="20" viewBox="0 85.5 1024 855" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M490.666667 938.666667c46.933333 0 85.333333-38.4 85.333333-85.333334h-170.666667c0 46.933333 38.4 85.333333 85.333334 85.333334z m277.333333-256V448c0-130.986667-90.88-240.64-213.333333-269.653333V149.333333c0-35.413333-28.586667-64-64-64s-64 28.586667-64 64v29.013334C304.213333 207.36 213.333333 317.013333 213.333333 448v234.666667l-85.333333 85.333333v42.666667h725.333333v-42.666667l-85.333333-85.333333z" fill="black" /> </svg>';
-
-				$item->title .= '<span class="menu-item-notifications">' . $svg . $count_span . '</span>';
-			}
+			$item->title .= '<span class="menu-item-notifications">' . $svg . $count_span . '</span>';
 		}
 
 		return $sorted_menu_items;

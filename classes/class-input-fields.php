@@ -50,7 +50,7 @@ class Input_Fields {
 			// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
-		// Output $custom_attributes without esc_attr(), as they are already well formed.
+		// Output $custom_attributes without esc_attr(), as they are already well-formed.
 		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo '<input type="' . esc_attr( $field['type'] ) . '" class="' . esc_attr( $field['class'] ) . '"';
 		echo ' style="' . esc_attr( $field['style'] ) . '" name="' . esc_attr( $field['name'] ) . '"';
@@ -73,6 +73,7 @@ class Input_Fields {
 	 * @param bool   $allow_html Allow sanitized HTML if true or escape.
 	 *
 	 * @return string
+	 * @noinspection PhpSameParameterValueInspection
 	 */
 	private static function help_tip( $tip, $allow_html = false ) {
 		if ( $allow_html ) {
@@ -150,7 +151,7 @@ class Input_Fields {
 
 		$tooltip     = ! empty( $field['description'] ) && false !== $field['desc_tip'] ? $field['description'] : '';
 		$description = ! empty( $field['description'] ) && false === $field['desc_tip'] ? $field['description'] : '';
-		// Output $custom_attributes without esc_attr(), as they are already well formed.
+		// Output $custom_attributes without esc_attr(), as they are already well-formed.
 		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 		?>
 		<p <?php echo self::implode_html_attributes( $wrapper_attributes ); ?>>
@@ -228,8 +229,8 @@ class Input_Fields {
 	public static function clean( $var ) {
 		if ( is_array( $var ) ) {
 			return array_map( 'self::clean', $var );
-		} else {
-			return is_scalar( $var ) ? sanitize_text_field( $var ) : $var;
 		}
+
+		return is_scalar( $var ) ? sanitize_text_field( $var ) : $var;
 	}
 }

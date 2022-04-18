@@ -43,5 +43,8 @@
     "classmap": [
       "classes"
     ]
+  },
+  "require": {
+    "ext-mbstring": "*"
   }
 }

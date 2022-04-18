@@ -4,11 +4,15 @@
 
 	<!-- What to scan -->
 	<file>.</file>
+	<exclude-pattern>*/\.github/*</exclude-pattern>
 	<exclude-pattern>*/\.make/*</exclude-pattern>
+	<exclude-pattern>*/\.wordpress-org/*</exclude-pattern>
 	<exclude-pattern>*/assets/*</exclude-pattern>
 	<exclude-pattern>*/css/*</exclude-pattern>
 	<exclude-pattern>*/dist/*</exclude-pattern>
+	<exclude-pattern>*/images/*</exclude-pattern>
 	<exclude-pattern>*/languages/*</exclude-pattern>
+	<exclude-pattern>*/node-modules/*</exclude-pattern>
 	<exclude-pattern>*/src/*</exclude-pattern>
 	<exclude-pattern>*/tests/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
@@ -36,7 +40,36 @@
 	<config name="minimum_supported_wp_version" value="4.4"/>
 	<rule ref="WordPress" />
 
+	<!-- Re-enable certain sniffs that were disabled by WordPress* standards. -->
+	<rule ref="Generic.Metrics.CyclomaticComplexity">
+		<properties>
+			<property name="complexity" value="6"/>
+			<property name="absoluteComplexity" value="10"/>
+		</properties>
+	</rule>
+
+	<rule ref="Generic.Metrics.NestingLevel">
+		<properties>
+			<property name="absoluteNestingLevel" value="3"/>
+		</properties>
+	</rule>
+
+	<!-- Allow only short array syntax -->
 	<rule ref="Generic.Arrays.DisallowShortArraySyntax.Found">
+		<severity>0</severity>
+	</rule>
+	<rule ref="Generic.Arrays.DisallowLongArraySyntax.Found"/>
+
+	<!-- Allow short ternary syntax -->
+	<rule ref="WordPress.PHP.DisallowShortTernary.Found">
+		<severity>0</severity>
+	</rule>
+
+	<!-- Rules to follow PSR4 -->
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<severity>0</severity>
+	</rule>
+	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
 		<severity>0</severity>
 	</rule>
 </ruleset>

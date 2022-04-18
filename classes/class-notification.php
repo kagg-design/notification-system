@@ -115,14 +115,16 @@ class Notification {
 	 */
 	public function set_user_list( $users ) {
 		$users         = preg_replace( '/\s+/', '', $users );
-		$users         = explode( ',', $users );
+		$users_arr     = explode( ',', $users );
 		$users_to_save = [];
-		foreach ( $users as $key => $user ) {
+
+		foreach ( $users_arr as $user ) {
 			$wp_user = get_user_by( 'login', $user );
 			if ( $wp_user ) {
 				$users_to_save[] = $wp_user->ID;
 			}
 		}
+
 		$this->set_users( $users_to_save );
 	}
 

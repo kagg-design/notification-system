@@ -10,7 +10,7 @@
  * Plugin Name:          Notification System
  * Plugin URI:           https://wordpress.org/plugins/notification-system/
  * Description:          Creates and maintains notification system for users on WordPress site.
- * Version:              1.3
+ * Version:              1.3.0
  * Requires at least:    4.4
  * Requires PHP:         5.6
  * Author:               KAGG Design
@@ -34,7 +34,7 @@ if ( defined( 'KAGG_NOTIFICATIONS_VERSION' ) ) {
 /**
  * Plugin version.
  */
-define( 'KAGG_NOTIFICATIONS_VERSION', '1.3' );
+define( 'KAGG_NOTIFICATIONS_VERSION', '1.3.0' );
 
 /**
  * Plugin path.
