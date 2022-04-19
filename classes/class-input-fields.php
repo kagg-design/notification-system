@@ -20,50 +20,66 @@ class Input_Fields {
 	public static function text_input( $field ) {
 		global $post;
 
-		$the_post_id            = $post->ID;
-		$field['placeholder']   = isset( $field['placeholder'] ) ? $field['placeholder'] : '';
-		$field['class']         = isset( $field['class'] ) ? $field['class'] : 'short';
-		$field['style']         = isset( $field['style'] ) ? $field['style'] : '';
-		$field['wrapper_class'] = isset( $field['wrapper_class'] ) ? $field['wrapper_class'] : '';
-		$field['value']         = isset( $field['value'] ) ?
-			$field['value'] :
-			get_post_meta( $the_post_id, $field['id'], true );
-		$field['name']          = isset( $field['name'] ) ? $field['name'] : $field['id'];
-		$field['type']          = isset( $field['type'] ) ? $field['type'] : 'text';
-		$field['desc_tip']      = isset( $field['desc_tip'] ) ? $field['desc_tip'] : false;
+		$field = wp_parse_args(
+			$field,
+			[
+				'placeholder'   => '',
+				'class'         => 'short',
+				'style'         => '',
+				'wrapper_class' => '',
+				'value'         => get_post_meta( $post->ID, $field['id'], true ),
+				'name'          => $field['id'],
+				'type'          => 'text',
+				'desc_tip'      => false,
+			]
+		);
 
 		// Custom attribute handling.
-		$custom_attributes = [];
+		$custom_attributes = self::esc_custom_attributes( $field );
 
-		if ( ! empty( $field['custom_attributes'] ) && is_array( $field['custom_attributes'] ) ) {
-			foreach ( $field['custom_attributes'] as $attribute => $value ) {
-				$custom_attributes[] = esc_attr( $attribute ) . '="' . esc_attr( $value ) . '"';
-			}
-		}
+		$help_tip    = ! empty( $field['description'] ) && false !== $field['desc_tip'] ? $field['description'] : '';
+		$description = ! empty( $field['description'] ) && false === $field['desc_tip'] ? $field['description'] : '';
 
 		echo '<p class="form-field ' . esc_attr( $field['id'] ) . '_field ' . esc_attr( $field['wrapper_class'] ) . '">
 		<label for="' . esc_attr( $field['id'] ) . '">' . wp_kses_post( $field['label'] ) . '</label>';
 
-		if ( ! empty( $field['description'] ) && false !== $field['desc_tip'] ) {
-			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo self::help_tip( $field['description'] );
-			// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
-		}
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		self::show_help_tip( $help_tip );
 
-		// Output $custom_attributes without esc_attr(), as they are already well-formed.
-		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo '<input type="' . esc_attr( $field['type'] ) . '" class="' . esc_attr( $field['class'] ) . '"';
 		echo ' style="' . esc_attr( $field['style'] ) . '" name="' . esc_attr( $field['name'] ) . '"';
 		echo ' id="' . esc_attr( $field['id'] ) . '" value="' . esc_attr( $field['value'] ) . '"';
 		echo ' placeholder="' . esc_attr( $field['placeholder'] ) . '"';
+		// Output $custom_attributes without esc_attr(), as they are already well-formed.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo ' ' . implode( ' ', $custom_attributes ) . ' /> ';
-		// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		if ( ! empty( $field['description'] ) && false === $field['desc_tip'] ) {
-			echo '<span class="description">' . wp_kses_post( $field['description'] ) . '</span>';
-		}
+		self::show_description( $description );
 
 		echo '</p>';
+	}
+
+	/**
+	 * Return a help tip.
+	 *
+	 * @param string $tip        Help tip text.
+	 * @param bool   $allow_html Allow sanitized HTML if true or escape.
+	 *
+	 * @return string
+	 * @noinspection PhpSameParameterValueInspection
+	 */
+	private static function get_help_tip( $tip, $allow_html = false ) {
+		if ( ! $tip ) {
+			return '';
+		}
+
+		if ( $allow_html ) {
+			$tip = self::sanitize_tooltip( $tip );
+		} else {
+			$tip = esc_attr( $tip );
+		}
+
+		return '<span class="fq-help-tip" data-tip="' . $tip . '"></span>';
 	}
 
 	/**
@@ -72,17 +88,39 @@ class Input_Fields {
 	 * @param string $tip        Help tip text.
 	 * @param bool   $allow_html Allow sanitized HTML if true or escape.
 	 *
-	 * @return string
+	 * @return void
 	 * @noinspection PhpSameParameterValueInspection
 	 */
-	private static function help_tip( $tip, $allow_html = false ) {
-		if ( $allow_html ) {
-			$tip = self::sanitize_tooltip( $tip );
-		} else {
-			$tip = esc_attr( $tip );
+	private static function show_help_tip( $tip, $allow_html = false ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo self::get_help_tip( $tip, $allow_html );
+	}
+
+	/**
+	 * Get description html.
+	 *
+	 * @param string $description Description.
+	 *
+	 * @return string
+	 */
+	private static function get_description_html( $description ) {
+		if ( ! $description ) {
+			return '';
 		}
 
-		return '<span class="fq-help-tip" data-tip="' . $tip . '"></span>';
+		return '<span class="description">' . wp_kses_post( $description ) . '</span>';
+	}
+
+	/**
+	 * Show description.
+	 *
+	 * @param string $description Description.
+	 *
+	 * @return void
+	 */
+	private static function show_description( $description ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo self::get_description_html( $description );
 	}
 
 	/**
@@ -149,7 +187,7 @@ class Input_Fields {
 		$field_attributes['name']  = $field['name'];
 		$field_attributes['class'] = $field['class'];
 
-		$tooltip     = ! empty( $field['description'] ) && false !== $field['desc_tip'] ? $field['description'] : '';
+		$help_tip    = ! empty( $field['description'] ) && false !== $field['desc_tip'] ? $field['description'] : '';
 		$description = ! empty( $field['description'] ) && false === $field['desc_tip'] ? $field['description'] : '';
 		// Output $custom_attributes without esc_attr(), as they are already well-formed.
 		// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -158,11 +196,7 @@ class Input_Fields {
 			<label <?php echo self::implode_html_attributes( $label_attributes ); ?>>
 				<?php echo wp_kses_post( $field['label'] ); ?>
 			</label>
-			<?php
-			if ( $tooltip ) {
-				echo self::help_tip( $tooltip );
-			}
-			?>
+			<?php self::show_help_tip( $help_tip ); ?>
 			<select <?php echo self::implode_html_attributes( $field_attributes ); ?> title="">
 				<?php
 				foreach ( $field['options'] as $key => $value ) {
@@ -171,14 +205,7 @@ class Input_Fields {
 				}
 				?>
 			</select>
-			<?php
-			// phpcs:enable WordPress.Security.EscapeOutput.OutputNotEscaped
-			if ( $description ) {
-				?>
-				<span class="description"><?php echo wp_kses_post( $description ); ?></span>
-				<?php
-			}
-			?>
+			<?php self::show_description( $description ); ?>
 		</p>
 		<?php
 	}
@@ -197,6 +224,27 @@ class Input_Fields {
 		}
 
 		return implode( ' ', $attributes );
+	}
+
+	/**
+	 * Escape custom attributes.
+	 *
+	 * @param array $field Field.
+	 *
+	 * @return array
+	 */
+	private static function esc_custom_attributes( $field ) {
+		$custom_attributes = [];
+
+		if ( ! isset( $field['custom_attributes'] ) || ! is_array( $field['custom_attributes'] ) ) {
+			return $custom_attributes;
+		}
+
+		foreach ( $field['custom_attributes'] as $attribute => $value ) {
+			$custom_attributes[] = esc_attr( $attribute ) . '="' . esc_attr( $value ) . '"';
+		}
+
+		return $custom_attributes;
 	}
 
 	/**

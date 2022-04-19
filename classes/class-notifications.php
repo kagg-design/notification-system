@@ -83,7 +83,7 @@ class Notifications {
 		add_action( 'add_meta_boxes', [ $this, 'remove_meta_boxes' ] );
 		add_action( 'save_post', [ $this, 'save_meta_boxes' ], 0, 2 );
 		add_action( 'update_unread_counts', [ $this, 'update_unread_counts' ] );
-		add_filter( 'wp_nav_menu_objects', [ $this, 'update_nav_menu_item' ], 10 );
+		add_filter( 'wp_nav_menu_objects', [ $this, 'update_nav_menu_items' ], 10 );
 
 		add_action( 'plugins_loaded', [ $this, 'load_plugin_textdomain' ] );
 	}
@@ -647,15 +647,14 @@ class Notifications {
 	}
 
 	/**
-	 * Update Notifications item in nav menu.
-	 * Add to it svg icon and unread count.
+	 * Update Notifications item(s) in nav menu.
+	 * Add svg icon and unread count to them.
 	 *
 	 * @param array $sorted_menu_items The menu items, sorted by each menu item's menu order.
 	 *
 	 * @return array
-	 * @noinspection HtmlDeprecatedAttribute
 	 */
-	public function update_nav_menu_item( $sorted_menu_items ) {
+	public function update_nav_menu_items( $sorted_menu_items ) {
 		if ( ! is_user_logged_in() ) {
 			return $sorted_menu_items;
 		}
@@ -670,11 +669,7 @@ class Notifications {
 				continue;
 			}
 
-			$item->title = self::EMPTY_MENU === trim( $item->title ) ? '' : $item->title;
-			$count_span  = '<span class="unread-notifications-count" style="display: ' . $display_span . '">' . $count_str . '</span>';
-			$svg         = '<svg class="icon" height="20" viewBox="0 85.5 1024 855" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M490.666667 938.666667c46.933333 0 85.333333-38.4 85.333333-85.333334h-170.666667c0 46.933333 38.4 85.333333 85.333334 85.333334z m277.333333-256V448c0-130.986667-90.88-240.64-213.333333-269.653333V149.333333c0-35.413333-28.586667-64-64-64s-64 28.586667-64 64v29.013334C304.213333 207.36 213.333333 317.013333 213.333333 448v234.666667l-85.333333 85.333333v42.666667h725.333333v-42.666667l-85.333333-85.333333z" fill="black" /> </svg>';
-
-			$item->title .= '<span class="menu-item-notifications">' . $svg . $count_span . '</span>';
+			$this->update_nav_menu_item( $item, $display_span, $count_str );
 		}
 
 		return $sorted_menu_items;
@@ -715,5 +710,23 @@ class Notifications {
 			?>
 		</select>
 		<?php
+	}
+
+	/**
+	 * Update nav menu item.
+	 *
+	 * @param object $item Menu item.
+	 * @param string $display_span Whether to display span.
+	 * @param string $count_str Counter.
+	 *
+	 * @return void
+	 * @noinspection HtmlDeprecatedAttribute
+	 */
+	private function update_nav_menu_item( $item, $display_span, $count_str ) {
+		$item->title = self::EMPTY_MENU === trim( $item->title ) ? '' : $item->title;
+		$count_span  = '<span class="unread-notifications-count" style="display: ' . $display_span . '">' . $count_str . '</span>';
+		$svg         = '<svg class="icon" height="20" viewBox="0 85.5 1024 855" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M490.666667 938.666667c46.933333 0 85.333333-38.4 85.333333-85.333334h-170.666667c0 46.933333 38.4 85.333333 85.333334 85.333334z m277.333333-256V448c0-130.986667-90.88-240.64-213.333333-269.653333V149.333333c0-35.413333-28.586667-64-64-64s-64 28.586667-64 64v29.013334C304.213333 207.36 213.333333 317.013333 213.333333 448v234.666667l-85.333333 85.333333v42.666667h725.333333v-42.666667l-85.333333-85.333333z" fill="black" /> </svg>';
+
+		$item->title .= '<span class="menu-item-notifications">' . $svg . $count_span . '</span>';
 	}
 }

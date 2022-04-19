@@ -469,39 +469,42 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 */
 	protected function prepare_items_query( $prepared_args = [], $request = null ) {
 
-		$valid_vars = array_flip( $this->get_allowed_query_vars() );
-		$query_args = [];
-		foreach ( $valid_vars as $var => $index ) {
-			if ( isset( $prepared_args[ $var ] ) ) {
-				$query_args[ $var ] = $prepared_args[ $var ];
+		$query_args = array_diff_key( $prepared_args, array_keys( $this->get_allowed_query_vars() ) );
+		$query_args = array_filter(
+			$query_args,
+			static function ( $query_arg ) {
+				return null !== $query_arg;
 			}
-		}
+		);
 
 		$query_args['ignore_sticky_posts'] = true;
 
 		$orderby = isset( $query_args['orderby'] ) ? $query_args['orderby'] : '';
+
 		if ( 'include' === $orderby ) {
 			$query_args['orderby'] = 'post__in';
 		} elseif ( 'id' === $orderby ) {
 			$query_args['orderby'] = 'ID'; // ID must be capitalized.
 		}
 
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-			$query_args['meta_query'] = [
-				'relation' => 'OR',
-				[
-					'key'     => Notification::USERS_META_KEY,
-					'value'   => List_In_Meta::get_prepared_item( wp_get_current_user()->ID ),
-					'compare' => 'LIKE',
-				],
-				[
-					'key'     => Notification::USERS_META_KEY,
-					'compare' => 'NOT EXISTS',
-				],
-			];
-			// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+		if ( current_user_can( 'edit_posts' ) ) {
+			return $query_args;
 		}
+
+		// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+		$query_args['meta_query'] = [
+			'relation' => 'OR',
+			[
+				'key'     => Notification::USERS_META_KEY,
+				'value'   => List_In_Meta::get_prepared_item( wp_get_current_user()->ID ),
+				'compare' => 'LIKE',
+			],
+			[
+				'key'     => Notification::USERS_META_KEY,
+				'compare' => 'NOT EXISTS',
+			],
+		];
+		// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 
 		return $query_args;
 	}
