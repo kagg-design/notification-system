@@ -381,7 +381,7 @@ class Notifications {
 								?>
 								<input
 									type='button' id='more-button'
-									value='<?php esc_html_e( 'Show more...', 'notification-system' ); ?>'>
+									value='<?php esc_html_e( 'More...', 'notification-system' ); ?>'>
 								<?php
 							}
 							?>
@@ -393,7 +393,7 @@ class Notifications {
 								?>
 								<input
 									type='button' id='create-notification-button'
-									value='<?php esc_html_e( 'Create Notification', 'notification-system' ); ?>'>
+									value='<?php esc_html_e( 'Create', 'notification-system' ); ?>'>
 								<?php
 							}
 							?>

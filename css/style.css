@@ -1,7 +1,9 @@
-.content-area.notifications-content {
+.notifications-modal-content .content-area.notifications-content {
 	width: 100% !important;
 	max-width: 1000px;
+	box-sizing: border-box;
 	margin: auto;
+	padding: 0 1em;
 }
 
 #notifications-popup > .notifications-modal-content {
@@ -12,11 +14,17 @@
 
 .notifications-modal-content .wrap {
 	position: relative;
-	padding: 2em 3em;
+	box-sizing: border-box;
+	width: 100%;
+	margin: 2em auto;
+	padding: 0 2em;
 	font-size: 16px;
 	max-height: 90vh;
 	overflow: auto;
 	height: auto;
+}
+.content-area.notifications-content {
+	width: 100% !important;
 }
 
 .content-area.notifications-content article {
@@ -35,13 +43,23 @@
 	margin: 0;
 }
 
+#notifications-page {
+	max-width: 800px;
+	margin: auto;
+}
+
 #notifications-page input[type="button"] {
 	cursor: pointer;
+	padding: 1em 2em;
 }
 
 div#notifications-header {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
 	margin-bottom: 1em;
-	clear: both;
 }
 
 #notifications-header select {
@@ -63,6 +81,7 @@ div#notifications-header {
 #notifications-list {
 	table-layout: fixed;
 	min-height: 100px;
+	width: 100%;
 }
 
 #notifications-list th,
@@ -94,17 +113,6 @@ div#notifications-header {
 #more-button:disabled {
 	cursor: not-allowed;
 	opacity: 0.3;
-}
-
-#more-button {
-	padding: 1em 28px;
-	float: left;
-}
-
-#create-notification-button {
-	padding: 1em 28px;
-	margin-left: 15px;
-	float: right;
 }
 
 .notifications-modal h3 {
@@ -243,8 +251,9 @@ div#notifications-header {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	align-items: stretch;
+	align-items: center;
 	justify-content: space-between;
+	margin-top: 1em;
 }
 /* End Menu */
 
