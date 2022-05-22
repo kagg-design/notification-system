@@ -79,6 +79,9 @@ class Notifications {
 		add_action( 'wp_ajax_kagg_notification_get_popup_content', [ $this, 'get_popup_content' ] );
 		add_action( 'wp_ajax_nopriv_kagg_notification_get_popup_content', [ $this, 'get_popup_content' ] );
 
+		add_action( 'wp_ajax_kagg_notification_make_all_as_read', [ $this, 'make_all_as_read' ] );
+		add_action( 'wp_ajax_nopriv_kagg_notification_make_all_as_read', [ $this, 'make_all_as_read' ] );
+
 		add_action( 'add_meta_boxes', [ $this, 'add_meta_boxes' ] );
 		add_action( 'add_meta_boxes', [ $this, 'remove_meta_boxes' ] );
 		add_action( 'save_post', [ $this, 'save_meta_boxes' ], 0, 2 );
@@ -372,23 +375,32 @@ class Notifications {
 							<?php // Here will be the javascript output. ?>
 							</tbody>
 						</table>
-						<?php
-						if ( current_user_can( 'read' ) ) {
+						<div class="buttons-block">
+							<?php
+							if ( current_user_can( 'read' ) ) {
+								?>
+								<input
+									type='button' id='more-button'
+									value='<?php esc_html_e( 'Show more...', 'notification-system' ); ?>'>
+								<?php
+							}
 							?>
 							<input
-								type='button' id='more-button'
-								value='<?php esc_html_e( 'Show more...', 'notification-system' ); ?>'>
+								type='button' id='read-button'
+								value='<?php esc_html_e( 'Mark all as read', 'notification-system' ); ?>'>
 							<?php
-						}
-
-						if ( current_user_can( 'edit_posts' ) ) {
+							if ( current_user_can( 'edit_posts' ) ) {
+								?>
+								<input
+									type='button' id='create-notification-button'
+									value='<?php esc_html_e( 'Create Notification', 'notification-system' ); ?>'>
+								<?php
+							}
 							?>
 							<input
-								type='button' id='create-notification-button'
-								value='<?php esc_html_e( 'Create Notification', 'notification-system' ); ?>'>
-							<?php
-						}
-						?>
+								type="hidden" id="current-user" name="current-user"
+								value="<?php echo esc_attr( get_current_user_id() ); ?>">
+						</div>
 					</article><!-- #notifications-page -->
 				</main><!-- #main -->
 
@@ -477,6 +489,89 @@ class Notifications {
 		}
 
 		wp_send_json_success( $this->notifications_shortcode() );
+	}
+
+	/**
+	 * Make all as read notification.
+	 *
+	 * @return void
+	 */
+	public function make_all_as_read(): void {
+		if ( ! wp_verify_nonce(
+			filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING ),
+			'kagg-notification-rest'
+		)
+		) {
+			wp_send_json_error( __( 'Bad nonce!', 'notification-system' ) );
+		}
+
+		$user_id = filter_input( INPUT_POST, 'current_user', FILTER_SANITIZE_STRING );
+
+		if ( empty( $user_id ) ) {
+			wp_send_json_error( __( 'Current user ID is empty!', 'notification-system' ) );
+		}
+		$read_value = List_In_Meta::get_prepared_item( wp_get_current_user()->ID );
+
+		$user_meta_query = [
+			'relation' => 'AND',
+			[
+				'key'     => Notification::USERS_META_KEY,
+				'value'   => List_In_Meta::get_prepared_item( $user_id ),
+				'compare' => 'LIKE',
+			],
+			[
+				'key'     => Notification::READ_STATUS_META_KEY,
+				'compare' => 'NOT EXISTS',
+			],
+		];
+
+		$admin_meta_query = [
+			'relation' => 'OR',
+			[
+				'relation' => 'AND',
+				[
+					'key'     => Notification::READ_STATUS_META_KEY,
+					'value'   => $read_value,
+					'compare' => 'NOT LIKE',
+				],
+				[
+					'key'     => Notification::READ_STATUS_META_KEY,
+					'compare' => 'EXISTS',
+				],
+			],
+			[
+				'key'     => Notification::READ_STATUS_META_KEY,
+				'compare' => 'NOT EXISTS',
+			],
+		];
+
+		$args = [
+			'post_type'      => 'notification',
+			'posts_per_page' => - 1,
+			'status'         => 'publish',
+		];
+
+		if ( user_can( $user_id, 'administrator' ) ) {
+			$args['meta_query'] = $admin_meta_query;
+		} else {
+			$args['meta_query'] = $user_meta_query;
+		}
+
+		$query = new WP_Query( $args );
+
+		if ( 0 === $query->post_count ) {
+			wp_send_json_success( __( 'Not found notification', 'notification-system' ) );
+		}
+
+		$notification = new Notification( 0 );
+
+		foreach ( $query->posts as $key => $post ) {
+			$notification->id = $post->ID;
+			$notification->set_read_status( true );
+		}
+
+		wp_send_json_success( 'done' );
+
 	}
 
 	/**

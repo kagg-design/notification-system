@@ -31,7 +31,7 @@ class Notification {
 	 *
 	 * @var int
 	 */
-	protected $id = 0;
+	public $id = 0;
 
 	/**
 	 * Instance of List In Meta class.
