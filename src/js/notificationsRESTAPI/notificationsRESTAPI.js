@@ -335,6 +335,7 @@ class NotificationsRESTAPI {
 		const updateNotification = () => this.updateNotification( query );
 		const deleteNotification = () => this.deleteNotification( deleteId );
 		const markAllAsReadAjax = () => this.markAllAsReadAjax();
+		const getNotifications = () => this.getNotifications();
 
 		// Click on link containing POPUP_HASH.
 		const links = document.getElementsByTagName( 'a' );
@@ -501,6 +502,7 @@ class NotificationsRESTAPI {
 						}
 					}
 				} );
+				getNotifications();
 			}
 		};
 
