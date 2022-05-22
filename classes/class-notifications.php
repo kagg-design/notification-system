@@ -277,12 +277,19 @@ class Notifications {
 	 * Template for the plugin frontend page.
 	 */
 	public function notifications_page() {
-		if ( $this->is_notification_page() ) {
-			get_header();
-			echo do_shortcode( '[notifications]' );
-			get_footer();
-			exit;
+		if ( ! $this->is_notification_page() ) {
+			return;
 		}
+
+		if ( wp_is_block_theme() ) {
+			add_filter( 'deprecated_file_trigger_error', '__return_false' );
+		}
+
+		get_header();
+		echo do_shortcode( '[notifications]' );
+		get_footer();
+
+		exit;
 	}
 
 	/**
