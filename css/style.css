@@ -35,6 +35,10 @@
 	margin: 0;
 }
 
+#notifications-page input[type="button"] {
+	cursor: pointer;
+}
+
 div#notifications-header {
 	margin-bottom: 1em;
 	clear: both;
@@ -42,7 +46,7 @@ div#notifications-header {
 
 #notifications-header select {
 	width: auto;
-	height: 2em;
+	min-height: 2em;
 	float: right;
 	outline: none;
 }

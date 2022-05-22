@@ -301,8 +301,6 @@ class NotificationsRESTAPI {
 		this.updateUnreadCountElements( unreadCount );
 
 		this.bindEvents();
-
-		var notification = document.getElementsByClassName( 'notification-cell' );
 	}
 
 	updateUnreadCountElements( unreadCount ) {
@@ -336,6 +334,7 @@ class NotificationsRESTAPI {
 			this.showNotifications( this.notifications, true );
 		const updateNotification = () => this.updateNotification( query );
 		const deleteNotification = () => this.deleteNotification( deleteId );
+		const markAllAsReadAjax = () => this.markAllAsReadAjax();
 
 		// Click on link containing POPUP_HASH.
 		const links = document.getElementsByTagName( 'a' );
@@ -491,6 +490,18 @@ class NotificationsRESTAPI {
 					deleteNotification();
 				}
 			}
+
+			// Mark all as read.
+			if ( event.target.matches( '#read-button' ) ) {
+				markAllAsReadAjax().then( ( response ) => {
+					const notifications = document.getElementsByClassName( 'notification-cell' )
+					if ( response === 'done' ) {
+						for ( const notification in notifications ) {
+							notifications.item( notification ).classList.add( 'read' );
+						}
+					}
+				} );
+			}
 		};
 
 		// Select change handler.
@@ -590,7 +601,6 @@ class NotificationsRESTAPI {
 				'<span class="close">&times;</span>' + response;
 			popup.style.display = 'block';
 
-
 			this.bindEvents();
 
 			this.getNotifications();
@@ -601,26 +611,10 @@ class NotificationsRESTAPI {
 			document.body.appendChild(
 				document.getElementById( 'update-modal' )
 			);
-			this.makeAllRead();
 		} );
 	}
 
-	makeAllRead() {
-		const button = document.getElementById( 'read-button' );
-
-		button.addEventListener( 'click', ( event ) => {
-			this.sendMakeReadAjax().then( ( response ) => {
-				const notifications = document.getElementsByClassName( 'notification-cell' )
-				if ( response === 'done' ) {
-					for ( const notification in notifications ) {
-						notifications.item( notification ).classList.add( 'read' );
-					}
-				}
-			} );
-		} );
-	}
-
-	sendMakeReadAjax() {
+	markAllAsReadAjax() {
 		const data = {
 			action: 'kagg_notification_make_all_as_read',
 			nonce: WPAPISettings.nonce,
