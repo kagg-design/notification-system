@@ -3,9 +3,9 @@ Contributors: kaggdesign
 Donate link: https://www.paypal.me/kagg
 Tags: notification, notification system, user notification, notification channel
 Requires at least: 4.4
-Tested up to: 5.9
+Tested up to: 6.0
 Requires PHP: 5.6
-Stable tag: 1.3.0
+Stable tag: 1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -100,8 +100,8 @@ If you get stuck, you can ask for help in the [Notification System Plugin Forum]
 
 == Changelog ==
 
-= 1.3.0 =
-* Tested with WordPress 5.9
+= 1.3 =
+* Tested with WordPress 6.0
 
 = 1.2 =
 * Tested with WordPress 5.7
