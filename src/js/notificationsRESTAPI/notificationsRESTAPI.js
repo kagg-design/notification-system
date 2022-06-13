@@ -108,10 +108,12 @@ class NotificationsRESTAPI {
 				}
 			}
 
+			// noinspection JSUnresolvedVariable
 			const Notification = wp.api.models.Post.extend( {
 				urlRoot: WPAPISettings.root + WPAPISettings.base,
 			} );
 
+			// noinspection JSUnresolvedVariable
 			const Notifications = wp.api.collections.Posts.extend( {
 				url: WPAPISettings.root + WPAPISettings.base + queryString,
 				model: Notification,
@@ -126,6 +128,7 @@ class NotificationsRESTAPI {
 					// eslint-disable-next-line
 					data: { per_page: this.PER_PAGE },
 					error: ( collection, response ) => {
+						// noinspection JSUnresolvedVariable
 						this.getNotificationsListElement.innerHTML =
 							'<td colspan="4" class="notifications-error">' +
 							response.responseJSON.message +
@@ -150,6 +153,7 @@ class NotificationsRESTAPI {
 		const getNotifications = () => this.getNotifications();
 
 		wp.api.loadPromise.done( () => {
+			// noinspection JSUnresolvedFunction
 			const notification = new wp.api.models.Notifications( {} );
 
 			for ( const key in query ) {
@@ -172,6 +176,7 @@ class NotificationsRESTAPI {
 	updateNotification( query ) {
 		const getNotifications = () => this.getNotifications();
 		wp.api.loadPromise.done( function () {
+			// noinspection JSUnresolvedFunction
 			const notification = new wp.api.models.Notifications( {} );
 
 			for ( const key in query ) {
@@ -196,6 +201,7 @@ class NotificationsRESTAPI {
 	deleteNotification( id ) {
 		const getNotifications = () => this.getNotifications();
 		wp.api.loadPromise.done( function () {
+			// noinspection JSUnresolvedFunction
 			const notification = new wp.api.models.Notifications( {} );
 
 			notification.attributes.id = id;
@@ -229,10 +235,12 @@ class NotificationsRESTAPI {
 				.querySelector( '.notifications-content' )
 				.classList.contains( 'edit' )
 		) {
+			// noinspection JSUnresolvedVariable
 			buttons +=
 				'<img alt="Delete Button" class="delete-notification-button" src="' +
 				WPAPISettings.pluginURL +
 				'/images/delete-button.svg">';
+			// noinspection JSUnresolvedVariable
 			buttons +=
 				'<img alt="Update Button" class="update-notification-button" src="' +
 				WPAPISettings.pluginURL +
@@ -334,6 +342,8 @@ class NotificationsRESTAPI {
 			this.showNotifications( this.notifications, true );
 		const updateNotification = () => this.updateNotification( query );
 		const deleteNotification = () => this.deleteNotification( deleteId );
+		const markAllAsReadAjax = () => this.markAllAsReadAjax();
+		const getNotifications = () => this.getNotifications();
 
 		// Click on link containing POPUP_HASH.
 		const links = document.getElementsByTagName( 'a' );
@@ -370,7 +380,7 @@ class NotificationsRESTAPI {
 		}
 
 		window.onclick = function ( event ) {
-			// When user clicks anywhere outside of the modal, close it.
+			// When user clicks anywhere outside the modal, close it.
 			if ( event.target.matches( '.notifications-modal' ) ) {
 				event.target.style.display = 'none';
 			}
@@ -489,6 +499,23 @@ class NotificationsRESTAPI {
 					deleteNotification();
 				}
 			}
+
+			// Mark all as read.
+			if ( event.target.matches( '#read-button' ) ) {
+				markAllAsReadAjax().then( ( response ) => {
+					const notifications = document.getElementsByClassName(
+						'notification-cell'
+					);
+					if ( response === 'done' ) {
+						for ( const notification in notifications ) {
+							notifications
+								.item( notification )
+								.classList.add( 'read' );
+						}
+					}
+				} );
+				getNotifications();
+			}
 		};
 
 		// Select change handler.
@@ -505,6 +532,7 @@ class NotificationsRESTAPI {
 			};
 		}
 
+		// eslint-disable-next-line @wordpress/no-global-event-listener
 		document.addEventListener( 'update_unread_counts', ( event ) => {
 			this.updateUnreadCountElements( event.detail );
 		} );
@@ -524,6 +552,8 @@ class NotificationsRESTAPI {
 
 	/**
 	 * Get content of popup window with notifications.
+	 *
+	 * @return {Promise<any>} Promise.
 	 */
 	getPopupContent() {
 		const data = {
@@ -531,39 +561,7 @@ class NotificationsRESTAPI {
 			nonce: WPAPISettings.nonce,
 		};
 
-		const encodedData = Object.keys( data )
-			.map(
-				( key ) =>
-					encodeURIComponent( key ) +
-					'=' +
-					encodeURIComponent( data[ key ] )
-			)
-			.join( '&' );
-
-		return fetch( WPAPISettings.ajaxURL, {
-			method: 'POST',
-			body: encodedData,
-			headers: {
-				'Content-Type':
-					'application/x-www-form-urlencoded; charset=utf-8',
-			},
-			credentials: 'same-origin',
-		} )
-			.then( ( response ) => {
-				if ( ! response.ok ) {
-					throw new Error( response.statusText );
-				}
-				return response.json();
-			} )
-			.then( ( response ) => {
-				if ( response.success ) {
-					return response.data;
-				}
-				throw new Error( response.data );
-			} )
-			.catch( ( reason ) => {
-				return reason.message;
-			} );
+		return this.ajax( data );
 	}
 
 	/**
@@ -599,6 +597,58 @@ class NotificationsRESTAPI {
 				document.getElementById( 'update-modal' )
 			);
 		} );
+	}
+
+	/**
+	 * Mark all notifications as read.
+	 *
+	 * @return {Promise<any>} Promise.
+	 */
+	markAllAsReadAjax() {
+		const data = {
+			action: 'kagg_notification_make_all_as_read',
+			nonce: WPAPISettings.nonce,
+			current_user: document.getElementById( 'current-user' ).value,
+		};
+
+		return this.ajax( data );
+	}
+
+	ajax( data ) {
+		const encodedData = Object.keys( data )
+			.map(
+				( key ) =>
+					encodeURIComponent( key ) +
+					'=' +
+					encodeURIComponent( data[ key ] )
+			)
+			.join( '&' );
+
+		// noinspection JSUnresolvedVariable
+		return fetch( WPAPISettings.ajaxURL, {
+			method: 'POST',
+			body: encodedData,
+			headers: {
+				'Content-Type':
+					'application/x-www-form-urlencoded; charset=utf-8',
+			},
+			credentials: 'same-origin',
+		} )
+			.then( ( response ) => {
+				if ( ! response.ok ) {
+					throw new Error( response.statusText );
+				}
+				return response.json();
+			} )
+			.then( ( response ) => {
+				if ( response.success ) {
+					return response.data;
+				}
+				throw new Error( response.data );
+			} )
+			.catch( ( reason ) => {
+				return reason.message;
+			} );
 	}
 }
 

@@ -28,12 +28,8 @@ class List_In_Meta {
 	 */
 	public function is_in_list( $post_id, $meta_key, $value ) {
 		$meta_arr = $this->get_array( $post_id, $meta_key );
-		$result   = array_search( (string) $value, $meta_arr, true );
-		if ( false !== $result ) {
-			return true;
-		}
 
-		return false;
+		return in_array( (string) $value, $meta_arr, true );
 	}
 
 	/**

@@ -7,7 +7,7 @@
 
 namespace KAGG\Notification_System;
 
-if ( ! class_exists( __NAMESPACE__ . '\Requirements' ) ) {
+if ( ! class_exists( Requirements::class ) ) {
 
 	/**
 	 * Class Requirements
@@ -29,7 +29,7 @@ if ( ! class_exists( __NAMESPACE__ . '\Requirements' ) ) {
 		 * @return bool
 		 */
 		private function is_php_version_required() {
-			if ( version_compare( KAGG_NOTIFICATIONS_MINIMUM_PHP_REQUIRED_VERSION, phpversion(), '>' ) ) {
+			if ( version_compare( KAGG_NOTIFICATIONS_MINIMUM_PHP_REQUIRED_VERSION, PHP_VERSION, '>' ) ) {
 				add_action( 'admin_notices', [ $this, 'php_requirement_message' ] );
 
 				return false;
@@ -48,8 +48,14 @@ if ( ! class_exists( __NAMESPACE__ . '\Requirements' ) ) {
 				dirname( plugin_basename( KAGG_NOTIFICATIONS_FILE ) ) . '/languages/'
 			);
 
+			$message = sprintf(
 			/* translators: 1: Current PHP version number, 2: Notification System version, 3: Minimum required PHP version number */
-			$message = sprintf( __( 'Your server is running PHP version %1$s but Notification System %2$s requires at least %3$s.', 'notification-system' ), phpversion(), KAGG_NOTIFICATIONS_VERSION, KAGG_NOTIFICATIONS_MINIMUM_PHP_REQUIRED_VERSION );
+				__( 'Your server is running PHP version %1$s but Notification System %2$s requires at least %3$s.', 'notification-system' ),
+				PHP_VERSION,
+				KAGG_NOTIFICATIONS_VERSION,
+				KAGG_NOTIFICATIONS_MINIMUM_PHP_REQUIRED_VERSION
+			);
+
 			?>
 			<div class="message error">
 				<p>

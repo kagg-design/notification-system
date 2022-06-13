@@ -47,7 +47,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 *
 	 * @var List_In_Meta
 	 */
-	public $list_in_meta = null;
+	public $list_in_meta;
 
 	/**
 	 * Notifications_API_Controller constructor.
@@ -166,16 +166,14 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 * Retrieves an array of endpoint arguments from the item schema for the controller.
 	 *
 	 * @param string $method Optional. HTTP method of the request. The arguments for `CREATABLE` requests are
-	 *                       checked for required values and may fall-back to a given default, this is not done
+	 *                       checked for required values and may fall back to a given default, this is not done
 	 *                       on `EDITABLE` requests. Default WP_REST_Server::CREATABLE.
 	 *
 	 * @return array Endpoint arguments.
 	 */
 	public function get_endpoint_args_for_item_schema( $method = WP_REST_Server::CREATABLE ) {
 		// @todo Expand.
-		$endpoint_args = [];
-
-		return $endpoint_args;
+		return [];
 	}
 
 	/**
@@ -227,24 +225,35 @@ class Notifications_API_Controller extends WP_REST_Controller {
 			'post_status' => 'publish',
 		];
 
-		if ( isset( $request['slug'] ) ) {
-			$postarr['name'] = $request['slug'];
-		}
-
-		if ( isset( $request['title'] ) ) {
-			$postarr['post_title'] = $request['title'];
-		}
-
-		if ( isset( $request['content'] ) ) {
-			$postarr['post_content'] = $request['content'];
-		}
+		$postarr = $this->copy_request_fields( $request, $postarr );
 
 		$post_id = wp_insert_post( $postarr );
 
-		if ( is_wp_error( $post_id ) || ( ! $post_id ) ) {
+		if ( is_wp_error( $post_id ) ) {
 			return $post_id;
 		}
 
+		$response = $this->process_item_fields( $post_id, $request );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$response->set_status( 201 );
+		$response->header( 'Location', rest_url( sprintf( '/%s/%s/%d', $this->namespace, $this->rest_base, $post_id ) ) );
+
+		return $response;
+	}
+
+	/**
+	 * Process item fields.
+	 *
+	 * @param int             $post_id Post ID.
+	 * @param WP_REST_Request $request Request.
+	 *
+	 * @return WP_Error|WP_REST_Response
+	 */
+	private function process_item_fields( $post_id, $request ) {
 		if ( isset( $request['users'] ) ) {
 			$this->set_user_list( $post_id, $request['users'] );
 		}
@@ -261,11 +270,8 @@ class Notifications_API_Controller extends WP_REST_Controller {
 
 		$request->set_param( 'context', 'edit' );
 		$response = $this->prepare_object_for_response( $object, $request );
-		$response = rest_ensure_response( $response );
-		$response->set_status( 201 );
-		$response->header( 'Location', rest_url( sprintf( '/%s/%s/%d', $this->namespace, $this->rest_base, $object->ID ) ) );
 
-		return $response;
+		return rest_ensure_response( $response );
 	}
 
 	/**
@@ -290,21 +296,11 @@ class Notifications_API_Controller extends WP_REST_Controller {
 			'ID' => $object->ID,
 		];
 
-		if ( isset( $request['slug'] ) ) {
-			$postarr['name'] = $request['slug'];
-		}
-
-		if ( isset( $request['title'] ) ) {
-			$postarr['post_title'] = $request['title'];
-		}
-
-		if ( isset( $request['content'] ) ) {
-			$postarr['post_content'] = $request['content'];
-		}
+		$postarr = $this->copy_request_fields( $request, $postarr );
 
 		$post_id = wp_update_post( $postarr );
 
-		if ( is_wp_error( $post_id ) || ( ! $post_id ) ) {
+		if ( is_wp_error( $post_id ) ) {
 			return $post_id;
 		}
 
@@ -312,24 +308,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 			$this->set_read_status( $post_id, $request['read'] );
 		}
 
-		if ( isset( $request['users'] ) ) {
-			$this->set_user_list( $post_id, $request['users'] );
-		}
-
-		$this->add_taxonomies( $post_id, $request );
-
-		$object = get_post( $post_id );
-
-		try {
-			$this->update_additional_fields_for_object( $object, $request );
-		} catch ( Exception $e ) {
-			return new WP_Error( $e->getCode(), $e->getMessage(), [ 'status' => $e->getCode() ] );
-		}
-
-		$request->set_param( 'context', 'edit' );
-		$response = $this->prepare_object_for_response( $object, $request );
-
-		return rest_ensure_response( $response );
+		return $this->process_item_fields( $post_id, $request );
 	}
 
 	/**
@@ -377,6 +356,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full details about the request.
 	 *
 	 * @return WP_Error|WP_REST_Response
+	 * @noinspection DuplicatedCode
 	 */
 	public function get_items( $request ) {
 		$query_args    = $this->prepare_objects_query( $request );
@@ -403,12 +383,15 @@ class Notifications_API_Controller extends WP_REST_Controller {
 
 		if ( $page > 1 ) {
 			$prev_page = $page - 1;
+
 			if ( $prev_page > $max_pages ) {
 				$prev_page = $max_pages;
 			}
+
 			$prev_link = add_query_arg( 'page', $prev_page, $base );
 			$response->link_header( 'prev', $prev_link );
 		}
+
 		if ( $max_pages > $page ) {
 			$next_page = $page + 1;
 			$next_link = add_query_arg( 'page', $next_page, $base );
@@ -482,42 +465,46 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 * @param WP_REST_Request $request       Request object.
 	 *
 	 * @return array          $query_args
+	 * @noinspection PhpUnusedParameterInspection
 	 */
 	protected function prepare_items_query( $prepared_args = [], $request = null ) {
 
-		$valid_vars = array_flip( $this->get_allowed_query_vars() );
-		$query_args = [];
-		foreach ( $valid_vars as $var => $index ) {
-			if ( isset( $prepared_args[ $var ] ) ) {
-				$query_args[ $var ] = $prepared_args[ $var ];
+		$query_args = array_diff_key( $prepared_args, array_keys( $this->get_allowed_query_vars() ) );
+		$query_args = array_filter(
+			$query_args,
+			static function ( $query_arg ) {
+				return null !== $query_arg;
 			}
-		}
+		);
 
 		$query_args['ignore_sticky_posts'] = true;
 
 		$orderby = isset( $query_args['orderby'] ) ? $query_args['orderby'] : '';
+
 		if ( 'include' === $orderby ) {
 			$query_args['orderby'] = 'post__in';
 		} elseif ( 'id' === $orderby ) {
 			$query_args['orderby'] = 'ID'; // ID must be capitalized.
 		}
 
-		if ( ! current_user_can( 'edit_posts' ) ) {
-			// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-			$query_args['meta_query'] = [
-				'relation' => 'OR',
-				[
-					'key'     => Notification::USERS_META_KEY,
-					'value'   => List_In_Meta::get_prepared_item( wp_get_current_user()->ID ),
-					'compare' => 'LIKE',
-				],
-				[
-					'key'     => Notification::USERS_META_KEY,
-					'compare' => 'NOT EXISTS',
-				],
-			];
-			// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+		if ( current_user_can( 'edit_posts' ) ) {
+			return $query_args;
 		}
+
+		// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+		$query_args['meta_query'] = [
+			'relation' => 'OR',
+			[
+				'key'     => Notification::USERS_META_KEY,
+				'value'   => List_In_Meta::get_prepared_item( wp_get_current_user()->ID ),
+				'compare' => 'LIKE',
+			],
+			[
+				'key'     => Notification::USERS_META_KEY,
+				'compare' => 'NOT EXISTS',
+			],
+		];
+		// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 
 		return $query_args;
 	}
@@ -540,7 +527,8 @@ class Notifications_API_Controller extends WP_REST_Controller {
 		$valid_vars = apply_filters( 'query_vars', $wp->public_query_vars );
 
 		$post_type_obj = get_post_type_object( $this->post_type );
-		if ( current_user_can( $post_type_obj->cap->edit_posts ) ) {
+
+		if ( $post_type_obj && current_user_can( $post_type_obj->cap->edit_posts ) ) {
 			/**
 			 * Filter the allowed 'private' query vars for authorized users.
 			 *
@@ -557,7 +545,8 @@ class Notifications_API_Controller extends WP_REST_Controller {
 			$private    = $wp->private_query_vars;
 			$valid_vars = array_merge( $valid_vars, $private );
 		}
-		// Define our own in addition to WP's normal vars.
+
+		// Define our own in addition to WP normal vars.
 		$rest_valid = [
 			'date_query',
 			'ignore_sticky_posts',
@@ -575,9 +564,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 			'meta_compare',
 			'meta_value_num',
 		];
-		$valid_vars = array_merge( $valid_vars, $rest_valid );
-
-		return $valid_vars;
+		return array_merge( $valid_vars, $rest_valid );
 	}
 
 	/**
@@ -602,7 +589,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 
 		return [
 			'objects' => $result,
-			'total'   => (int) $total_posts,
+			'total'   => $total_posts,
 			'pages'   => (int) ceil( $total_posts / (int) $query->query_vars['posts_per_page'] ),
 		];
 	}
@@ -635,6 +622,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 *                              Options: 'view' and 'edit'.
 	 *
 	 * @return array
+	 * @noinspection PhpUnusedParameterInspection
 	 */
 	protected function get_notification_data( $notification, $context = 'view' ) {
 		$data = [
@@ -679,7 +667,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 			$names[] = $term->name;
 		}
 
-		return join( $sep, $names );
+		return implode( $sep, $names );
 	}
 
 	/**
@@ -690,9 +678,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 * @return bool
 	 */
 	protected function get_read_status( $id ) {
-		$notification = new Notification( $id );
-
-		return $notification->get_read_status();
+		return ( new Notification( $id ) )->get_read_status();
 	}
 
 	/**
@@ -714,9 +700,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 * @return string
 	 */
 	protected function get_user_list( $id ) {
-		$notification = new Notification( $id );
-
-		return $notification->get_user_list();
+		return ( new Notification( $id ) )->get_user_list();
 	}
 
 	/**
@@ -737,9 +721,10 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Request object.
 	 *
 	 * @return array          Links for the given post.
+	 * @noinspection PhpUnusedParameterInspection
 	 */
 	protected function prepare_links( $object, $request ) {
-		$links = [
+		return [
 			'self'       => [
 				'href' => rest_url( sprintf( '/%s/%s/%d', $this->namespace, $this->rest_base, $object->ID ) ),
 			],
@@ -747,8 +732,6 @@ class Notifications_API_Controller extends WP_REST_Controller {
 				'href' => rest_url( sprintf( '/%s/%s', $this->namespace, $this->rest_base ) ),
 			],
 		];
-
-		return $links;
 	}
 
 	/**
@@ -863,28 +846,22 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 */
 	protected function add_taxonomies( $post_id, $request ) {
 		$taxonomies = [ 'channel' ];
+
 		foreach ( $taxonomies as $taxonomy ) {
 			$term_slug_list = isset( $request[ $taxonomy ] ) ? $request[ $taxonomy ] : null;
 			$term_slugs     = explode( '|', $term_slug_list );
 			$append         = false; // To drop any existing terms at first call of wp_set_post_terms().
-			foreach ( $term_slugs as $i => $term_slug ) {
+
+			foreach ( $term_slugs as $term_slug ) {
 				$term_slug = trim( $term_slug );
-				if ( $term_slug ) {
-					$term = get_term_by( 'slug', $term_slug, $taxonomy );
-					if ( $term ) {
-						wp_set_post_terms( $post_id, [ $term->term_id ], $taxonomy, $append );
-					} else {
-						$new_term_arr = wp_insert_term( $term_slug, $taxonomy, [] );
-						if ( ! is_wp_error( $new_term_arr ) ) {
-							if ( is_taxonomy_hierarchical( $taxonomy ) ) {
-								wp_set_post_terms( $post_id, $new_term_arr['term_id'], $taxonomy, $append );
-							} else {
-								wp_set_post_terms( $post_id, $term_slug, $taxonomy, $append );
-							}
-						}
-					}
-					$append = true; // To add terms at next calls of wp_set_post_terms().
+
+				if ( ! $term_slug ) {
+					continue;
 				}
+
+				$this->add_term( $term_slug, $taxonomy, $post_id, $append );
+
+				$append = true; // To add terms at next calls of wp_set_post_terms().
 			}
 		}
 	}
@@ -913,5 +890,61 @@ class Notifications_API_Controller extends WP_REST_Controller {
 		}
 
 		return $h_time;
+	}
+
+	/**
+	 * Copy request fields.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @param array           $postarr Post array.
+	 *
+	 * @return array
+	 */
+	private function copy_request_fields( WP_REST_Request $request, array $postarr ) {
+		if ( isset( $request['slug'] ) ) {
+			$postarr['name'] = $request['slug'];
+		}
+
+		if ( isset( $request['title'] ) ) {
+			$postarr['post_title'] = $request['title'];
+		}
+
+		if ( isset( $request['content'] ) ) {
+			$postarr['post_content'] = $request['content'];
+		}
+
+		return $postarr;
+	}
+
+	/**
+	 * Add term.
+	 *
+	 * @param string $term_slug Term slug.
+	 * @param string $taxonomy  Taxonomy.
+	 * @param int    $post_id   Post ID.
+	 * @param bool   $append    Append.
+	 *
+	 * @return void
+	 */
+	private function add_term( $term_slug, $taxonomy, $post_id, $append ) {
+		$term = get_term_by( 'slug', $term_slug, $taxonomy );
+
+		if ( $term ) {
+			wp_set_post_terms( $post_id, [ $term->term_id ], $taxonomy, $append );
+			return;
+		}
+
+		$new_term_arr = wp_insert_term( $term_slug, $taxonomy, [] );
+
+		if ( is_wp_error( $new_term_arr ) ) {
+			return;
+		}
+
+		if ( is_taxonomy_hierarchical( $taxonomy ) ) {
+			wp_set_post_terms( $post_id, $new_term_arr['term_id'], $taxonomy, $append );
+			return;
+		}
+
+		wp_set_post_terms( $post_id, $term_slug, $taxonomy, $append );
 	}
 }

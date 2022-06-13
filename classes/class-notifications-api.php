@@ -39,7 +39,7 @@ class Notifications_API {
 	public function register_rest_routes() {
 		// Register settings to the REST API.
 		$controllers = [
-			__NAMESPACE__ . '\Notifications_API_Controller',
+			Notifications_API_Controller::class,
 		];
 
 		foreach ( $controllers as $controller ) {

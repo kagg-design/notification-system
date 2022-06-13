@@ -1,3 +1,6 @@
+## 1.3
+* Tested with WordPress 6.0
+
 ## 1.2
 * Tested with WordPress 5.7
 

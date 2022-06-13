@@ -37,7 +37,7 @@ class Notifications {
 	 *
 	 * @var Notifications_API
 	 */
-	public $api = null;
+	public $api;
 
 	/**
 	 * Notifications constructor.
@@ -79,11 +79,14 @@ class Notifications {
 		add_action( 'wp_ajax_kagg_notification_get_popup_content', [ $this, 'get_popup_content' ] );
 		add_action( 'wp_ajax_nopriv_kagg_notification_get_popup_content', [ $this, 'get_popup_content' ] );
 
+		add_action( 'wp_ajax_kagg_notification_make_all_as_read', [ $this, 'make_all_as_read' ] );
+		add_action( 'wp_ajax_nopriv_kagg_notification_make_all_as_read', [ $this, 'make_all_as_read' ] );
+
 		add_action( 'add_meta_boxes', [ $this, 'add_meta_boxes' ] );
 		add_action( 'add_meta_boxes', [ $this, 'remove_meta_boxes' ] );
 		add_action( 'save_post', [ $this, 'save_meta_boxes' ], 0, 2 );
 		add_action( 'update_unread_counts', [ $this, 'update_unread_counts' ] );
-		add_filter( 'wp_nav_menu_objects', [ $this, 'update_nav_menu_item' ], 10 );
+		add_filter( 'wp_nav_menu_objects', [ $this, 'update_nav_menu_items' ], 10 );
 
 		add_action( 'plugins_loaded', [ $this, 'load_plugin_textdomain' ] );
 	}
@@ -93,7 +96,7 @@ class Notifications {
 	 */
 	public function activate_plugin() {
 		// Register entities as they do not exist when activation hook is fired.
-		// Otherwise flush_rewrite_rules() has nothing to do.
+		// Otherwise, flush_rewrite_rules() has nothing to do.
 		$this->register_taxonomies();
 		$this->add_rewrite_rules();
 		$this->register_cpt_notification();
@@ -106,7 +109,7 @@ class Notifications {
 	 */
 	public function deactivate_plugin() {
 		// Unregister entities here as they do already exist when deactivation hook is fired.
-		// Otherwise flush_rewrite_rules() has nothing to do.
+		// Otherwise, flush_rewrite_rules() has nothing to do.
 		remove_rewrite_tag( '%channel%' );
 
 		// This also unregisters taxonomies.
@@ -133,7 +136,7 @@ class Notifications {
 		);
 		wp_enqueue_script( 'wp-api' );
 
-		// Plugin RESTful script.
+		// Plugin REST script.
 		wp_enqueue_script(
 			'notification-system',
 			KAGG_NOTIFICATIONS_URL . '/dist/js/notificationsRESTAPI/app.js',
@@ -216,6 +219,8 @@ class Notifications {
 
 	/**
 	 * Register Notification custom post type.
+	 *
+	 * @noinspection HtmlDeprecatedAttribute
 	 */
 	public function register_cpt_notification() {
 		$labels = [
@@ -262,7 +267,7 @@ class Notifications {
 			'capability_type'       => 'post',
 			'show_in_rest'          => false,
 			'rest_base'             => 'kagg/v1/notification',
-			'rest_controller_class' => __NAMESPACE__ . '\Notifications_API_Controller',
+			'rest_controller_class' => Notifications_API_Controller::class,
 		];
 
 		register_post_type( 'notification', $args );
@@ -272,12 +277,19 @@ class Notifications {
 	 * Template for the plugin frontend page.
 	 */
 	public function notifications_page() {
-		if ( $this->is_notification_page() ) {
-			get_header();
-			echo do_shortcode( '[notifications]' );
-			get_footer();
-			exit;
+		if ( ! $this->is_notification_page() ) {
+			return;
 		}
+
+		if ( wp_is_block_theme() ) {
+			add_filter( 'deprecated_file_trigger_error', '__return_false' );
+		}
+
+		get_header();
+		echo do_shortcode( '[notifications]' );
+		get_footer();
+
+		exit;
 	}
 
 	/**
@@ -309,11 +321,7 @@ class Notifications {
 
 		$path = wp_parse_url( $uri, PHP_URL_PATH );
 
-		if ( '/' . trailingslashit( self::PAGE_SLUG ) === trailingslashit( $path ) ) {
-			return true;
-		}
-
-		return false;
+		return '/' . trailingslashit( self::PAGE_SLUG ) === trailingslashit( $path );
 	}
 
 	/**
@@ -374,23 +382,32 @@ class Notifications {
 							<?php // Here will be the javascript output. ?>
 							</tbody>
 						</table>
-						<?php
-						if ( current_user_can( 'read' ) ) {
+						<div class="buttons-block">
+							<?php
+							if ( current_user_can( 'read' ) ) {
+								?>
+								<input
+									type='button' id='more-button'
+									value='<?php esc_html_e( 'More...', 'notification-system' ); ?>'>
+								<?php
+							}
 							?>
 							<input
-								type='button' id='more-button'
-								value='<?php esc_html_e( 'Show more...', 'notification-system' ); ?>'>
+								type='button' id='read-button'
+								value='<?php esc_html_e( 'Mark all as read', 'notification-system' ); ?>'>
 							<?php
-						}
-
-						if ( current_user_can( 'edit_posts' ) ) {
+							if ( current_user_can( 'edit_posts' ) ) {
+								?>
+								<input
+									type='button' id='create-notification-button'
+									value='<?php esc_html_e( 'Create', 'notification-system' ); ?>'>
+								<?php
+							}
 							?>
 							<input
-								type='button' id='create-notification-button'
-								value='<?php esc_html_e( 'Create Notification', 'notification-system' ); ?>'>
-							<?php
-						}
-						?>
+								type="hidden" id="current-user" name="current-user"
+								value="<?php echo esc_attr( get_current_user_id() ); ?>">
+						</div>
 					</article><!-- #notifications-page -->
 				</main><!-- #main -->
 
@@ -482,6 +499,89 @@ class Notifications {
 	}
 
 	/**
+	 * Make all as read notification.
+	 *
+	 * @return void
+	 */
+	public function make_all_as_read(): void {
+		if ( ! wp_verify_nonce(
+			filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING ),
+			'kagg-notification-rest'
+		)
+		) {
+			wp_send_json_error( __( 'Bad nonce!', 'notification-system' ) );
+		}
+
+		$user_id = filter_input( INPUT_POST, 'current_user', FILTER_SANITIZE_STRING );
+
+		if ( empty( $user_id ) ) {
+			wp_send_json_error( __( 'Current user ID is empty!', 'notification-system' ) );
+		}
+		$read_value = List_In_Meta::get_prepared_item( wp_get_current_user()->ID );
+
+		$user_meta_query = [
+			'relation' => 'AND',
+			[
+				'key'     => Notification::USERS_META_KEY,
+				'value'   => List_In_Meta::get_prepared_item( $user_id ),
+				'compare' => 'LIKE',
+			],
+			[
+				'key'     => Notification::READ_STATUS_META_KEY,
+				'compare' => 'NOT EXISTS',
+			],
+		];
+
+		$admin_meta_query = [
+			'relation' => 'OR',
+			[
+				'relation' => 'AND',
+				[
+					'key'     => Notification::READ_STATUS_META_KEY,
+					'value'   => $read_value,
+					'compare' => 'NOT LIKE',
+				],
+				[
+					'key'     => Notification::READ_STATUS_META_KEY,
+					'compare' => 'EXISTS',
+				],
+			],
+			[
+				'key'     => Notification::READ_STATUS_META_KEY,
+				'compare' => 'NOT EXISTS',
+			],
+		];
+
+		$args = [
+			'post_type'      => 'notification',
+			'posts_per_page' => - 1,
+			'status'         => 'publish',
+		];
+
+		if ( user_can( $user_id, 'administrator' ) ) {
+			$args['meta_query'] = $admin_meta_query;
+		} else {
+			$args['meta_query'] = $user_meta_query;
+		}
+
+		$query = new WP_Query( $args );
+
+		if ( 0 === $query->post_count ) {
+			wp_send_json_success( __( 'Not found notification', 'notification-system' ) );
+		}
+
+		$notification = new Notification( 0 );
+
+		foreach ( $query->posts as $key => $post ) {
+			$notification->id = $post->ID;
+			$notification->set_read_status( true );
+		}
+
+		wp_send_json_success( 'done' );
+
+	}
+
+	/**
 	 * Get count of notifications.
 	 *
 	 * @return int
@@ -546,9 +646,7 @@ class Notifications {
 			// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 		];
 
-		$query = new WP_Query( $args );
-
-		return $query->found_posts;
+		return ( new WP_Query( $args ) )->found_posts;
 	}
 
 	/**
@@ -561,7 +659,7 @@ class Notifications {
 			document.dispatchEvent(
 				new CustomEvent(
 					'update_unread_counts',
-					{ 'detail': <?php echo intval( $count ); ?>},
+					{ 'detail': <?php echo $count; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>},
 				),
 			);
 		</script>
@@ -606,16 +704,16 @@ class Notifications {
 	/**
 	 * Check if we're saving, the trigger an action based on the post type.
 	 *
-	 * @param int     $post_id Post Id.
+	 * @param int     $post_id Post ID.
 	 * @param WP_Post $post    Post instance.
 	 */
 	public function save_meta_boxes( $post_id, $post ) {
 		// $post_id and $post are required
-		if ( empty( $post_id ) || empty( $post ) ) {
+		if ( empty( $post_id ) || null === $post ) {
 			return;
 		}
 
-		// Dont' save meta boxes for revisions or autosaves.
+		// Don't save meta boxes for revision or autosave.
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || is_int( wp_is_post_revision( $post ) ) ||
 			is_int( wp_is_post_autosave( $post ) )
@@ -635,7 +733,7 @@ class Notifications {
 		}
 
 		// Check the post being saved == the $post_id to prevent triggering this call for other save_post events.
-		if ( empty( $_POST['post_ID'] ) || ( intval( $_POST['post_ID'] ) !== $post_id ) ) {
+		if ( empty( $_POST['post_ID'] ) || ( (int) $_POST['post_ID'] !== $post_id ) ) {
 			return;
 		}
 
@@ -646,48 +744,34 @@ class Notifications {
 
 		remove_action( 'save_post', [ $this, 'save_meta_boxes' ], 1 );
 		$metabox = new Notification_Meta_Box();
-		$metabox->save( $post_id );
+		$metabox::save( $post_id );
 		add_action( 'save_post', [ $this, 'save_meta_boxes' ], 0, 3 );
 	}
 
 	/**
-	 * Update Notifications item in nav menu.
-	 * Add to it svg icon and unread count.
+	 * Update Notifications item(s) in nav menu.
+	 * Add svg icon and unread count to them.
 	 *
 	 * @param array $sorted_menu_items The menu items, sorted by each menu item's menu order.
 	 *
-	 * @return mixed
+	 * @return array
 	 */
-	public function update_nav_menu_item( $sorted_menu_items ) {
+	public function update_nav_menu_items( $sorted_menu_items ) {
 		if ( ! is_user_logged_in() ) {
 			return $sorted_menu_items;
 		}
 
-		$hash = '#' . self::POPUP_HASH;
+		$hash         = '#' . self::POPUP_HASH;
+		$count        = $this->get_unread_count();
+		$count_str    = $count > 9 ? '9+' : (string) $count;
+		$display_span = 0 === $count ? 'none' : 'inline-block';
+
 		foreach ( $sorted_menu_items as $item ) {
-			if ( ! isset( $item->url ) ) {
+			if ( ! isset( $item->url ) || false === mb_strpos( $item->url, $hash ) ) {
 				continue;
 			}
-			if ( false !== mb_strpos( $item->url, $hash ) ) {
-				if ( self::EMPTY_MENU === trim( $item->title ) ) {
-					$item->title = '';
-				};
 
-				$count = $this->get_unread_count();
-				if ( 0 === $count ) {
-					$display_span = 'none';
-				} else {
-					$display_span = 'inline-block';
-					if ( $count > 9 ) {
-						$count = '9+';
-					}
-				}
-				$count_span = '<span class="unread-notifications-count" style="display: ' . $display_span . '">' . $count . '</span>';
-
-				$svg = '<svg class="icon" height="20" viewBox="0 85.5 1024 855" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M490.666667 938.666667c46.933333 0 85.333333-38.4 85.333333-85.333334h-170.666667c0 46.933333 38.4 85.333333 85.333334 85.333334z m277.333333-256V448c0-130.986667-90.88-240.64-213.333333-269.653333V149.333333c0-35.413333-28.586667-64-64-64s-64 28.586667-64 64v29.013334C304.213333 207.36 213.333333 317.013333 213.333333 448v234.666667l-85.333333 85.333333v42.666667h725.333333v-42.666667l-85.333333-85.333333z" fill="black" /> </svg>';
-
-				$item->title .= '<span class="menu-item-notifications">' . $svg . $count_span . '</span>';
-			}
+			$this->update_nav_menu_item( $item, $display_span, $count_str );
 		}
 
 		return $sorted_menu_items;
@@ -728,5 +812,23 @@ class Notifications {
 			?>
 		</select>
 		<?php
+	}
+
+	/**
+	 * Update nav menu item.
+	 *
+	 * @param object $item Menu item.
+	 * @param string $display_span Whether to display span.
+	 * @param string $count_str Counter.
+	 *
+	 * @return void
+	 * @noinspection HtmlDeprecatedAttribute
+	 */
+	private function update_nav_menu_item( $item, $display_span, $count_str ) {
+		$item->title = self::EMPTY_MENU === trim( $item->title ) ? '' : $item->title;
+		$count_span  = '<span class="unread-notifications-count" style="display: ' . $display_span . '">' . $count_str . '</span>';
+		$svg         = '<svg class="icon" height="20" viewBox="0 85.5 1024 855" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M490.666667 938.666667c46.933333 0 85.333333-38.4 85.333333-85.333334h-170.666667c0 46.933333 38.4 85.333333 85.333334 85.333334z m277.333333-256V448c0-130.986667-90.88-240.64-213.333333-269.653333V149.333333c0-35.413333-28.586667-64-64-64s-64 28.586667-64 64v29.013334C304.213333 207.36 213.333333 317.013333 213.333333 448v234.666667l-85.333333 85.333333v42.666667h725.333333v-42.666667l-85.333333-85.333333z" fill="black" /> </svg>';
+
+		$item->title .= '<span class="menu-item-notifications">' . $svg . $count_span . '</span>';
 	}
 }
