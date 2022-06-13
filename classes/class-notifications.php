@@ -500,10 +500,8 @@ class Notifications {
 
 	/**
 	 * Make all as read notification.
-	 *
-	 * @return void
 	 */
-	public function make_all_as_read(): void {
+	public function make_all_as_read() {
 		if ( ! wp_verify_nonce(
 			filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING ),
 			'kagg-notification-rest'
@@ -558,21 +556,23 @@ class Notifications {
 			'status'         => 'publish',
 		];
 
+		// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 		if ( user_can( $user_id, 'administrator' ) ) {
 			$args['meta_query'] = $admin_meta_query;
 		} else {
 			$args['meta_query'] = $user_meta_query;
 		}
+		// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 
 		$query = new WP_Query( $args );
 
 		if ( 0 === $query->post_count ) {
-			wp_send_json_success( __( 'Not found notification', 'notification-system' ) );
+			wp_send_json_success( __( 'No notification found.', 'notification-system' ) );
 		}
 
 		$notification = new Notification( 0 );
 
-		foreach ( $query->posts as $key => $post ) {
+		foreach ( $query->posts as $post ) {
 			$notification->id = $post->ID;
 			$notification->set_read_status( true );
 		}
