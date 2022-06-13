@@ -41,7 +41,7 @@ jobs:
       - name: Install dependencies and update PHPUnit
         run: |
           composer config github-oauth.github.com ${{ secrets.GITHUB_TOKEN }}
-          make install
+          composer install
         env:
           COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
