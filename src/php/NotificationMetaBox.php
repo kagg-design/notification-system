@@ -70,7 +70,7 @@ class NotificationMetaBox {
 		if (
 			empty( $_POST[ self::SAVE_NONCE ] ) ||
 			! wp_verify_nonce(
-				filter_input( INPUT_POST, self::SAVE_NONCE, FILTER_SANITIZE_STRING ),
+				filter_input( INPUT_POST, self::SAVE_NONCE, FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 				self::SAVE_ACTION
 			)
 		) {

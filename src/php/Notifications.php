@@ -335,7 +335,7 @@ SVG;
 	 */
 	private function is_notification_page(): bool {
 		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
-			$uri = filter_var( wp_unslash( $_SERVER['REQUEST_URI'] ), FILTER_SANITIZE_STRING );
+			$uri = filter_var( wp_unslash( $_SERVER['REQUEST_URI'] ), FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 		} else {
 			return false;
 		}
@@ -512,7 +512,7 @@ SVG;
 	 */
 	public function get_popup_content() {
 		if ( ! wp_verify_nonce(
-			filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING ),
+			filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 			'kagg-notification-rest'
 		)
 		) {
@@ -527,14 +527,14 @@ SVG;
 	 */
 	public function make_all_as_read() {
 		if ( ! wp_verify_nonce(
-			filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_STRING ),
+			filter_input( INPUT_POST, 'nonce', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 			'kagg-notification-rest'
 		)
 		) {
 			wp_send_json_error( __( 'Bad nonce!', 'notification-system' ) );
 		}
 
-		$user_id = filter_input( INPUT_POST, 'current_user', FILTER_SANITIZE_STRING );
+		$user_id = filter_input( INPUT_POST, 'current_user', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 		if ( empty( $user_id ) ) {
 			wp_send_json_error( __( 'Current user ID is empty!', 'notification-system' ) );
@@ -748,7 +748,7 @@ SVG;
 		if (
 			empty( $_POST[ NotificationMetaBox::SAVE_NONCE ] ) ||
 			! wp_verify_nonce(
-				filter_input( INPUT_POST, NotificationMetaBox::SAVE_NONCE, FILTER_SANITIZE_STRING ),
+				filter_input( INPUT_POST, NotificationMetaBox::SAVE_NONCE, FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 				NotificationMetaBox::SAVE_ACTION
 			)
 		) {
