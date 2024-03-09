@@ -1,4 +1,4 @@
-= 1.4.0 =
+= 2.0.0 =
 * Dropped support for PHP 5.6. The minimum required PHP version is now 7.0.
 * The minimal WordPress version required is 5.0 now.
 * Tested with WordPress 6.5.

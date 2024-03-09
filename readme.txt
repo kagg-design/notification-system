@@ -5,7 +5,7 @@ Tags: notification, notification system, user notification, notification channel
 Requires at least: 5.0
 Tested up to: 6.5
 Requires PHP: 7.0
-Stable tag: 1.4.0
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -104,7 +104,7 @@ If you get stuck, you can ask for help in the [Notification System Plugin Forum]
 
 == Changelog ==
 
-= 1.4.0 =
+= 2.0.0 =
 * Dropped support for PHP 5.6. The minimum required PHP version is now 7.0.
 * The minimal WordPress version required is 5.0 now.
 * Tested with WordPress 6.5.
