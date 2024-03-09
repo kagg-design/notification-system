@@ -12,26 +12,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get Composer cache directory
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - name: Set up Composer caching
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-composer-dependencies
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
+          php-version: ${{ matrix.php-version }}
+          extensions: json, mysqli, mbstring, zip
 
-      - name: Install dependencies in prod version
-        run: |
-          composer config github-oauth.github.com ${{ secrets.GITHUB_TOKEN }}
-          make install-prod
-        env:
-          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install dependencies with caching
+        uses: kagg-design/composer-install@v2
+        with:
+          composer-options: "--no-dev --optimize-autoloader --classmap-authoritative"
 
       - name: WordPress Plugin Deploy
         id: deploy
@@ -43,7 +33,7 @@ jobs:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
 
       - name: Upload release asset
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: ${{github.workspace}}/${{ github.event.repository.name }}.zip
         env:
