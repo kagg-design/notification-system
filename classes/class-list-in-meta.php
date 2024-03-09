@@ -18,7 +18,7 @@ class List_In_Meta {
 	const DELIMITER = '|';
 
 	/**
-	 * Looks for item in post meta, containing comma-separated list.
+	 * Looks for item in post meta, containing a comma-separated list.
 	 *
 	 * @param int    $post_id  Post ID.
 	 * @param string $meta_key Meta name.
@@ -26,14 +26,14 @@ class List_In_Meta {
 	 *
 	 * @return bool
 	 */
-	public function is_in_list( $post_id, $meta_key, $value ) {
+	public function is_in_list( $post_id, $meta_key, $value ): bool {
 		$meta_arr = $this->get_array( $post_id, $meta_key );
 
 		return in_array( (string) $value, $meta_arr, true );
 	}
 
 	/**
-	 * Add item to list.
+	 * Add item to the list.
 	 *
 	 * @param int    $post_id  Post ID.
 	 * @param string $meta_key Meta name.
@@ -46,7 +46,7 @@ class List_In_Meta {
 	}
 
 	/**
-	 * Remove item from list.
+	 * Remove item from a list.
 	 *
 	 * @param int    $post_id  Post ID.
 	 * @param string $meta_key Meta name.
@@ -59,19 +59,19 @@ class List_In_Meta {
 	}
 
 	/**
-	 * Get array from the list stored in meta.
+	 * Get an array from the list stored in meta.
 	 *
 	 * @param int    $post_id  Post ID.
 	 * @param string $meta_key Meta name.
 	 *
 	 * @return array
 	 */
-	public function get_array( $post_id, $meta_key ) {
+	public function get_array( $post_id, $meta_key ): array {
 		return array_filter( explode( self::DELIMITER, get_post_meta( $post_id, $meta_key, true ) ) );
 	}
 
 	/**
-	 * Set array to store as list in meta.
+	 * Set array to store as a list in meta.
 	 *
 	 * @param int    $post_id  Post ID.
 	 * @param string $meta_key Meta name.
@@ -89,7 +89,7 @@ class List_In_Meta {
 	 *
 	 * @return string
 	 */
-	public static function get_prepared_item( $item ) {
+	public static function get_prepared_item( $item ): string {
 		return self::DELIMITER . $item . self::DELIMITER;
 	}
 

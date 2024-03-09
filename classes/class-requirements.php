@@ -19,16 +19,16 @@ if ( ! class_exists( Requirements::class ) ) {
 		 *
 		 * @return bool
 		 */
-		public function are_requirements_met() {
+		public function are_requirements_met(): bool {
 			return $this->is_php_version_required();
 		}
 
 		/**
-		 * Check php version.
+		 * Check the PHP version.
 		 *
 		 * @return bool
 		 */
-		private function is_php_version_required() {
+		private function is_php_version_required(): bool {
 			if ( version_compare( KAGG_NOTIFICATIONS_MINIMUM_PHP_REQUIRED_VERSION, PHP_VERSION, '>' ) ) {
 				add_action( 'admin_notices', [ $this, 'php_requirement_message' ] );
 

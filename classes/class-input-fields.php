@@ -66,9 +66,9 @@ class Input_Fields {
 	 * @param bool   $allow_html Allow sanitized HTML if true or escape.
 	 *
 	 * @return string
-	 * @noinspection PhpSameParameterValueInspection
+	 * @noinspection PhpSameParameterValueInspection PhpSameParameterValueInspection.
 	 */
-	private static function get_help_tip( $tip, $allow_html = false ) {
+	private static function get_help_tip( $tip, $allow_html = false ): string {
 		if ( ! $tip ) {
 			return '';
 		}
@@ -89,7 +89,7 @@ class Input_Fields {
 	 * @param bool   $allow_html Allow sanitized HTML if true or escape.
 	 *
 	 * @return void
-	 * @noinspection PhpSameParameterValueInspection
+	 * @noinspection PhpSameParameterValueInspection PhpSameParameterValueInspection.
 	 */
 	private static function show_help_tip( $tip, $allow_html = false ) {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -103,7 +103,7 @@ class Input_Fields {
 	 *
 	 * @return string
 	 */
-	private static function get_description_html( $description ) {
+	private static function get_description_html( $description ): string {
 		if ( ! $description ) {
 			return '';
 		}
@@ -126,16 +126,17 @@ class Input_Fields {
 	/**
 	 * Sanitize a string destined to be a tooltip.
 	 *
-	 * Tooltips are encoded with htmlspecialchars to prevent XSS. Should not be used in conjunction with esc_attr().
+	 * Tooltips are encoded with htmlspecialchars() to prevent XSS.
+	 * Should not be used in conjunction with esc_attr().
 	 *
-	 * @param string $var Data to sanitize.
+	 * @param string $tip Data to sanitize.
 	 *
 	 * @return string
 	 */
-	private static function sanitize_tooltip( $var ) {
+	private static function sanitize_tooltip( $tip ): string {
 		return htmlspecialchars(
 			wp_kses(
-				html_entity_decode( $var ),
+				html_entity_decode( $tip ),
 				[
 					'br'     => [],
 					'em'     => [],
@@ -217,7 +218,7 @@ class Input_Fields {
 	 *
 	 * @return string
 	 */
-	private static function implode_html_attributes( $raw_attributes ) {
+	private static function implode_html_attributes( $raw_attributes ): string {
 		$attributes = [];
 		foreach ( $raw_attributes as $name => $value ) {
 			$attributes[] = esc_attr( $name ) . '="' . esc_attr( $value ) . '"';
@@ -233,7 +234,7 @@ class Input_Fields {
 	 *
 	 * @return array
 	 */
-	private static function esc_custom_attributes( $field ) {
+	private static function esc_custom_attributes( $field ): array {
 		$custom_attributes = [];
 
 		if ( ! isset( $field['custom_attributes'] ) || ! is_array( $field['custom_attributes'] ) ) {
@@ -248,7 +249,7 @@ class Input_Fields {
 	}
 
 	/**
-	 * Return the html selected attribute if stringified $value is found in array of stringified $options
+	 * Return the html selected attribute if stringified $value is found in an array of stringified $options
 	 * or if stringified $value is the same as scalar stringified $options.
 	 *
 	 * @param string|int       $value   Value to find within options.
@@ -256,7 +257,7 @@ class Input_Fields {
 	 *
 	 * @return string
 	 */
-	public function selected( $value, $options ) {
+	public function selected( $value, $options ): string {
 		if ( is_array( $options ) ) {
 			$options = array_map( 'strval', $options );
 
@@ -270,15 +271,15 @@ class Input_Fields {
 	 * Clean variables using sanitize_text_field. Arrays are cleaned recursively.
 	 * Non-scalar values are ignored.
 	 *
-	 * @param string|array $var Data to sanitize.
+	 * @param string|array $str Data to sanitize.
 	 *
 	 * @return string|array
 	 */
-	public static function clean( $var ) {
-		if ( is_array( $var ) ) {
-			return array_map( 'self::clean', $var );
+	public static function clean( $str ) {
+		if ( is_array( $str ) ) {
+			return array_map( 'self::clean', $str );
 		}
 
-		return is_scalar( $var ) ? sanitize_text_field( $var ) : $var;
+		return is_scalar( $str ) ? sanitize_text_field( $str ) : $str;
 	}
 }

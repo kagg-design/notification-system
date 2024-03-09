@@ -28,7 +28,7 @@ class Notifications {
 	const POPUP_HASH = 'notifications';
 
 	/**
-	 * Such menu title will be replaced by icon and unread count.
+	 * Such a menu title will be replaced by icon and unread count.
 	 */
 	const EMPTY_MENU = '-';
 
@@ -166,7 +166,7 @@ class Notifications {
 	}
 
 	/**
-	 * Register taxonomies for Notification custom post type.
+	 * Register taxonomies for a Notification custom post type.
 	 */
 	public function register_taxonomies() {
 		$args = [
@@ -207,11 +207,12 @@ class Notifications {
 	/**
 	 * Add query vars.
 	 *
-	 * @param array $vars Query vars.
+	 * @param array|mixed $vars Query vars.
 	 *
 	 * @return array
 	 */
-	public function add_query_vars( $vars ) {
+	public function add_query_vars( $vars ): array {
+		$vars   = (array) $vars;
 		$vars[] = 'channel';
 
 		return $vars;
@@ -220,7 +221,7 @@ class Notifications {
 	/**
 	 * Register Notification custom post type.
 	 *
-	 * @noinspection HtmlDeprecatedAttribute
+	 * @noinspection HtmlDeprecatedAttribute HtmlDeprecatedAttribute.
 	 */
 	public function register_cpt_notification() {
 		$labels = [
@@ -295,11 +296,13 @@ class Notifications {
 	/**
 	 * Filters the document title before it is generated.
 	 *
-	 * @param string $title Page title.
+	 * @param string|mixed $title Page title.
 	 *
 	 * @return string
 	 */
-	public function notifications_page_document_title( $title ) {
+	public function notifications_page_document_title( $title ): string {
+		$title = (string) $title;
+
 		if ( $this->is_notification_page() ) {
 			return esc_html__( 'Notifications', 'kagg-notification' );
 		}
@@ -308,11 +311,11 @@ class Notifications {
 	}
 
 	/**
-	 * Check if it is notifications page.
+	 * Check if it is a notification page.
 	 *
 	 * @return bool
 	 */
-	private function is_notification_page() {
+	private function is_notification_page(): bool {
 		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
 			$uri = filter_var( wp_unslash( $_SERVER['REQUEST_URI'] ), FILTER_SANITIZE_STRING );
 		} else {
@@ -327,11 +330,13 @@ class Notifications {
 	/**
 	 * Filter Yoast SEO breadcrumbs and set proper page name.
 	 *
-	 * @param array $crumbs The crumbs array.
+	 * @param array|mixed $crumbs The crumbs array.
 	 *
 	 * @return array
 	 */
-	public function wpseo_breadcrumb_links( $crumbs ) {
+	public function wpseo_breadcrumb_links( $crumbs ): array {
+		$crumbs = (array) $crumbs;
+
 		if ( $this->is_notification_page() ) {
 			$crumbs[1]['text'] = esc_html__( 'Notifications', 'kagg-notification' );
 
@@ -346,15 +351,16 @@ class Notifications {
 	 *
 	 * @return string
 	 */
-	public function notifications_shortcode() {
+	public function notifications_shortcode(): string {
 		ob_start();
+
 		if ( current_user_can( 'edit_posts' ) ) {
 			$edit_class = 'edit';
 		} else {
 			$edit_class = '';
 		}
-		?>
 
+		?>
 		<div class="wrap">
 			<div id="primary" class="content-area notifications-content <?php echo esc_attr( $edit_class ); ?>">
 				<main id="main" class="site-main" role="main">
@@ -411,7 +417,7 @@ class Notifications {
 					</article><!-- #notifications-page -->
 				</main><!-- #main -->
 
-				<?php // Create modal window. ?>
+				<?php // Create a modal window. ?>
 				<?php
 				if ( current_user_can( 'edit_posts' ) ) {
 					?>
@@ -478,8 +484,8 @@ class Notifications {
 				?>
 			</div><!-- #primary -->
 		</div><!-- .wrap -->
-
 		<?php
+
 		return ob_get_clean();
 	}
 
@@ -557,7 +563,7 @@ class Notifications {
 		];
 
 		// phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-		if ( user_can( $user_id, 'administrator' ) ) {
+		if ( user_can( $user_id, 'manage_options' ) ) {
 			$args['meta_query'] = $admin_meta_query;
 		} else {
 			$args['meta_query'] = $user_meta_query;
@@ -578,7 +584,6 @@ class Notifications {
 		}
 
 		wp_send_json_success( 'done' );
-
 	}
 
 	/**
@@ -586,7 +591,7 @@ class Notifications {
 	 *
 	 * @return int
 	 */
-	public function get_unread_count() {
+	public function get_unread_count(): int {
 		$read_value = List_In_Meta::get_prepared_item( wp_get_current_user()->ID );
 
 		$read_meta_query = [
@@ -678,7 +683,7 @@ class Notifications {
 	}
 
 	/**
-	 * Add meta boxes for notifications.
+	 * Add meta-boxes for notifications.
 	 */
 	public function add_meta_boxes() {
 		$metabox = new Notification_Meta_Box();
@@ -693,7 +698,7 @@ class Notifications {
 	}
 
 	/**
-	 * Remove unnecessary meta boxes for notifications.
+	 * Remove unnecessary meta-boxes for notifications.
 	 */
 	public function remove_meta_boxes() {
 		remove_meta_box( 'slugdiv', 'notification', 'normal' );
@@ -713,7 +718,7 @@ class Notifications {
 			return;
 		}
 
-		// Don't save meta boxes for revision or autosave.
+		// Don't save meta-boxes for revision or autosave.
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || is_int( wp_is_post_revision( $post ) ) ||
 			is_int( wp_is_post_autosave( $post ) )
@@ -749,14 +754,16 @@ class Notifications {
 	}
 
 	/**
-	 * Update Notifications item(s) in nav menu.
+	 * Update Notifications item(s) in the nav menu.
 	 * Add svg icon and unread count to them.
 	 *
-	 * @param array $sorted_menu_items The menu items, sorted by each menu item's menu order.
+	 * @param array|mixed $sorted_menu_items The menu items, sorted by each menu item's menu order.
 	 *
 	 * @return array
 	 */
-	public function update_nav_menu_items( $sorted_menu_items ) {
+	public function update_nav_menu_items( $sorted_menu_items ): array {
+		$sorted_menu_items = (array) $sorted_menu_items;
+
 		if ( ! is_user_logged_in() ) {
 			return $sorted_menu_items;
 		}
@@ -822,12 +829,11 @@ class Notifications {
 	 * @param string $count_str Counter.
 	 *
 	 * @return void
-	 * @noinspection HtmlDeprecatedAttribute
 	 */
 	private function update_nav_menu_item( $item, $display_span, $count_str ) {
 		$item->title = self::EMPTY_MENU === trim( $item->title ) ? '' : $item->title;
 		$count_span  = '<span class="unread-notifications-count" style="display: ' . $display_span . '">' . $count_str . '</span>';
-		$svg         = '<svg class="icon" height="20" viewBox="0 85.5 1024 855" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M490.666667 938.666667c46.933333 0 85.333333-38.4 85.333333-85.333334h-170.666667c0 46.933333 38.4 85.333333 85.333334 85.333334z m277.333333-256V448c0-130.986667-90.88-240.64-213.333333-269.653333V149.333333c0-35.413333-28.586667-64-64-64s-64 28.586667-64 64v29.013334C304.213333 207.36 213.333333 317.013333 213.333333 448v234.666667l-85.333333 85.333333v42.666667h725.333333v-42.666667l-85.333333-85.333333z" fill="black" /> </svg>';
+		$svg         = '<svg class="icon" height="20" viewBox="0 85.5 1024 855" xmlns="http://www.w3.org/2000/svg"><path d="M490.666667 938.666667c46.933333 0 85.333333-38.4 85.333333-85.333334h-170.666667c0 46.933333 38.4 85.333333 85.333334 85.333334z m277.333333-256V448c0-130.986667-90.88-240.64-213.333333-269.653333V149.333333c0-35.413333-28.586667-64-64-64s-64 28.586667-64 64v29.013334C304.213333 207.36 213.333333 317.013333 213.333333 448v234.666667l-85.333333 85.333333v42.666667h725.333333v-42.666667l-85.333333-85.333333z" fill="black" /> </svg>';
 
 		$item->title .= '<span class="menu-item-notifications">' . $svg . $count_span . '</span>';
 	}

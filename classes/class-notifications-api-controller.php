@@ -137,7 +137,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 *
 	 * @return array
 	 */
-	public function get_collection_params() {
+	public function get_collection_params(): array {
 		$params['slug']    = [
 			'description'       => __( 'Limit result set to notification with a specific slug.', 'notification-system' ),
 			'type'              => 'string',
@@ -171,7 +171,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 *
 	 * @return array Endpoint arguments.
 	 */
-	public function get_endpoint_args_for_item_schema( $method = WP_REST_Server::CREATABLE ) {
+	public function get_endpoint_args_for_item_schema( $method = WP_REST_Server::CREATABLE ): array {
 		// @todo Expand.
 		return [];
 	}
@@ -356,7 +356,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 * @param WP_REST_Request $request Full details about the request.
 	 *
 	 * @return WP_Error|WP_REST_Response
-	 * @noinspection DuplicatedCode
+	 * @noinspection DuplicatedCode DuplicatedCode.
 	 */
 	public function get_items( $request ) {
 		$query_args    = $this->prepare_objects_query( $request );
@@ -368,7 +368,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 			$objects[] = $this->prepare_response_for_collection( $data );
 		}
 
-		$paged     = isset( $query_args['paged'] ) ? $query_args['paged'] : '';
+		$paged     = $query_args['paged'] ?? '';
 		$page      = (int) $paged;
 		$max_pages = $query_results['pages'];
 
@@ -408,7 +408,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 *
 	 * @return array
 	 */
-	protected function prepare_objects_query( $request ) {
+	protected function prepare_objects_query( $request ): array {
 		$args                        = [];
 		$args['offset']              = $request['offset'];
 		$args['order']               = $request['order'];
@@ -441,12 +441,12 @@ class Notifications_API_Controller extends WP_REST_Controller {
 		// phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 
 		$args['date_query'] = [];
-		// Set before into date query. Date query must be specified as an array of an array.
+		// Set before into a date query. Date query must be specified as an array of an array.
 		if ( isset( $request['before'] ) ) {
 			$args['date_query'][0]['before'] = $request['before'];
 		}
 
-		// Set after into date query. Date query must be specified as an array of an array.
+		// Set after into a date query. Date query must be specified as an array of an array.
 		if ( isset( $request['after'] ) ) {
 			$args['date_query'][0]['after'] = $request['after'];
 		}
@@ -465,9 +465,9 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 * @param WP_REST_Request $request       Request object.
 	 *
 	 * @return array          $query_args
-	 * @noinspection PhpUnusedParameterInspection
+	 * @noinspection PhpUnusedParameterInspection PhpUnusedParameterInspection.
 	 */
-	protected function prepare_items_query( $prepared_args = [], $request = null ) {
+	protected function prepare_items_query( $prepared_args = [], $request = null ): array {
 
 		$query_args = array_diff_key( $prepared_args, array_keys( $this->get_allowed_query_vars() ) );
 		$query_args = array_filter(
@@ -479,7 +479,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 
 		$query_args['ignore_sticky_posts'] = true;
 
-		$orderby = isset( $query_args['orderby'] ) ? $query_args['orderby'] : '';
+		$orderby = $query_args['orderby'] ?? '';
 
 		if ( 'include' === $orderby ) {
 			$query_args['orderby'] = 'post__in';
@@ -514,7 +514,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 *
 	 * @return array
 	 */
-	protected function get_allowed_query_vars() {
+	protected function get_allowed_query_vars(): array {
 		global $wp;
 
 		/**
@@ -522,7 +522,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 		 *
 		 * Allows adjusting of the default query vars that are made public.
 		 *
-		 * @param array  Array of allowed WP_Query query vars.
+		 * @param array $query_vars Array of allowed WP_Query query vars.
 		 */
 		$valid_vars = apply_filters( 'query_vars', $wp->public_query_vars );
 
@@ -574,7 +574,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 *
 	 * @return array
 	 */
-	protected function get_objects( $query_args ) {
+	protected function get_objects( $query_args ): array {
 		$query  = new WP_Query();
 		$result = $query->query( $query_args );
 
@@ -597,19 +597,24 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * Prepare a single notification output for response.
 	 *
-	 * @param WP_Post         $object  Object data.
+	 * @param WP_Post         $post    Post data.
 	 * @param WP_REST_Request $request Request object.
 	 *
-	 * @return WP_REST_Response
+	 * @return WP_REST_Response|WP_Error
 	 */
-	public function prepare_object_for_response( $object, $request ) {
+	public function prepare_object_for_response( $post, $request ) {
 		$context = ! empty( $request['context'] ) ? $request['context'] : 'view';
-		$data    = $this->get_notification_data( $object, $context );
+		$data    = $this->get_notification_data( $post, $context );
 
 		$data     = $this->add_additional_fields_to_object( $data, $request );
 		$data     = $this->filter_response_by_context( $data, $context );
 		$response = rest_ensure_response( $data );
-		$response->add_links( $this->prepare_links( $object, $request ) );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$response->add_links( $this->prepare_links( $post, $request ) );
 
 		return $response;
 	}
@@ -622,9 +627,9 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 *                              Options: 'view' and 'edit'.
 	 *
 	 * @return array
-	 * @noinspection PhpUnusedParameterInspection
+	 * @noinspection PhpUnusedParameterInspection PhpUnusedParameterInspection.
 	 */
-	protected function get_notification_data( $notification, $context = 'view' ) {
+	protected function get_notification_data( $notification, $context = 'view' ): array {
 		$data = [
 			'id'      => $notification->ID,
 			'title'   => $notification->post_title,
@@ -643,7 +648,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	}
 
 	/**
-	 * Get term names as list.
+	 * Get term names as a list.
 	 *
 	 * @param int    $id       Post ID.
 	 * @param string $taxonomy Taxonomy name.
@@ -651,7 +656,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 *
 	 * @return string
 	 */
-	protected function get_terms_list( $id, $taxonomy, $sep = '' ) {
+	protected function get_terms_list( $id, $taxonomy, $sep = '' ): string {
 		$terms = get_the_terms( $id, $taxonomy );
 
 		if ( is_wp_error( $terms ) ) {
@@ -677,12 +682,12 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 *
 	 * @return bool
 	 */
-	protected function get_read_status( $id ) {
+	protected function get_read_status( $id ): bool {
 		return ( new Notification( $id ) )->get_read_status();
 	}
 
 	/**
-	 * Set read status of the notification for current user.
+	 * Set read status of the notification for the current user.
 	 *
 	 * @param int  $id          Notification ID.
 	 * @param bool $read_status Read status.
@@ -693,18 +698,18 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	}
 
 	/**
-	 * Get list of users as comma-separated string.
+	 * Get a list of users as comma-separated string.
 	 *
 	 * @param int $id Notification ID.
 	 *
 	 * @return string
 	 */
-	protected function get_user_list( $id ) {
+	protected function get_user_list( $id ): string {
 		return ( new Notification( $id ) )->get_user_list();
 	}
 
 	/**
-	 * Set list of users defined by the comma-separated string.
+	 * Set the list of users defined by the comma-separated string.
 	 *
 	 * @param int    $id    Notification ID.
 	 * @param string $users User list as comma-separated string.
@@ -717,16 +722,16 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * Prepare links for the request.
 	 *
-	 * @param WP_Post         $object  Object data.
+	 * @param WP_Post         $post    Object data.
 	 * @param WP_REST_Request $request Request object.
 	 *
 	 * @return array          Links for the given post.
-	 * @noinspection PhpUnusedParameterInspection
+	 * @noinspection PhpUnusedParameterInspection PhpUnusedParameterInspection.
 	 */
-	protected function prepare_links( $object, $request ) {
+	protected function prepare_links( $post, $request ): array {
 		return [
 			'self'       => [
-				'href' => rest_url( sprintf( '/%s/%s/%d', $this->namespace, $this->rest_base, $object->ID ) ),
+				'href' => rest_url( sprintf( '/%s/%s/%d', $this->namespace, $this->rest_base, $post->ID ) ),
 			],
 			'collection' => [
 				'href' => rest_url( sprintf( '/%s/%s', $this->namespace, $this->rest_base ) ),
@@ -848,7 +853,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 		$taxonomies = [ 'channel' ];
 
 		foreach ( $taxonomies as $taxonomy ) {
-			$term_slug_list = isset( $request[ $taxonomy ] ) ? $request[ $taxonomy ] : null;
+			$term_slug_list = $request[ $taxonomy ] ?? null;
 			$term_slugs     = explode( '|', $term_slug_list );
 			$append         = false; // To drop any existing terms at first call of wp_set_post_terms().
 
@@ -900,7 +905,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 *
 	 * @return array
 	 */
-	private function copy_request_fields( WP_REST_Request $request, array $postarr ) {
+	private function copy_request_fields( WP_REST_Request $request, array $postarr ): array {
 		if ( isset( $request['slug'] ) ) {
 			$postarr['name'] = $request['slug'];
 		}

@@ -2,7 +2,7 @@
 Contributors: kaggdesign
 Donate link: https://www.paypal.me/kagg
 Tags: notification, notification system, user notification, notification channel
-Requires at least: 4.4
+Requires at least: 5.0
 Tested up to: 6.5
 Requires PHP: 7.0
 Stable tag: 1.4.0
@@ -106,6 +106,7 @@ If you get stuck, you can ask for help in the [Notification System Plugin Forum]
 
 = 1.4.0 =
 * Dropped support for PHP 5.6. The minimum required PHP version is now 7.0.
+* The minimal WordPress version required is 5.0 now.
 * Tested with WordPress 6.5.
 
 = 1.3 =

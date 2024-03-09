@@ -55,12 +55,12 @@ class Notification {
 	 *
 	 * @return bool
 	 */
-	public function get_read_status() {
+	public function get_read_status(): bool {
 		return $this->list_in_meta->is_in_list( $this->id, self::READ_STATUS_META_KEY, wp_get_current_user()->ID );
 	}
 
 	/**
-	 * Set read status of the notification for current user.
+	 * Set read status of the notification for the current user.
 	 *
 	 * @param bool $read_status Read status.
 	 */
@@ -74,11 +74,11 @@ class Notification {
 	}
 
 	/**
-	 * Get array of user ids to whom to show notifications.
+	 * Get an array of user ids to whom to show notifications.
 	 *
 	 * @return array
 	 */
-	public function get_users() {
+	public function get_users(): array {
 		return $this->list_in_meta->get_array( $this->id, self::USERS_META_KEY );
 	}
 
@@ -92,11 +92,11 @@ class Notification {
 	}
 
 	/**
-	 * Get list of users as comma-separated string.
+	 * Get a list of users as comma-separated string.
 	 *
 	 * @return string
 	 */
-	public function get_user_list() {
+	public function get_user_list(): string {
 		$users = $this->get_users();
 		foreach ( $users as $key => $user ) {
 			$user_data = get_userdata( $user );
@@ -109,7 +109,7 @@ class Notification {
 	}
 
 	/**
-	 * Set list of users defined by the comma-separated string.
+	 * Set the list of users defined by the comma-separated string.
 	 *
 	 * @param string $users User list as comma-separated string.
 	 */
