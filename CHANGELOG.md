@@ -1,3 +1,6 @@
+= 2.0.1 =
+* Fixed PHP deprecated message.
+
 = 2.0.0 =
 * Dropped support for PHP 5.6. The minimum required PHP version is now 7.0.
 * The minimum WordPress version required is now 5.0.

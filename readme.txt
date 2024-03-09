@@ -5,7 +5,7 @@ Tags: notification, notification system, user notification, notification channel
 Requires at least: 5.0
 Tested up to: 6.5
 Requires PHP: 7.0
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -103,6 +103,9 @@ If you get stuck, you can ask for help in the [Notification System Plugin Forum]
 2. The Notification System Update Notification popup.
 
 == Changelog ==
+
+= 2.0.1 =
+* Fixed PHP deprecated message.
 
 = 2.0.0 =
 * Dropped support for PHP 5.6. The minimum required PHP version is now 7.0.
