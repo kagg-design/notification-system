@@ -122,6 +122,8 @@ class Notifications {
 	 * Enqueue scripts.
 	 */
 	public function enqueue_scripts() {
+		$min = $this->min_suffix();
+
 		// REST Javascript API.
 		wp_localize_script(
 			'wp-api',
@@ -139,7 +141,7 @@ class Notifications {
 		// Plugin REST script.
 		wp_enqueue_script(
 			'notification-system',
-			KAGG_NOTIFICATIONS_URL . '/dist/js/notificationsRESTAPI/app.js',
+			KAGG_NOTIFICATIONS_URL . '/assets/js/apps/notificationsRESTAPI.js',
 			[ 'wp-api' ],
 			KAGG_NOTIFICATIONS_VERSION,
 			true
@@ -147,7 +149,7 @@ class Notifications {
 
 		wp_enqueue_style(
 			'notification-system',
-			KAGG_NOTIFICATIONS_URL . '/css/style.css',
+			KAGG_NOTIFICATIONS_URL . "/assets/css/style$min.css",
 			[],
 			KAGG_NOTIFICATIONS_VERSION
 		);
@@ -157,9 +159,11 @@ class Notifications {
 	 * Enqueue admin scripts.
 	 */
 	public function admin_enqueue_scripts() {
+		$min = $this->min_suffix();
+
 		wp_enqueue_style(
 			'notification-system',
-			KAGG_NOTIFICATIONS_URL . '/css/admin-style.css',
+			KAGG_NOTIFICATIONS_URL . "/assets/css/admin-style$min.css",
 			[],
 			KAGG_NOTIFICATIONS_VERSION
 		);
@@ -836,5 +840,14 @@ class Notifications {
 		$svg         = '<svg class="icon" height="20" viewBox="0 85.5 1024 855" xmlns="http://www.w3.org/2000/svg"><path d="M490.666667 938.666667c46.933333 0 85.333333-38.4 85.333333-85.333334h-170.666667c0 46.933333 38.4 85.333333 85.333334 85.333334z m277.333333-256V448c0-130.986667-90.88-240.64-213.333333-269.653333V149.333333c0-35.413333-28.586667-64-64-64s-64 28.586667-64 64v29.013334C304.213333 207.36 213.333333 317.013333 213.333333 448v234.666667l-85.333333 85.333333v42.666667h725.333333v-42.666667l-85.333333-85.333333z" fill="black" /> </svg>';
 
 		$item->title .= '<span class="menu-item-notifications">' . $svg . $count_span . '</span>';
+	}
+
+	/**
+	 * Get min suffix.
+	 *
+	 * @return string
+	 */
+	private function min_suffix(): string {
+		return defined( 'SCRIPT_DEBUG' ) && constant( 'SCRIPT_DEBUG' ) ? '' : '.min';
 	}
 }
