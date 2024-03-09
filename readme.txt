@@ -106,7 +106,7 @@ If you get stuck, you can ask for help in the [Notification System Plugin Forum]
 
 = 2.0.0 =
 * Dropped support for PHP 5.6. The minimum required PHP version is now 7.0.
-* The minimal WordPress version required is 5.0 now.
+* The minimum WordPress version required is now 5.0.
 * Tested with WordPress 6.5.
 
 = 1.3 =
