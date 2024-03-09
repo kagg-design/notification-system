@@ -40,6 +40,13 @@ class Notifications {
 	public $api;
 
 	/**
+	 * Bell svg icon.
+	 *
+	 * @var string
+	 */
+	private $bell_icon = '';
+
+	/**
 	 * Notifications constructor.
 	 */
 	public function __construct() {
@@ -51,6 +58,13 @@ class Notifications {
 	 * Init class.
 	 */
 	protected function init() {
+		$this->bell_icon = <<<SVG
+<svg width="24" height="20" viewBox="0 85.5 1024 855" xmlns="http://www.w3.org/2000/svg">
+    <path d="M490.666667 938.666667c46.933333 0 85.333333-38.4 85.333333-85.333334h-170.666667c0 46.933333 38.4 85.333333 85.333334 85.333334z m277.333333-256V448c0-130.986667-90.88-240.64-213.333333-269.653333V149.333333c0-35.413333-28.586667-64-64-64s-64 28.586667-64 64v29.013334C304.213333 207.36 213.333333 317.013333 213.333333 448v234.666667l-85.333333 85.333333v42.666667h725.333333v-42.666667l-85.333333-85.333333z"
+          fill="#a7aaad"/>
+</svg>
+SVG;
+
 		$this->api = new Notifications_API();
 	}
 
@@ -257,7 +271,7 @@ class Notifications {
 			'show_ui'               => true,
 			'show_in_menu'          => true,
 			// phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-			'menu_icon'             => 'data:image/svg+xml;base64,' . base64_encode( '<svg height="20" viewBox="0 85.5 1024 855" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M490.666667 938.666667c46.933333 0 85.333333-38.4 85.333333-85.333334h-170.666667c0 46.933333 38.4 85.333333 85.333334 85.333334z m277.333333-256V448c0-130.986667-90.88-240.64-213.333333-269.653333V149.333333c0-35.413333-28.586667-64-64-64s-64 28.586667-64 64v29.013334C304.213333 207.36 213.333333 317.013333 213.333333 448v234.666667l-85.333333 85.333333v42.666667h725.333333v-42.666667l-85.333333-85.333333z" fill="black" /> </svg>' ),
+			'menu_icon'             => 'data:image/svg+xml;base64,' . base64_encode( $this->bell_icon ),
 			// phpcs:enable WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 			'show_in_nav_menus'     => true,
 			'publicly_queryable'    => true,
@@ -837,9 +851,8 @@ class Notifications {
 	private function update_nav_menu_item( $item, $display_span, $count_str ) {
 		$item->title = self::EMPTY_MENU === trim( $item->title ) ? '' : $item->title;
 		$count_span  = '<span class="unread-notifications-count" style="display: ' . $display_span . '">' . $count_str . '</span>';
-		$svg         = '<svg class="icon" height="20" viewBox="0 85.5 1024 855" xmlns="http://www.w3.org/2000/svg"><path d="M490.666667 938.666667c46.933333 0 85.333333-38.4 85.333333-85.333334h-170.666667c0 46.933333 38.4 85.333333 85.333334 85.333334z m277.333333-256V448c0-130.986667-90.88-240.64-213.333333-269.653333V149.333333c0-35.413333-28.586667-64-64-64s-64 28.586667-64 64v29.013334C304.213333 207.36 213.333333 317.013333 213.333333 448v234.666667l-85.333333 85.333333v42.666667h725.333333v-42.666667l-85.333333-85.333333z" fill="black" /> </svg>';
 
-		$item->title .= '<span class="menu-item-notifications">' . $svg . $count_span . '</span>';
+		$item->title .= '<span class="menu-item-notifications svg">' . $this->bell_icon . $count_span . '</span>';
 	}
 
 	/**

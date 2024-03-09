@@ -220,7 +220,7 @@ div#notifications-header {
 
 .menu-item-notifications {position: relative;display: inline-block;vertical-align: middle;width: 1.2em;height: 1.2em;font-size: 1.125em;margin-left: 0.1em;}
 
-.menu-item-notifications svg.icon {
+.menu-item-notifications svg {
 	position: absolute;
 	opacity: 0.7;
 	height: 1em;
@@ -229,7 +229,7 @@ div#notifications-header {
 	display: inline-block !important;
 }
 
-.menu-item-notifications svg.icon path {
+.menu-item-notifications svg path {
 	fill: #111;
 }
 
