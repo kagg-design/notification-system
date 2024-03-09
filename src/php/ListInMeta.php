@@ -1,16 +1,16 @@
 <?php
 /**
- * List_In_Meta class file.
+ * ListInMeta class file.
  *
  * @package notification-system
  */
 
-namespace KAGG\Notification_System;
+namespace KAGG\NotificationSystem;
 
 /**
- * Class List_In_Meta
+ * Class ListInMeta
  */
-class List_In_Meta {
+class ListInMeta {
 
 	/**
 	 * Delimiter in the list.

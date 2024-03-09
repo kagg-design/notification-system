@@ -5,7 +5,7 @@
  * @package notification-system
  */
 
-namespace KAGG\Notification_System;
+namespace KAGG\NotificationSystem;
 
 use WP_Post;
 use WP_Query;
@@ -35,7 +35,7 @@ class Notifications {
 	/**
 	 * API instance.
 	 *
-	 * @var Notifications_API
+	 * @var NotificationsAPI
 	 */
 	public $api;
 
@@ -65,7 +65,7 @@ class Notifications {
 </svg>
 SVG;
 
-		$this->api = new Notifications_API();
+		$this->api = new NotificationsAPI();
 	}
 
 	/**
@@ -286,7 +286,7 @@ SVG;
 			'capability_type'       => 'post',
 			'show_in_rest'          => false,
 			'rest_base'             => 'kagg/v1/notification',
-			'rest_controller_class' => Notifications_API_Controller::class,
+			'rest_controller_class' => NotificationsAPIController::class,
 		];
 
 		register_post_type( 'notification', $args );
@@ -539,13 +539,13 @@ SVG;
 		if ( empty( $user_id ) ) {
 			wp_send_json_error( __( 'Current user ID is empty!', 'notification-system' ) );
 		}
-		$read_value = List_In_Meta::get_prepared_item( wp_get_current_user()->ID );
+		$read_value = ListInMeta::get_prepared_item( wp_get_current_user()->ID );
 
 		$user_meta_query = [
 			'relation' => 'AND',
 			[
 				'key'     => Notification::USERS_META_KEY,
-				'value'   => List_In_Meta::get_prepared_item( $user_id ),
+				'value'   => ListInMeta::get_prepared_item( $user_id ),
 				'compare' => 'LIKE',
 			],
 			[
@@ -610,7 +610,7 @@ SVG;
 	 * @return int
 	 */
 	public function get_unread_count(): int {
-		$read_value = List_In_Meta::get_prepared_item( wp_get_current_user()->ID );
+		$read_value = ListInMeta::get_prepared_item( wp_get_current_user()->ID );
 
 		$read_meta_query = [
 			'relation' => 'OR',
@@ -638,7 +638,7 @@ SVG;
 				'relation' => 'AND',
 				[
 					'key'     => Notification::USERS_META_KEY,
-					'value'   => List_In_Meta::get_prepared_item( wp_get_current_user()->ID ),
+					'value'   => ListInMeta::get_prepared_item( wp_get_current_user()->ID ),
 					'compare' => 'LIKE',
 				],
 				[
@@ -704,7 +704,7 @@ SVG;
 	 * Add meta-boxes for notifications.
 	 */
 	public function add_meta_boxes() {
-		$metabox = new Notification_Meta_Box();
+		$metabox = new NotificationMetaBox();
 		add_meta_box(
 			'notification-data',
 			__( 'Notification data', 'notification-system' ),
@@ -746,10 +746,10 @@ SVG;
 
 		// Check the nonce.
 		if (
-			empty( $_POST[ Notification_Meta_Box::SAVE_NONCE ] ) ||
+			empty( $_POST[ NotificationMetaBox::SAVE_NONCE ] ) ||
 			! wp_verify_nonce(
-				filter_input( INPUT_POST, Notification_Meta_Box::SAVE_NONCE, FILTER_SANITIZE_STRING ),
-				Notification_Meta_Box::SAVE_ACTION
+				filter_input( INPUT_POST, NotificationMetaBox::SAVE_NONCE, FILTER_SANITIZE_STRING ),
+				NotificationMetaBox::SAVE_ACTION
 			)
 		) {
 			return;
@@ -766,7 +766,7 @@ SVG;
 		}
 
 		remove_action( 'save_post', [ $this, 'save_meta_boxes' ], 1 );
-		$metabox = new Notification_Meta_Box();
+		$metabox = new NotificationMetaBox();
 		$metabox::save( $post_id );
 		add_action( 'save_post', [ $this, 'save_meta_boxes' ], 0, 3 );
 	}

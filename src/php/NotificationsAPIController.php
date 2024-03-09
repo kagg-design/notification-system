@@ -1,11 +1,11 @@
 <?php
 /**
- * Notifications_API_Controller class file.
+ * NotificationsAPIController class file.
  *
  * @package notification-system
  */
 
-namespace KAGG\Notification_System;
+namespace KAGG\NotificationSystem;
 
 use Exception;
 use WP_Error;
@@ -17,9 +17,9 @@ use WP_REST_Response;
 use WP_REST_Server;
 
 /**
- * Class Notifications_API_Controller
+ * Class NotificationsAPIController
  */
-class Notifications_API_Controller extends WP_REST_Controller {
+class NotificationsAPIController extends WP_REST_Controller {
 
 	/**
 	 * Endpoint namespace.
@@ -45,7 +45,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	/**
 	 * List_In_Meta instance.
 	 *
-	 * @var List_In_Meta
+	 * @var ListInMeta
 	 */
 	public $list_in_meta;
 
@@ -60,7 +60,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 	 * Init controller.
 	 */
 	private function init() {
-		$this->list_in_meta = new List_In_Meta();
+		$this->list_in_meta = new ListInMeta();
 	}
 
 	/**
@@ -496,7 +496,7 @@ class Notifications_API_Controller extends WP_REST_Controller {
 			'relation' => 'OR',
 			[
 				'key'     => Notification::USERS_META_KEY,
-				'value'   => List_In_Meta::get_prepared_item( wp_get_current_user()->ID ),
+				'value'   => ListInMeta::get_prepared_item( wp_get_current_user()->ID ),
 				'compare' => 'LIKE',
 			],
 			[

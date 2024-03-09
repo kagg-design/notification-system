@@ -40,9 +40,9 @@
     "wp-coding-standards/wpcs": "^3.0.1"
   },
   "autoload": {
-    "classmap": [
-      "classes"
-    ]
+    "psr-4": {
+      "KAGG\\NotificationSystem\\": "src/php"
+    }
   },
   "scripts": {
     "update-tests": "update-tests",

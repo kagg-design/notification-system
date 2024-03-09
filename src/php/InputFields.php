@@ -1,16 +1,16 @@
 <?php
 /**
- * Input_Fields class file.
+ * InputFields class file.
  *
  * @package notification-system
  */
 
-namespace KAGG\Notification_System;
+namespace KAGG\NotificationSystem;
 
 /**
- * Class Input_Fields
+ * Class InputFields
  */
-class Input_Fields {
+class InputFields {
 
 	/**
 	 * Output a text input box.

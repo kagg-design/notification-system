@@ -1,18 +1,18 @@
 <?php
 /**
- * Notification_Meta_Box class file.
+ * NotificationMetaBox class file.
  *
  * @package notification-system
  */
 
-namespace KAGG\Notification_System;
+namespace KAGG\NotificationSystem;
 
 use WP_Post;
 
 /**
- * Class Notification_Meta_Box
+ * Class NotificationMetaBox
  */
-class Notification_Meta_Box {
+class NotificationMetaBox {
 	/**
 	 * Ajax save action name.
 	 */
@@ -42,7 +42,7 @@ class Notification_Meta_Box {
 				<?php
 
 				// Amount.
-				Input_Fields::text_input(
+				InputFields::text_input(
 					[
 						'id'          => 'users',
 						'label'       => __( 'Show to users', 'notification-system' ),
@@ -81,7 +81,7 @@ class Notification_Meta_Box {
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-		$users = Input_Fields::clean( $_POST['users'] );
+		$users = InputFields::clean( $_POST['users'] );
 		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.MissingUnslash
 		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized

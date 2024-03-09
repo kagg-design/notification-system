@@ -5,7 +5,7 @@
  * @package notification-system
  */
 
-namespace KAGG\Notification_System;
+namespace KAGG\NotificationSystem;
 
 /**
  * Class Notification
@@ -36,7 +36,7 @@ class Notification {
 	/**
 	 * Instance of List In Meta class.
 	 *
-	 * @var List_In_Meta
+	 * @var ListInMeta
 	 */
 	protected $list_in_meta;
 
@@ -47,7 +47,7 @@ class Notification {
 	 */
 	public function __construct( $id ) {
 		$this->id           = absint( $id );
-		$this->list_in_meta = new List_In_Meta();
+		$this->list_in_meta = new ListInMeta();
 	}
 
 	/**

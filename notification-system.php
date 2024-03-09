@@ -21,7 +21,7 @@
  * Domain Path:          /languages/
  */
 
-namespace KAGG\Notification_System;
+namespace KAGG\NotificationSystem;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.

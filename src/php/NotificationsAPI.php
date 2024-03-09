@@ -1,16 +1,16 @@
 <?php
 /**
- * Notifications_API class file.
+ * NotificationsAPI class file.
  *
  * @package notification-system
  */
 
-namespace KAGG\Notification_System;
+namespace KAGG\NotificationSystem;
 
 /**
- * Class Notifications_API
+ * Class NotificationsAPI
  */
-class Notifications_API {
+class NotificationsAPI {
 
 	/**
 	 * Notifications_API constructor.
@@ -39,7 +39,7 @@ class Notifications_API {
 	public function register_rest_routes() {
 		// Register settings to the REST API.
 		$controllers = [
-			Notifications_API_Controller::class,
+			NotificationsAPIController::class,
 		];
 
 		foreach ( $controllers as $controller ) {
