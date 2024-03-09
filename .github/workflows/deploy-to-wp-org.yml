@@ -10,18 +10,19 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          extensions: json, mysqli, mbstring, zip
+        uses: actions/checkout@v4
 
       - name: Install dependencies with caching
         uses: kagg-design/composer-install@v2
         with:
           composer-options: "--no-dev --optimize-autoloader --classmap-authoritative"
+
+      - name: Install packages
+        run: |
+          corepack enable
+          yarn set version stable
+          yarn
+          yarn prod
 
       - name: WordPress Plugin Deploy
         id: deploy
