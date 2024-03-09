@@ -239,12 +239,12 @@ class NotificationsRESTAPI {
 			buttons +=
 				'<img alt="Delete Button" class="delete-notification-button" src="' +
 				WPAPISettings.pluginURL +
-				'/images/delete-button.svg">';
+				'/assets/images/delete-button.svg">';
 			// noinspection JSUnresolvedVariable
 			buttons +=
 				'<img alt="Update Button" class="update-notification-button" src="' +
 				WPAPISettings.pluginURL +
-				'/images/update-button.svg">';
+				'/assets/images/update-button.svg">';
 		}
 
 		let unreadCount = 0;
