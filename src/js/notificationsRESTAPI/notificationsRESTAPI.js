@@ -24,12 +24,12 @@ class NotificationsRESTAPI {
 		wp.api.init( { versionString: 'kagg/v1/' } );
 
 		// Get content.
-		const notificationsContent = document.getElementsByClassName(
+		const notificationContent = document.getElementsByClassName(
 			'notifications-content'
 		)[ 0 ];
 
-		// Get and show notifications at page load.
-		if ( notificationsContent ) {
+		// Get and show notifications at a page load.
+		if ( notificationContent ) {
 			// Standard page.
 			this.getNotifications( [] );
 			return;
@@ -51,7 +51,7 @@ class NotificationsRESTAPI {
 	 *
 	 * @return {null|HTMLDivElement} Element containing notifications list.
 	 */
-	getNotificationsListElement() {
+	getNotificationListElement() {
 		const popup = document.querySelector( '#notifications-popup' );
 
 		if ( ! popup ) {
@@ -129,7 +129,7 @@ class NotificationsRESTAPI {
 					data: { per_page: this.PER_PAGE },
 					error: ( collection, response ) => {
 						// noinspection JSUnresolvedVariable
-						this.getNotificationsListElement.innerHTML =
+						this.getNotificationListElement.innerHTML =
 							'<td colspan="4" class="notifications-error">' +
 							response.responseJSON.message +
 							'</td>';
@@ -162,7 +162,7 @@ class NotificationsRESTAPI {
 				}
 			}
 
-			notification.save().done( function () {
+			notification.save().done( function() {
 				getNotifications();
 			} );
 		} );
@@ -175,7 +175,7 @@ class NotificationsRESTAPI {
 	 */
 	updateNotification( query ) {
 		const getNotifications = () => this.getNotifications();
-		wp.api.loadPromise.done( function () {
+		wp.api.loadPromise.done( function() {
 			// noinspection JSUnresolvedFunction
 			const notification = new wp.api.models.Notifications( {} );
 
@@ -187,7 +187,7 @@ class NotificationsRESTAPI {
 
 			notification.set();
 
-			notification.save().done( function () {
+			notification.save().done( function() {
 				getNotifications();
 			} );
 		} );
@@ -200,13 +200,13 @@ class NotificationsRESTAPI {
 	 */
 	deleteNotification( id ) {
 		const getNotifications = () => this.getNotifications();
-		wp.api.loadPromise.done( function () {
+		wp.api.loadPromise.done( function() {
 			// noinspection JSUnresolvedFunction
 			const notification = new wp.api.models.Notifications( {} );
 
 			notification.attributes.id = id;
 
-			notification.destroy().done( function () {
+			notification.destroy().done( function() {
 				getNotifications();
 			} );
 		} );
@@ -215,11 +215,11 @@ class NotificationsRESTAPI {
 	/**
 	 * Show notifications received via REST API.
 	 *
-	 * @param {{}} notifications Notifications.
-	 * @param {boolean} add bool Add to output area.
+	 * @param {{}}      notifications Notifications.
+	 * @param {boolean} add           Add to output area.
 	 */
 	showNotifications( notifications, add = false ) {
-		const notificationsListElement = this.getNotificationsListElement();
+		const notificationsListElement = this.getNotificationListElement();
 
 		if ( ! notificationsListElement ) {
 			return;
@@ -249,7 +249,7 @@ class NotificationsRESTAPI {
 
 		let unreadCount = 0;
 		let notificationsList = '';
-		notifications.each( function ( notification ) {
+		notifications.each( function( notification ) {
 			let readClass = '';
 			if ( notification.attributes.read ) {
 				readClass = ' read';
@@ -345,11 +345,11 @@ class NotificationsRESTAPI {
 		const markAllAsReadAjax = () => this.markAllAsReadAjax();
 		const getNotifications = () => this.getNotifications();
 
-		// Click on link containing POPUP_HASH.
+		// Click on a link containing POPUP_HASH.
 		const links = document.getElementsByTagName( 'a' );
 		for ( const link of links ) {
 			if ( this.hasPopupHash( link.hash ) ) {
-				link.onclick = function ( event ) {
+				link.onclick = function( event ) {
 					event.preventDefault();
 					showPopup();
 					return false;
@@ -379,13 +379,13 @@ class NotificationsRESTAPI {
 			};
 		}
 
-		window.onclick = function ( event ) {
-			// When user clicks anywhere outside the modal, close it.
+		window.onclick = function( event ) {
+			// When a user clicks anywhere outside the modal, close it.
 			if ( event.target.matches( '.notifications-modal' ) ) {
 				event.target.style.display = 'none';
 			}
 
-			// When user clicks on <span> (x), close modal.
+			// When a user clicks on <span> (x), close modal.
 			if ( event.target.matches( '.close' ) ) {
 				event.target.closest( '.notifications-modal' ).style.display =
 					'none';
@@ -492,7 +492,7 @@ class NotificationsRESTAPI {
 					// eslint-disable-next-line no-alert
 					confirm(
 						'Are you sure to delete the following notification?\n\n' +
-							text.innerText
+						text.innerText
 					)
 				) {
 					deleteId = text.dataset.id;
@@ -532,7 +532,6 @@ class NotificationsRESTAPI {
 			};
 		}
 
-		// eslint-disable-next-line @wordpress/no-global-event-listener
 		document.addEventListener( 'update_unread_counts', ( event ) => {
 			this.updateUnreadCountElements( event.detail );
 		} );
@@ -551,7 +550,7 @@ class NotificationsRESTAPI {
 	}
 
 	/**
-	 * Get content of popup window with notifications.
+	 * Get content of a popup window with notifications.
 	 *
 	 * @return {Promise<any>} Promise.
 	 */
@@ -565,7 +564,7 @@ class NotificationsRESTAPI {
 	}
 
 	/**
-	 * Show popup window.
+	 * Show a popup window.
 	 */
 	showPopup() {
 		let popup = document.getElementById( 'notifications-popup' );
